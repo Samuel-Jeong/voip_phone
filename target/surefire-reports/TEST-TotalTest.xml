@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite tests="1" failures="0" name="TotalTest" time="0.128" errors="1" skipped="0">
+  <properties>
+    <property name="java.vendor" value="AdoptOpenJDK"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="os.name" value="Mac OS X"/>
+    <property name="sun.boot.class.path" value="/Users/jamesj/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre/lib/default/jclSC180/vm.jar:/Users/jamesj/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre/lib/se-service.jar:/Users/jamesj/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre/lib/rt.jar:/Users/jamesj/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre/lib/resources.jar:/Users/jamesj/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre/lib/jsse.jar:/Users/jamesj/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre/lib/charsets.jar:/Users/jamesj/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre/lib/jce.jar"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.runtime.version" value="1.8.0_292-b10"/>
+    <property name="user.name" value="jamesj"/>
+    <property name="java.compiler" value="j9jit29"/>
+    <property name="os.encoding" value="UTF-8"/>
+    <property name="guice.disable.misplaced.annotation.check" value="true"/>
+    <property name="com.ibm.util.extralibs.properties" value=""/>
+    <property name="com.ibm.jcl.checkClassPath" value=""/>
+    <property name="user.language" value="ko"/>
+    <property name="com.ibm.oti.vm.bootstrap.library.path" value="/Users/jamesj/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre/lib/default:/Users/jamesj/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre/lib"/>
+    <property name="idea.version" value="2021.1.3"/>
+    <property name="sun.boot.library.path" value="/Users/jamesj/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre/lib/default:/Users/jamesj/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre/lib"/>
+    <property name="classworlds.conf" value="/Applications/IntelliJ IDEA CE.app/Contents/plugins/maven/lib/maven3/bin/m2.conf"/>
+    <property name="jdk.extensions.version" value="8.0.292.0"/>
+    <property name="java.version" value="1.8.0_292"/>
+    <property name="user.timezone" value="Asia/Seoul"/>
+    <property name="com.ibm.system.agent.path" value="/Users/jamesj/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre/lib"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="com.ibm.zero.version" value="2"/>
+    <property name="java.endorsed.dirs" value="/Users/jamesj/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre/lib/endorsed"/>
+    <property name="com.ibm.oti.vm.library.version" value="29"/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="file.encoding.pkg" value="sun.io"/>
+    <property name="file.separator" value="/"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="maven.conf" value="/Applications/IntelliJ IDEA CE.app/Contents/plugins/maven/lib/maven3/conf"/>
+    <property name="java.class.version" value="52.0"/>
+    <property name="user.country" value="KR"/>
+    <property name="java.home" value="/Users/jamesj/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre"/>
+    <property name="java.vm.info" value="JRE 1.8.0 Mac OS X amd64-64-Bit Compressed References 20210421_909 (JIT enabled, AOT enabled)
+OpenJ9   - b4cc246d9
+OMR      - 162e6f729
+JCL      - 2a5e268814 based on jdk8u292-b10"/>
+    <property name="os.version" value="10.16"/>
+    <property name="path.separator" value=":"/>
+    <property name="java.vm.version" value="openj9-0.26.0"/>
+    <property name="user.variant" value=""/>
+    <property name="maven.ext.class.path" value="/Applications/IntelliJ IDEA CE.app/Contents/plugins/maven/lib/maven-event-listener.jar"/>
+    <property name="java.awt.printerjob" value="sun.lwawt.macosx.CPrinterJob"/>
+    <property name="jdk.extensions.name" value="Extensions for OpenJDK for Eclipse OpenJ9"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="awt.toolkit" value="sun.lwawt.macosx.LWCToolkit"/>
+    <property name="ibm.signalhandling.sigint" value="true"/>
+    <property name="user.home" value="/Users/jamesj"/>
+    <property name="com.ibm.cpu.endian" value="little"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="ibm.signalhandling.sigchain" value="true"/>
+    <property name="java.library.path" value="/Users/jamesj/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre/lib/default:/Users/jamesj/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre/lib:/usr/lib"/>
+    <property name="java.vendor.url" value="https://adoptopenjdk.net/"/>
+    <property name="java.vm.vendor" value="Eclipse OpenJ9"/>
+    <property name="java.fullversion" value="1.8.0_292-b10
+JRE 1.8.0 Mac OS X amd64-64-Bit Compressed References 20210421_909 (JIT enabled, AOT enabled)
+OpenJ9   - b4cc246d9
+OMR      - 162e6f729
+JCL      - 2a5e268814 based on jdk8u292-b10"/>
+    <property name="maven.home" value="/Applications/IntelliJ IDEA CE.app/Contents/plugins/maven/lib/maven3"/>
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+    <property name="sun.java.command" value="org.codehaus.classworlds.Launcher -Didea.version=2021.1.3 test"/>
+    <property name="java.class.path" value="/Applications/IntelliJ IDEA CE.app/Contents/plugins/maven/lib/maven3/boot/plexus-classworlds.license:/Applications/IntelliJ IDEA CE.app/Contents/plugins/maven/lib/maven3/boot/plexus-classworlds-2.6.0.jar:/Applications/IntelliJ IDEA CE.app/Contents/lib/idea_rt.jar:/Applications/IntelliJ IDEA CE.app/Contents/lib/idea_rt.jar"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="java.vm.specification.version" value="1.8"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="java.io.tmpdir" value="/var/folders/zw/j097jsqd7vqc37wr4vfqyfx80000gn/T/"/>
+    <property name="maven.multiModuleProjectDirectory" value="/Users/jamesj/VOIP_Phone"/>
+    <property name="ibm.system.encoding" value="UTF-8"/>
+    <property name="os.arch" value="x86_64"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.CGraphicsEnvironment"/>
+    <property name="ibm.signalhandling.rs" value="false"/>
+    <property name="java.ext.dirs" value="/Users/jamesj/Library/Java/JavaVirtualMachines/adopt-openj9-1.8.0_292/Contents/Home/jre/lib/ext"/>
+    <property name="user.dir" value="/Users/jamesj/VOIP_Phone"/>
+    <property name="line.separator" value="
+"/>
+    <property name="java.vm.name" value="Eclipse OpenJ9 VM"/>
+    <property name="com.ibm.oti.shared.enabled" value="false"/>
+    <property name="com.ibm.vm.bitmode" value="64"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="com.ibm.oti.configuration" value="scar"/>
+    <property name="java.specification.version" value="1.8"/>
+  </properties>
+  <testcase classname="TotalTest" name="TotalTest" time="0.128">
+    <error type="java.lang.NullPointerException">java.lang.NullPointerException
+	at signal.SignalManager.init(SignalManager.java:103)
+	at signal.SignalManager.&lt;init&gt;(SignalManager.java:98)
+	at signal.SignalManager.getInstance(SignalManager.java:162)
+	at service.ServiceManager.&lt;init&gt;(ServiceManager.java:37)
+	at service.ServiceManager.getInstance(ServiceManager.java:45)
+	at config.ConfigManager.getIniValue(ConfigManager.java:213)
+	at config.ConfigManager.loadCommonConfig(ConfigManager.java:126)
+	at config.ConfigManager.&lt;init&gt;(ConfigManager.java:98)
+	at TestAppInstance.&lt;init&gt;(TestAppInstance.java:21)
+	at TotalTest.setUp(TotalTest.java:13)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:24)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:252)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:141)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+</error>
+    <system-out>17:04:31.009 [main] INFO TestAppInstance - | class root: /Users/jamesj/VOIP_Phone/target/test-classes/
+17:04:31.025 [main] DEBUG config.ConfigManager - 	Get Config [COMMON] &gt; [UDP_RCV_BUFFER_SIZE] : [33554432]
+17:04:31.025 [main] DEBUG config.ConfigManager - 	Get Config [COMMON] &gt; [UDP_SND_BUFFER_SIZE] : [16777216]
+17:04:31.025 [main] DEBUG config.ConfigManager - 	Get Config [COMMON] &gt; [LONG_CALL_TIME] : [360000]
+17:04:31.025 [main] DEBUG config.ConfigManager - 	Get Config [COMMON] &gt; [USE_CLIENT] : [true]
+17:04:31.025 [main] WARN config.ConfigManager - [ COMMON ] &quot; CALL_AUTO_ACCEPT &quot; is null.
+17:04:31.027 [main] DEBUG service.ServiceManager - | ShutDownHookHandler is initiated. (target=main)
+</system-out>
+  </testcase>
+</testsuite>
