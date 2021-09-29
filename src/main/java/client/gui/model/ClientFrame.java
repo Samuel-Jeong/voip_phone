@@ -65,7 +65,7 @@ public class ClientFrame extends JFrame {
 
     //////////////////////////////////////////////////////////////////////
     // ComboBox
-    private JComboBox codecSelectCombo;
+    private JComboBox audioCodecSelectCombo;
 
     //////////////////////////////////////////////////////////////////////
     // Slider
@@ -391,41 +391,41 @@ public class ClientFrame extends JFrame {
         JPanel codecDescriptionPanel = new JPanel(new GridLayout(1, 1));
 
         JPanel codecDesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel codecSelectLabel = new JLabel("Codec : ");
+        JLabel codecSelectLabel = new JLabel("Audio Codec : ");
         codecDesPanel.add(codecSelectLabel);
         codecDescriptionPanel.add(codecDesPanel);
 
-        String[] codecStrArray = MediaManager.getInstance().getSupportedCodecList();
-        JPanel codecComboPanel = new JPanel(new GridLayout(1, 1));
+        String[] audioCodecStrArray = MediaManager.getInstance().getSupportedAudioCodecList();
+        JPanel audioCodecComboPanel = new JPanel(new GridLayout(1, 1));
 
-        codecSelectCombo = new JComboBox(codecStrArray);
+        audioCodecSelectCombo = new JComboBox(audioCodecStrArray);
 
         ConfigManager configManager = AppInstance.getInstance().getConfigManager();
-        if (configManager.getPriorityCodec().equals(AudioFormat.Encoding.ALAW.toString())) {
-            codecSelectCombo.setSelectedItem(AudioFormat.Encoding.ALAW);
-        } else if (configManager.getPriorityCodec().equals(AudioFormat.Encoding.ULAW.toString())) {
-            codecSelectCombo.setSelectedItem(AudioFormat.Encoding.ULAW);
-        } else if (configManager.getPriorityCodec().equals(MediaManager.EVS)) {
-            codecSelectCombo.setSelectedItem(MediaManager.EVS);
-        } else if (configManager.getPriorityCodec().equals(MediaManager.AMR_NB)) {
-            codecSelectCombo.setSelectedItem(MediaManager.AMR_NB);
-        } else if (configManager.getPriorityCodec().equals(MediaManager.AMR_WB)) {
-            codecSelectCombo.setSelectedItem(MediaManager.AMR_WB);
+        if (configManager.getPriorityAudioCodec().equals(AudioFormat.Encoding.ALAW.toString())) {
+            audioCodecSelectCombo.setSelectedItem(AudioFormat.Encoding.ALAW);
+        } else if (configManager.getPriorityAudioCodec().equals(AudioFormat.Encoding.ULAW.toString())) {
+            audioCodecSelectCombo.setSelectedItem(AudioFormat.Encoding.ULAW);
+        } else if (configManager.getPriorityAudioCodec().equals(MediaManager.EVS)) {
+            audioCodecSelectCombo.setSelectedItem(MediaManager.EVS);
+        } else if (configManager.getPriorityAudioCodec().equals(MediaManager.AMR_NB)) {
+            audioCodecSelectCombo.setSelectedItem(MediaManager.AMR_NB);
+        } else if (configManager.getPriorityAudioCodec().equals(MediaManager.AMR_WB)) {
+            audioCodecSelectCombo.setSelectedItem(MediaManager.AMR_WB);
         }
 
-        codecSelectCombo.addActionListener(e -> {
+        audioCodecSelectCombo.addActionListener(e -> {
             try {
                 JComboBox cb = (JComboBox) e.getSource();
                 int index = cb.getSelectedIndex();
 
-                String codecName = codecStrArray[index];
-                logger.debug("Selected codec name : {}", codecName);
+                String codecName = audioCodecStrArray[index];
+                logger.debug("Selected audio codec name : {}", codecName);
 
-                String curPriorityCodec = configManager.getPriorityCodec();
+                String curPriorityCodec = configManager.getPriorityAudioCodec();
                 if (!curPriorityCodec.equals(codecName)) {
-                    logger.debug("Priority codec option is changed. (before=[{}], after=[{}])", configManager.getPriorityCodec(), codecName);
-                    appendText("Priority codec option is changed. ([" + curPriorityCodec + "] > [" + codecName + "])\n");
-                    configManager.setPriorityCodec(codecName);
+                    logger.debug("Priority audio codec option is changed. (before=[{}], after=[{}])", configManager.getPriorityAudioCodec(), codecName);
+                    appendText("Priority audio codec option is changed. ([" + curPriorityCodec + "] > [" + codecName + "])\n");
+                    configManager.setPriorityAudioCodec(codecName);
                     configManager.setIniValue(ConfigManager.SECTION_MEDIA, ConfigManager.FIELD_PRIORITY_CODEC, codecName);
                     MediaManager.getInstance().setPriorityCodec(codecName);
                 }
@@ -434,8 +434,8 @@ public class ClientFrame extends JFrame {
             }
         });
 
-        codecComboPanel.add(codecSelectCombo);
-        codecSelectPanel.add(codecComboPanel);
+        audioCodecComboPanel.add(audioCodecSelectCombo);
+        codecSelectPanel.add(audioCodecComboPanel);
 
         mediaPanel.add(codecDescriptionPanel);
         mediaPanel.add(codecSelectPanel);
@@ -967,7 +967,7 @@ public class ClientFrame extends JFrame {
                 mediaPortTextField.setEnabled(false);
                 recordPathTextField.setEnabled(false);
 
-                codecSelectCombo.setEnabled(false);
+                audioCodecSelectCombo.setEnabled(false);
                 rawFileCheck.setEnabled(false);
                 encFileCheck.setEnabled(false);
                 decFileCheck.setEnabled(false);
@@ -1019,7 +1019,7 @@ public class ClientFrame extends JFrame {
                 mediaPortTextField.setEnabled(true);
                 recordPathTextField.setEnabled(true);
 
-                codecSelectCombo.setEnabled(true);
+                audioCodecSelectCombo.setEnabled(true);
                 rawFileCheck.setEnabled(true);
                 encFileCheck.setEnabled(true);
                 decFileCheck.setEnabled(true);
@@ -1369,4 +1369,5 @@ public class ClientFrame extends JFrame {
             dispose();
         }
     }
+
 }

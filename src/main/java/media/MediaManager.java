@@ -14,9 +14,13 @@ public class MediaManager {
 
     private static final Logger logger = LoggerFactory.getLogger(MediaManager.class);
 
+    // AUDIO
     public static final String EVS = "EVS";
     public static final String AMR_NB = "AMR";
     public static final String AMR_WB = "AMR-WB";
+
+    // VIDEO
+    public static final String H264 = "H264";
 
     public static final int AMR_NB_MAX_MODE_SET = 7;
     public static final int AMR_WB_MAX_MODE_SET = 8;
@@ -25,12 +29,16 @@ public class MediaManager {
 
     private final NettyChannelManager nettyChannelManager;
 
-    private final String[] supportedCodecList = {
+    private final String[] supportedAudioCodecList = {
             AudioFormat.Encoding.ALAW.toString(),
             AudioFormat.Encoding.ULAW.toString(),
             EVS,
             AMR_NB,
-            AMR_WB
+            AMR_WB,
+    };
+
+    private final String[] supportedVideoCodecList = {
+            H264
     };
 
     private String priorityCodec = null;
@@ -71,8 +79,12 @@ public class MediaManager {
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    public String[] getSupportedCodecList() {
-        return supportedCodecList;
+    public String[] getSupportedAudioCodecList() {
+        return supportedAudioCodecList;
+    }
+
+    public String[] getSupportedVideoCodecList() {
+        return supportedVideoCodecList;
     }
 
     public String getPriorityCodec() {
@@ -89,7 +101,7 @@ public class MediaManager {
 
     public void setPriorityCodec(String priorityCodec) {
         if (priorityCodec != null) {
-            for (String codec : supportedCodecList) {
+            for (String codec : supportedAudioCodecList) {
                 if (priorityCodec.equals(codec) && codec.equals(AudioFormat.Encoding.ALAW.toString())) {
                     priorityCodecId = 8;
                     priorityCodecSamplingRate = "8000";
@@ -105,6 +117,9 @@ public class MediaManager {
                 } else if (priorityCodec.equals(codec) && codec.equals(MediaManager.AMR_WB)) {
                     priorityCodecId = 112;
                     priorityCodecSamplingRate = "16000";
+                } else if (priorityCodec.equals(codec) && codec.equals(MediaManager.H264)) {
+                    priorityCodecId = 113;
+                    priorityCodecSamplingRate = "90000";
                 }
             }
         }

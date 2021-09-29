@@ -74,7 +74,7 @@ public class ConfigManager {
     private int callRecvDuration = 0; // 호 시작 시 상대방이 전화 받을 때까지 대기하는 시간 > 설정된 시간이 지나면 자동으로 Cancel 보낸다.
 
     // MEDIA
-    private String priorityCodec;
+    private String priorityAudioCodec;
     private int nettyServerConsumerCount = 0; // Netty Server 당 Consumer 개수
     private String nettyServerIp; // Netty Server IP List
     private int nettyServerPort; // Netty Server Port List
@@ -190,8 +190,8 @@ public class ConfigManager {
      * @brief MEDIA Section 을 로드하는 함수
      */
     private void loadMediaConfig() {
-        this.priorityCodec = getIniValue(SECTION_MEDIA, FIELD_PRIORITY_CODEC);
-        MediaManager.getInstance().setPriorityCodec(this.priorityCodec);
+        this.priorityAudioCodec = getIniValue(SECTION_MEDIA, FIELD_PRIORITY_CODEC);
+        MediaManager.getInstance().setPriorityCodec(this.priorityAudioCodec);
 
         this.nettyServerConsumerCount = Integer.parseInt(getIniValue(SECTION_MEDIA, FIELD_NETTY_SERVER_CONSUMER_COUNT));
 
@@ -378,12 +378,12 @@ public class ConfigManager {
         this.callRecvDuration = callRecvDuration;
     }
 
-    public String getPriorityCodec() {
-        return priorityCodec;
+    public String getPriorityAudioCodec() {
+        return priorityAudioCodec;
     }
 
-    public void setPriorityCodec(String priorityCodec) {
-        this.priorityCodec = priorityCodec;
+    public void setPriorityAudioCodec(String priorityAudioCodec) {
+        this.priorityAudioCodec = priorityAudioCodec;
     }
 
     public int getNettyServerConsumerCount() {
