@@ -78,7 +78,7 @@ public class DtmfUnit {
         if (data != null && data.length == 4) {
             this.data = data;
 
-            this.digit = (char) data[0];
+            this.digit = data[0];
 
             this.isEndOfEvent = (data[1] & 0x10000000) == 0x10000000;
             this.isReserved = (data[1] & 0x01000000) == 0x01000000;
