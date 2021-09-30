@@ -20,7 +20,7 @@ public class AudioFrame {
     private int sampleSize;
     /* Channel size */
     private int channelSize;
-    private boolean isDtmf = false;
+    private boolean isDtmf;
 
     ////////////////////////////////////////////////////////////////////////////////
 

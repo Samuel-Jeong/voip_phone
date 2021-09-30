@@ -202,6 +202,7 @@ public class UdpReceiver extends TaskUnit {
 
                 addData(data, false);
             } else {
+                logger.warn("DTMF is detected!");
                 addData(data, true);
             }
 

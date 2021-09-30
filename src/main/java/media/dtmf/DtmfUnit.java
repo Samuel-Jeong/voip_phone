@@ -47,17 +47,17 @@ public class DtmfUnit {
     public static final int DTMF_TYPE = 101;
 
     public static final int DIGIT_0 = 0x00000000;
-    public static final int DIGIT_1 = 0x00000001;
-    public static final int DIGIT_2 = 0x00000010;
-    public static final int DIGIT_3 = 0x00000011;
-    public static final int DIGIT_4 = 0x00000100;
-    public static final int DIGIT_5 = 0x00000101;
-    public static final int DIGIT_6 = 0x00000110;
-    public static final int DIGIT_7 = 0x00000111;
-    public static final int DIGIT_8 = 0x00001000;
-    public static final int DIGIT_9 = 0x00001001;
-    public static final int DIGIT_10 = 0x00001010;
-    public static final int DIGIT_11 = 0x00001011;
+    public static final int DIGIT_1 = 0x10000000;
+    public static final int DIGIT_2 = 0x01000000;
+    public static final int DIGIT_3 = 0x11000000;
+    public static final int DIGIT_4 = 0x00100000;
+    public static final int DIGIT_5 = 0x10100000;
+    public static final int DIGIT_6 = 0x01100000;
+    public static final int DIGIT_7 = 0x11100000;
+    public static final int DIGIT_8 = 0x00010000;
+    public static final int DIGIT_9 = 0x10010000;
+    public static final int DIGIT_10 = 0x01010000;
+    public static final int DIGIT_11 = 0x11010000;
 
     // 4 bytes
     private byte[] data = null;
