@@ -301,7 +301,7 @@ public class UdpReceiver extends TaskUnit {
             } else {
                 logger.debug("DTMF is detected!");
                 DtmfUnit dtmfUnit = new DtmfUnit(data);
-                logger.debug("DTMF digit: {}", dtmfUnit.getDigit());
+                logger.debug("DTMF digit: {}", dtmfUnit);
             }
 
             SourceDataLine sourceDataLine = VoipClient.getInstance().getSourceLine();
