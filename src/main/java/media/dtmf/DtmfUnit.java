@@ -104,9 +104,8 @@ public class DtmfUnit {
         newData[1] = isEndOfEvent? (byte) (volume | 0x80) : (byte) (volume | 0x7f);
         this.volume = volume;
 
-        byte[] durationData = ByteUtil.intToBytes(eventDuration);
-        newData[2] = durationData[0];
-        newData[3] = durationData[1];
+        newData[2] = (byte) (eventDuration >> 8);
+        newData[3] = (byte) (eventDuration);
         this.eventDuration = eventDuration;
 
         this.data = newData;
