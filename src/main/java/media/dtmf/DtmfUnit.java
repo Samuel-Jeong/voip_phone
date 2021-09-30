@@ -75,7 +75,7 @@ public class DtmfUnit {
 
     // Unpacking object
     public DtmfUnit(byte[] data) {
-        if (data != null && data.length == 4) {
+        if (data != null && data.length == 8) {
             this.data = data;
 
             byte[] digitData = { data[0], data[1] };
@@ -89,9 +89,9 @@ public class DtmfUnit {
 
             byte[] durationData = new byte[4];
             durationData[0] = data[4];
-            durationData[2] = data[5];
-            durationData[3] = data[6];
-            durationData[4] = data[7];
+            durationData[1] = data[5];
+            durationData[2] = data[6];
+            durationData[3] = data[7];
             this.eventDuration = ByteUtil.bytesToInt(durationData);
         }
     }
