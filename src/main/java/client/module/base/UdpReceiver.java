@@ -294,6 +294,8 @@ public class UdpReceiver extends TaskUnit {
                         data = RtpUtil.changeByteOrder(data);
                     }
                 }
+            } else {
+
             }
 
             SourceDataLine sourceDataLine = VoipClient.getInstance().getSourceLine();

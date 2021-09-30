@@ -6,16 +6,13 @@ import client.module.base.MediaFrame;
 import client.module.base.UdpReceiver;
 import client.module.base.UdpSender;
 import config.ConfigManager;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import media.MediaManager;
 import media.dtmf.DtmfUnit;
-import media.protocol.rtp.RtpPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.AppInstance;
 
 import javax.swing.*;
+import java.applet.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,6 +28,10 @@ public class DtmfPanel {
     private static final Logger logger = LoggerFactory.getLogger(DtmfPanel.class);
 
     private static final JButton[] dtmfButtons = new JButton[12];
+
+    AudioClip toneZero, toneOne, toneTwo, toneThree, toneFour,
+            toneFive, toneSix, toneSeven, toneEight,
+            toneNine, toneStar, toneHash;
 
     ////////////////////////////////////////////////////////////////////////////////
 
