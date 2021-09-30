@@ -46,7 +46,7 @@ public class DtmfUnit {
 
     public static final int DTMF_TYPE = 101;
 
-    public static final int DIGIT_0 = 0x0000;
+    /*public static final int DIGIT_0 = 0x0000;
     public static final int DIGIT_1 = 0x0001;
     public static final int DIGIT_2 = 0x0010;
     public static final int DIGIT_3 = 0x0011;
@@ -57,7 +57,20 @@ public class DtmfUnit {
     public static final int DIGIT_8 = 0x1000;
     public static final int DIGIT_9 = 0x1001;
     public static final int DIGIT_10 = 0x1010;
-    public static final int DIGIT_11 = 0x1011;
+    public static final int DIGIT_11 = 0x1011;*/
+
+    public static final int DIGIT_0 = 0;
+    public static final int DIGIT_1 = 1;
+    public static final int DIGIT_2 = 2;
+    public static final int DIGIT_3 = 3;
+    public static final int DIGIT_4 = 4;
+    public static final int DIGIT_5 = 5;
+    public static final int DIGIT_6 = 6;
+    public static final int DIGIT_7 = 7;
+    public static final int DIGIT_8 = 8;
+    public static final int DIGIT_9 = 9;
+    public static final int DIGIT_10 = 10;
+    public static final int DIGIT_11 = 11;
 
     // 4 bytes
     private byte[] data = null;
@@ -66,7 +79,7 @@ public class DtmfUnit {
     private int digit = 0; // 1 byte
     private boolean isEndOfEvent = false; // 1 bit
     private boolean isReserved = false; // 1 bit
-    private short volume = 0; // 6 bits
+    private int volume = 0; // 6 bits
 
     // 2 bytes
     private int eventDuration = 0;
@@ -94,7 +107,7 @@ public class DtmfUnit {
     }
 
     // Unpacking object
-    public DtmfUnit(int digit, boolean isEndOfEvent, boolean isReserved, short volume, int eventDuration) {
+    public DtmfUnit(int digit, boolean isEndOfEvent, boolean isReserved, int volume, int eventDuration) {
         byte[] newData = new byte[4];
 
         //newData[0] = (byte) (digit >> 8);
@@ -147,11 +160,11 @@ public class DtmfUnit {
         isReserved = reserved;
     }
 
-    public short getVolume() {
+    public int getVolume() {
         return volume;
     }
 
-    public void setVolume(short volume) {
+    public void setVolume(int volume) {
         this.volume = volume;
     }
 

@@ -132,7 +132,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_1,
                             true,
                             false,
-                            (short) 12,
+                            12,
                             400
                     );
 
@@ -185,7 +185,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_2,
                             true,
                             false,
-                            (short) 12,
+                            12,
                             400
                     );
 
@@ -238,7 +238,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_3,
                             true,
                             false,
-                            (short) 12,
+                            12,
                             400
                     );
 
@@ -291,7 +291,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_4,
                             true,
                             false,
-                            (short) 12,
+                            12,
                             400
                     );
 
@@ -344,7 +344,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_5,
                             true,
                             false,
-                            (short) 12,
+                            12,
                             400
                     );
 
@@ -397,7 +397,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_6,
                             true,
                             false,
-                            (short) 12,
+                            12,
                             400
                     );
 
@@ -450,7 +450,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_7,
                             true,
                             false,
-                            (short) 12,
+                            12,
                             400
                     );
 
@@ -503,7 +503,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_8,
                             true,
                             false,
-                            (short) 12,
+                            12,
                             400
                     );
 
@@ -556,7 +556,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_9,
                             true,
                             false,
-                            (short) 12,
+                            12,
                             400
                     );
 
@@ -609,7 +609,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_10,
                             true,
                             false,
-                            (short) 12,
+                            12,
                             400
                     );
 
@@ -662,7 +662,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_0,
                             true,
                             false,
-                            (short) 12,
+                            12,
                             400
                     );
 
@@ -715,7 +715,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_11,
                             true,
                             false,
-                            (short) 12,
+                            12,
                             400
                     );
 
