@@ -85,11 +85,11 @@ public class ClientChannelHandler extends SimpleChannelInboundHandler<DatagramPa
 
                 // 2) Check QoS.
                 RtpPacket rtpPacket = new RtpPacket(data, data.length);
-                if (!rtpQosHandler.checkSeqNum(rtpPacket.getSeqNum())) {
+                /*if (!rtpQosHandler.checkSeqNum(rtpPacket.getSeqNum())) {
                     //logger.trace("Wrong RTP Packet is detected. Discarded. (jRtp={}, rtpPacket={})", jRtp, rtpPacket);
                     logger.warn("Wrong RTP Packet is detected. Discarded. (rtpPacket={})", rtpPacket);
                     return;
-                }
+                }*/
                 byte[] payload = rtpPacket.getPayload();
                 //
 
