@@ -1,4 +1,4 @@
-package client.gui.model;
+package client.gui.model.dtmf;
 
 import client.VoipClient;
 import client.module.SoundHandler;
@@ -11,16 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.AppInstance;
 
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 
 import static client.gui.model.ClientFrame.appendText;
 
@@ -32,41 +26,17 @@ public class DtmfPanel {
 
     private static final Logger logger = LoggerFactory.getLogger(DtmfPanel.class);
 
-    private static final JButton[] dtmfButtons = new JButton[12];
+    private static final int DTMF_COUNT = 12;
+    private static final JButton[] dtmfButtons = new JButton[DTMF_COUNT];
 
-    private static Clip toneZero;
-    private static Clip toneOne;
-    private static Clip toneTwo;
-    private static Clip toneThree;
-    private static Clip toneFour;
-    private static Clip toneFive;
-    private static Clip toneSix;
-    private static Clip toneSeven;
-    private static Clip toneEight;
-    private static Clip toneNine;
-    private static Clip toneStar;
-    private static Clip toneHash;
+    private static final int volume = 12;
 
     ////////////////////////////////////////////////////////////////////////////////
 
     public static JPanel createKeypadPanel() {
         JPanel keypadPanel = new JPanel();
 
-        String curUserDir = System.getProperty("user.dir");
-
         try {
-            //
-            AudioInputStream toneZeroInputStream = AudioSystem.getAudioInputStream(
-                    new BufferedInputStream(
-                            new FileInputStream(
-                                    curUserDir + "/src/main/resources/dtmf/zero.au"
-                            )
-                    )
-            );
-            toneZero = AudioSystem.getClip();
-            toneZero.open(toneZeroInputStream);
-            //
-
             keypadPanel.setLayout(new GridLayout(4, 3));
             for (int i = 0; i < dtmfButtons.length; i++) {
                 if (i == 9) {
@@ -124,16 +94,11 @@ public class DtmfPanel {
                 dtmfButtons[i].setEnabled(false);
                 keypadPanel.add(dtmfButtons[i]);
             }
-        } catch (Exception e) {
-            logger.warn("DtmfPanel.createDtmfPanel.Exception", e);
-        } finally {
-            if (toneZero != null) {
-                try {
-                    toneZero.close();
-                } catch (Exception e) {
-                    logger.warn("Fail to close the toneZero.", e);
-                }
-            }
+
+            DtmfSoundGenerator.getInstance().start();
+        } catch (Exception e1) {
+            logger.warn("DtmfPanel.createDtmfPanel.Exception", e1);
+            DtmfSoundGenerator.getInstance().stop();
         }
 
         return keypadPanel;
@@ -153,6 +118,9 @@ public class DtmfPanel {
 
             // 1
             if(e.getSource() == dtmfButtons[0]) {
+                DtmfSoundGenerator.getInstance().playTone(1);
+                logger.debug("DTMF: 1");
+
                 if (VoipClient.getInstance().isStarted()) {
                     SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
                     if (soundHandler == null) {
@@ -163,7 +131,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_1,
                             true,
                             false,
-                            12,
+                            volume,
                             400
                     );
 
@@ -187,12 +155,7 @@ public class DtmfPanel {
                         );
                     }
 
-                    logger.debug("DTMF: 1");
                     appendText("DTMF: 1\n");
-
-                    if (toneZero != null) {
-                        toneZero.start();
-                    }
                 }
             }
         }
@@ -210,6 +173,9 @@ public class DtmfPanel {
 
             // 2
             if(e.getSource() == dtmfButtons[1]) {
+                DtmfSoundGenerator.getInstance().playTone(2);
+                logger.debug("DTMF: 2");
+
                 if (VoipClient.getInstance().isStarted()) {
                     SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
                     if (soundHandler == null) {
@@ -220,7 +186,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_2,
                             true,
                             false,
-                            12,
+                            volume,
                             400
                     );
 
@@ -244,7 +210,6 @@ public class DtmfPanel {
                         );
                     }
 
-                    logger.debug("DTMF: 2");
                     appendText("DTMF: 2\n");
                 }
             }
@@ -263,6 +228,9 @@ public class DtmfPanel {
 
             // 3
             if(e.getSource() == dtmfButtons[2]) {
+                DtmfSoundGenerator.getInstance().playTone(3);
+                logger.debug("DTMF: 3");
+
                 if (VoipClient.getInstance().isStarted()) {
                     SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
                     if (soundHandler == null) {
@@ -273,7 +241,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_3,
                             true,
                             false,
-                            12,
+                            volume,
                             400
                     );
 
@@ -297,7 +265,6 @@ public class DtmfPanel {
                         );
                     }
 
-                    logger.debug("DTMF: 3");
                     appendText("DTMF: 3\n");
                 }
             }
@@ -316,6 +283,9 @@ public class DtmfPanel {
 
             // 4
             if(e.getSource() == dtmfButtons[3]) {
+                DtmfSoundGenerator.getInstance().playTone(4);
+                logger.debug("DTMF: 4");
+
                 if (VoipClient.getInstance().isStarted()) {
                     SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
                     if (soundHandler == null) {
@@ -326,7 +296,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_4,
                             true,
                             false,
-                            12,
+                            volume,
                             400
                     );
 
@@ -350,7 +320,6 @@ public class DtmfPanel {
                         );
                     }
 
-                    logger.debug("DTMF: 4");
                     appendText("DTMF: 4\n");
                 }
             }
@@ -369,6 +338,9 @@ public class DtmfPanel {
 
             // 5
             if(e.getSource() == dtmfButtons[4]) {
+                DtmfSoundGenerator.getInstance().playTone(5);
+                logger.debug("DTMF: 5");
+
                 if (VoipClient.getInstance().isStarted()) {
                     SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
                     if (soundHandler == null) {
@@ -379,7 +351,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_5,
                             true,
                             false,
-                            12,
+                            volume,
                             400
                     );
 
@@ -422,6 +394,9 @@ public class DtmfPanel {
 
             // 6
             if(e.getSource() == dtmfButtons[5]) {
+                DtmfSoundGenerator.getInstance().playTone(6);
+                logger.debug("DTMF: 6");
+
                 if (VoipClient.getInstance().isStarted()) {
                     SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
                     if (soundHandler == null) {
@@ -432,7 +407,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_6,
                             true,
                             false,
-                            12,
+                            volume,
                             400
                     );
 
@@ -456,7 +431,6 @@ public class DtmfPanel {
                         );
                     }
 
-                    logger.debug("DTMF: 6");
                     appendText("DTMF: 6\n");
                 }
             }
@@ -475,6 +449,9 @@ public class DtmfPanel {
 
             // 7
             if(e.getSource() == dtmfButtons[6]) {
+                DtmfSoundGenerator.getInstance().playTone(7);
+                logger.debug("DTMF: 7");
+
                 if (VoipClient.getInstance().isStarted()) {
                     SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
                     if (soundHandler == null) {
@@ -485,7 +462,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_7,
                             true,
                             false,
-                            12,
+                            volume,
                             400
                     );
 
@@ -499,7 +476,6 @@ public class DtmfPanel {
                         );
                     }
 
-                    logger.debug("DTMF: 7");
                     appendText("DTMF: 7\n");
                 }
             }
@@ -518,6 +494,9 @@ public class DtmfPanel {
 
             // 8
             if(e.getSource() == dtmfButtons[7]) {
+                DtmfSoundGenerator.getInstance().playTone(8);
+                logger.debug("DTMF: 8");
+
                 if (VoipClient.getInstance().isStarted()) {
                     SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
                     if (soundHandler == null) {
@@ -528,7 +507,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_8,
                             true,
                             false,
-                            12,
+                            volume,
                             400
                     );
 
@@ -552,7 +531,6 @@ public class DtmfPanel {
                         );
                     }
 
-                    logger.debug("DTMF: 8");
                     appendText("DTMF: 8\n");
                 }
             }
@@ -571,6 +549,9 @@ public class DtmfPanel {
 
             // 9
             if(e.getSource() == dtmfButtons[8]) {
+                DtmfSoundGenerator.getInstance().playTone(9);
+                logger.debug("DTMF: 9");
+
                 if (VoipClient.getInstance().isStarted()) {
                     SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
                     if (soundHandler == null) {
@@ -581,7 +562,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_9,
                             true,
                             false,
-                            12,
+                            volume,
                             400
                     );
 
@@ -605,7 +586,6 @@ public class DtmfPanel {
                         );
                     }
 
-                    logger.debug("DTMF: 9");
                     appendText("DTMF: 9\n");
                 }
             }
@@ -624,6 +604,9 @@ public class DtmfPanel {
 
             // *
             if(e.getSource() == dtmfButtons[9]) {
+                DtmfSoundGenerator.getInstance().playTone(10);
+                logger.debug("DTMF: *");
+
                 if (VoipClient.getInstance().isStarted()) {
                     SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
                     if (soundHandler == null) {
@@ -634,7 +617,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_10,
                             true,
                             false,
-                            12,
+                            volume,
                             400
                     );
 
@@ -658,7 +641,6 @@ public class DtmfPanel {
                         );
                     }
 
-                    logger.debug("DTMF: *");
                     appendText("DTMF: *\n");
                 }
             }
@@ -677,6 +659,9 @@ public class DtmfPanel {
 
             // 0
             if(e.getSource() == dtmfButtons[10]) {
+                DtmfSoundGenerator.getInstance().playTone(0);
+                logger.debug("DTMF: 0");
+
                 if (VoipClient.getInstance().isStarted()) {
                     SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
                     if (soundHandler == null) {
@@ -687,7 +672,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_0,
                             true,
                             false,
-                            12,
+                            volume,
                             400
                     );
 
@@ -711,7 +696,6 @@ public class DtmfPanel {
                         );
                     }
 
-                    logger.debug("DTMF: 0");
                     appendText("DTMF: 0\n");
                 }
             }
@@ -730,6 +714,9 @@ public class DtmfPanel {
 
             // #
             if(e.getSource() == dtmfButtons[11]) {
+                DtmfSoundGenerator.getInstance().playTone(11);
+                logger.debug("DTMF: #");
+
                 if (VoipClient.getInstance().isStarted()) {
                     SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
                     if (soundHandler == null) {
@@ -740,7 +727,7 @@ public class DtmfPanel {
                             DtmfUnit.DIGIT_11,
                             true,
                             false,
-                            12,
+                            volume,
                             400
                     );
 
@@ -764,7 +751,6 @@ public class DtmfPanel {
                         );
                     }
 
-                    logger.debug("DTMF: #");
                     appendText("DTMF: #\n");
                 }
             }

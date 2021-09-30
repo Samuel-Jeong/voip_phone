@@ -1,6 +1,7 @@
 package client.gui.model;
 
 import client.VoipClient;
+import client.gui.model.dtmf.DtmfPanel;
 import config.ConfigManager;
 import media.MediaManager;
 import org.slf4j.Logger;
