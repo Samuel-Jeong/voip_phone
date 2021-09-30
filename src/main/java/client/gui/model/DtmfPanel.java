@@ -11,8 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.AppInstance;
 
+import javax.sound.sampled.Clip;
 import javax.swing.*;
-import java.applet.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,9 +29,18 @@ public class DtmfPanel {
 
     private static final JButton[] dtmfButtons = new JButton[12];
 
-    AudioClip toneZero, toneOne, toneTwo, toneThree, toneFour,
-            toneFive, toneSix, toneSeven, toneEight,
-            toneNine, toneStar, toneHash;
+    Clip toneZero;
+    Clip toneOne;
+    Clip toneTwo;
+    Clip toneThree;
+    Clip toneFour;
+    Clip toneFive;
+    Clip toneSix;
+    Clip toneSeven;
+    Clip toneEight;
+    Clip toneNine;
+    Clip toneStar;
+    Clip toneHash;
 
     ////////////////////////////////////////////////////////////////////////////////
 

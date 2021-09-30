@@ -100,14 +100,8 @@ public class DtmfUnit {
         newData[0] = (byte) digit;
         this.digit = digit;
 
-        newData[1] = (byte) (isEndOfEvent ? 0x1000 : 0);
-        this.isEndOfEvent = isEndOfEvent;
-
-        newData[1] |= (isReserved? 0x0100 : 0);
-        this.isReserved = isReserved;
-
-        byte[] volumeData = ByteUtil.shortToBytes(volume, false);
-        newData[1] |= volumeData[0];
+        //byte[] volumeData = ByteUtil.shortToBytes(volume, false);
+        newData[1] = isEndOfEvent? (byte) (volume | 0x80) : (byte) (volume | 0x7f);
         this.volume = volume;
 
         byte[] durationData = ByteUtil.intToBytes(eventDuration);
