@@ -262,7 +262,7 @@ public class UdpSender extends TaskUnit {
                 if (isDtmf) {
                     seqNum = callInfo.getDtmfSeqNum();
                     rtpPacket.setValue(
-                            2, 0, 0, 0, 0, MediaManager.getInstance().getPriorityCodecId(),
+                            2, 0, 0, 0, 0, 101,
                             seqNum,
                             callInfo.getDtmfTimestamp(),
                             callInfo.getDtmfSsrc(),
