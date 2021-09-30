@@ -199,15 +199,18 @@ public class UdpReceiver extends TaskUnit {
                     }
                     //
                 }
+
+                addData(data, false);
+            } else {
+                addData(data, true);
             }
 
-            addData(data);
         } catch (Exception e){
             logger.warn("Fail to write the data.", e);
         }
     }
 
-    public void addData (byte[] data) {
+    public void addData (byte[] data, boolean isDtmf) {
         if (recvTaskExecutor != null) {
             try {
                 if (data == null) {
@@ -230,7 +233,7 @@ public class UdpReceiver extends TaskUnit {
                         System.arraycopy(data, i, splitedData, 0, remainDataLength);
                         recvBuffer.offer(
                                 new MediaFrame(
-                                        false,
+                                        isDtmf,
                                         splitedData
                                 )
                         );
@@ -244,7 +247,7 @@ public class UdpReceiver extends TaskUnit {
                 } else {
                     recvBuffer.offer(
                             new MediaFrame(
-                            false,
+                                    isDtmf,
                                     data
                     ));
                 }
