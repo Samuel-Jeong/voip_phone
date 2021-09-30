@@ -97,7 +97,8 @@ public class DtmfUnit {
     public DtmfUnit(int digit, boolean isEndOfEvent, boolean isReserved, short volume, int eventDuration) {
         byte[] newData = new byte[4];
 
-        newData[0] = (byte) digit;
+        newData[0] = (byte) (digit >> 8);
+        newData[0] |= (byte) (digit);
         this.digit = digit;
 
         //byte[] volumeData = ByteUtil.shortToBytes(volume, false);
