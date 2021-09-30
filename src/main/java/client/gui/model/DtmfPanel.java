@@ -464,16 +464,6 @@ public class DtmfPanel {
                         );
                     }
 
-                    UdpReceiver udpReceiver = soundHandler.getUdpReceiver();
-                    if (udpReceiver != null) {
-                        udpReceiver.getRecvBuffer().offer(
-                                new MediaFrame(
-                                        true,
-                                        dtmfUnit.getData()
-                                )
-                        );
-                    }
-
                     logger.debug("DTMF: 7");
                     appendText("DTMF: 7\n");
                 }
