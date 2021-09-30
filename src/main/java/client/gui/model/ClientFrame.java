@@ -30,7 +30,7 @@ public class ClientFrame extends JFrame {
 
     //////////////////////////////////////////////////////////////////////
     // Text
-    private final JTextArea logTextArea;
+    private static final JTextArea logTextArea = new JTextArea(19, 38);;
     private final JTextField proxyTextField;
     private final JTextField remoteTextField;
     private final JTextField hostNameTextField = new JTextField(23);
@@ -169,7 +169,6 @@ public class ClientFrame extends JFrame {
         // Bottom Panel
         JPanel logPanel = new JPanel(new BorderLayout());
 
-        logTextArea = new JTextArea(19, 38);
         logTextArea.setEditable(false);
 
         JScrollPane jScrollPane = new JScrollPane(logTextArea);
@@ -180,11 +179,11 @@ public class ClientFrame extends JFrame {
         mainPanel.add(logPanel, "South");
 
         /////////////////////////////////////////////
-        // option Panel
+        // Option Panel
         JPanel optionPanel = createOptionPanel();
 
         /////////////////////////////////////////////
-        // codec Panel
+        // Media Panel
         JPanel mediaPanel = createMediaPanel();
         if (configManager.isProxyMode()) {
             speakerSlider.setEnabled(false);
@@ -192,11 +191,16 @@ public class ClientFrame extends JFrame {
         }
 
         /////////////////////////////////////////////
+        // Keypad Panel
+        JPanel keypadPanel = DtmfPanel.createKeypadPanel();
+
+        /////////////////////////////////////////////
         // Tab Panel
 
         JTabbedPane jTabbedPane = new JTabbedPane();
         add(jTabbedPane);
 
+        jTabbedPane.addTab("keypad", keypadPanel);
         jTabbedPane.addTab("phone", mainPanel);
         jTabbedPane.addTab("option", optionPanel);
         jTabbedPane.addTab("media", mediaPanel);
@@ -204,6 +208,7 @@ public class ClientFrame extends JFrame {
         jTabbedPane.setBackgroundAt(0, Color.GRAY);
         jTabbedPane.setBackgroundAt(1, Color.GRAY);
         jTabbedPane.setBackgroundAt(2, Color.GRAY);
+        jTabbedPane.setBackgroundAt(3, Color.GRAY);
 
         proxyTextField.setEnabled(false);
         remoteTextField.setEnabled(false);
@@ -596,7 +601,7 @@ public class ClientFrame extends JFrame {
         logTextArea.setText(content);
     }
 
-    public void appendText(String content) {
+    public static void appendText(String content) {
         logTextArea.append(content);
     }
 
@@ -792,7 +797,6 @@ public class ClientFrame extends JFrame {
             }
         }
     }
-
 
     ////////////////////////////////////////////////////////////////////////////////
 
