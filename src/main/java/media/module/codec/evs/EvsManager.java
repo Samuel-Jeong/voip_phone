@@ -100,7 +100,7 @@ public class EvsManager {
 
             ScheduledThreadPoolExecutor udpSenderTaskExecutor = udpSenderTaskUnit.getTaskExecutor();
             if (udpSenderTaskExecutor != null) {
-                udpSenderTaskUnit.setOutputByteBuffer(null);
+                udpSenderTaskUnit.setOutputMediaFrameBuffer(null);
                 udpSenderTaskExecutor.shutdown();
                 logger.debug("EvsManager UdpSenderTask is removed.");
             }
@@ -160,7 +160,7 @@ public class EvsManager {
 
             ScheduledThreadPoolExecutor udpReceiverTaskExecutor = udpReceiverTaskUnit.getTaskExecutor();
             if (udpReceiverTaskExecutor != null) {
-                udpReceiverTaskUnit.setOutputByteBuffer(null);
+                udpReceiverTaskUnit.setOutputMediaFrameBuffer(null);
                 udpReceiverTaskExecutor.shutdown();
                 logger.debug("EvsManager UdpReceiverTask is removed.");
             }
@@ -403,11 +403,16 @@ public class EvsManager {
 
                     // send
                     totalDataLength = 0;
-                    if (udpReceiverTaskUnit.getOutputByteBuffer() != null) {
+                    if (udpReceiverTaskUnit.getOutputMediaFrameBuffer() != null) {
                         for (int i = 0; i < curDataCount; i++) {
                             curData = new byte[EVS_DEC_DATA_SIZE];
                             System.arraycopy(newData, totalDataLength, curData, 0, EVS_DEC_DATA_SIZE);
-                            udpReceiverTaskUnit.getOutputByteBuffer().offer(curData);
+                            udpReceiverTaskUnit.getOutputMediaFrameBuffer().offer(
+                                    new MediaFrame(
+                                            false,
+                                            curData
+                                    )
+                            );
                             totalDataLength += EVS_DEC_DATA_SIZE;
                             //logger.debug("udpReceiverTaskUnit > curDataSize={} (output)", curData.length);
                         }
