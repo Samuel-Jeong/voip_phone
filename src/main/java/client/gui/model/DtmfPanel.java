@@ -57,7 +57,7 @@ public class DtmfPanel {
             AudioInputStream toneZeroInputStream = AudioSystem.getAudioInputStream(
                     new BufferedInputStream(
                             new FileInputStream(
-                                    "/src/main/resources/dtmf/zero.au"
+                                    "zero.au"
                             )
                     )
             );
