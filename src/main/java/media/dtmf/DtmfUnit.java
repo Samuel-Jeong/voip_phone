@@ -93,16 +93,11 @@ public class DtmfUnit {
 
             this.digit = data[0];
 
-            this.isEndOfEvent = (data[1] & 0x10000000) == 0x10000000;
-            this.isReserved = (data[1] & 0x01000000) == 0x01000000;
+            byte temp = data[1];
+            isEndOfEvent = (temp & 0x80) != 0;
+            volume = temp & 0x7f;
 
-            byte[] volumeData = {(byte) (data[1] & 0x00111111)};
-            this.volume = ByteUtil.bytesToShort(volumeData, false);
-
-            byte[] durationData = new byte[2];
-            durationData[0] = data[2];
-            durationData[1] = data[3];
-            this.eventDuration = ByteUtil.bytesToInt(durationData);
+            eventDuration = (data[2] & 0xff) << 8 | (data[3] & 0xff);
         }
     }
 
