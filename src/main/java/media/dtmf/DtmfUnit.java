@@ -46,24 +46,24 @@ public class DtmfUnit {
 
     public static final int DTMF_TYPE = 101;
 
-    public static final char DIGIT_0 = 0x00000000;
-    public static final char DIGIT_1 = 0x00000001;
-    public static final char DIGIT_2 = 0x00000010;
-    public static final char DIGIT_3 = 0x00000011;
-    public static final char DIGIT_4 = 0x00000100;
-    public static final char DIGIT_5 = 0x00000101;
-    public static final char DIGIT_6 = 0x00000110;
-    public static final char DIGIT_7 = 0x00000111;
-    public static final char DIGIT_8 = 0x00001000;
-    public static final char DIGIT_9 = 0x00001001;
-    public static final char DIGIT_10 = 0x00001010;
-    public static final char DIGIT_11 = 0x00001011;
+    public static final int DIGIT_0 = 0x00000000;
+    public static final int DIGIT_1 = 0x00000001;
+    public static final int DIGIT_2 = 0x00000010;
+    public static final int DIGIT_3 = 0x00000011;
+    public static final int DIGIT_4 = 0x00000100;
+    public static final int DIGIT_5 = 0x00000101;
+    public static final int DIGIT_6 = 0x00000110;
+    public static final int DIGIT_7 = 0x00000111;
+    public static final int DIGIT_8 = 0x00001000;
+    public static final int DIGIT_9 = 0x00001001;
+    public static final int DIGIT_10 = 0x00001010;
+    public static final int DIGIT_11 = 0x00001011;
 
     // 4 bytes
     private byte[] data = null;
 
     // 2 bytes
-    private char digit = 0; // 1 byte
+    private int digit = 0; // 1 byte
     private boolean isEndOfEvent = false; // 1 bit
     private boolean isReserved = false; // 1 bit
     private short volume = 0; // 6 bits
@@ -94,7 +94,7 @@ public class DtmfUnit {
     }
 
     // Unpacking object
-    public DtmfUnit(char digit, boolean isEndOfEvent, boolean isReserved, short volume, int eventDuration) {
+    public DtmfUnit(int digit, boolean isEndOfEvent, boolean isReserved, short volume, int eventDuration) {
         byte[] newData = new byte[4];
 
         newData[0] = (byte) digit;
@@ -121,11 +121,11 @@ public class DtmfUnit {
         this.data = data;
     }
 
-    public char getDigit() {
+    public int getDigit() {
         return digit;
     }
 
-    public void setDigit(char digit) {
+    public void setDigit(int digit) {
         this.digit = digit;
     }
 
