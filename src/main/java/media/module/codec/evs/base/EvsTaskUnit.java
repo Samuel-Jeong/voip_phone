@@ -1,5 +1,6 @@
 package media.module.codec.evs.base;
 
+import client.module.base.MediaFrame;
 import media.module.mixing.base.ConcurrentCyclicFIFO;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -12,7 +13,8 @@ public class EvsTaskUnit {
 
     private ScheduledThreadPoolExecutor taskExecutor;
     private final ConcurrentCyclicFIFO<byte[]> inputBuffer = new ConcurrentCyclicFIFO<>();
-    private ConcurrentCyclicFIFO<byte[]> outputBuffer = null;
+    private ConcurrentCyclicFIFO<byte[]> outputByteBuffer = null;
+    private ConcurrentCyclicFIFO<MediaFrame> outputMediaFrameBuffer = null;
 
     private final int mergeCount;
 
@@ -40,18 +42,32 @@ public class EvsTaskUnit {
         inputBuffer.clear();
     }
 
-    public ConcurrentCyclicFIFO<byte[]> getOutputBuffer() {
-        return outputBuffer;
+    public ConcurrentCyclicFIFO<byte[]> getOutputByteBuffer() {
+        return outputByteBuffer;
     }
 
-    public void clearOutputBuffer() {
-        if (outputBuffer != null) {
-            outputBuffer.clear();
+    public ConcurrentCyclicFIFO<MediaFrame> getOutputMediaFrameBuffer() {
+        return outputMediaFrameBuffer;
+    }
+
+    public void clearOutputByteBuffer() {
+        if (outputByteBuffer != null) {
+            outputByteBuffer.clear();
         }
     }
 
-    public void setOutputBuffer(ConcurrentCyclicFIFO<byte[]> outputBuffer) {
-        this.outputBuffer = outputBuffer;
+    public void clearOutputMediaFrameBuffer() {
+        if (outputMediaFrameBuffer != null) {
+            outputMediaFrameBuffer.clear();
+        }
+    }
+
+    public void setOutputByteBuffer(ConcurrentCyclicFIFO<byte[]> outputBuffer) {
+        this.outputByteBuffer = outputBuffer;
+    }
+
+    public void setOutputMediaFrameBuffer(ConcurrentCyclicFIFO<MediaFrame> outputBuffer) {
+        this.outputMediaFrameBuffer = outputBuffer;
     }
 
     public int getMergeCount() {

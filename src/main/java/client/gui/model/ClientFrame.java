@@ -30,7 +30,7 @@ public class ClientFrame extends JFrame {
 
     //////////////////////////////////////////////////////////////////////
     // Text
-    private static final JTextArea logTextArea = new JTextArea(19, 38);;
+    private static final JTextArea logTextArea = new JTextArea(19, 38);
     private final JTextField proxyTextField;
     private final JTextField remoteTextField;
     private final JTextField hostNameTextField = new JTextField(23);
@@ -62,6 +62,7 @@ public class ClientFrame extends JFrame {
     private JCheckBox rawFileCheck;
     private JCheckBox encFileCheck;
     private JCheckBox decFileCheck;
+    private JCheckBox dtmfCheck;
 
     //////////////////////////////////////////////////////////////////////
     // ComboBox
@@ -200,8 +201,8 @@ public class ClientFrame extends JFrame {
         JTabbedPane jTabbedPane = new JTabbedPane();
         add(jTabbedPane);
 
-        jTabbedPane.addTab("keypad", keypadPanel);
         jTabbedPane.addTab("phone", mainPanel);
+        jTabbedPane.addTab("keypad", keypadPanel);
         jTabbedPane.addTab("option", optionPanel);
         jTabbedPane.addTab("media", mediaPanel);
 
@@ -578,6 +579,37 @@ public class ClientFrame extends JFrame {
         mediaPanel.add(Box.createVerticalStrut(5));
         //
 
+        // DTMF Checkbox
+        JPanel dtmfPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        dtmfPanel.setAlignmentX(LEFT_ALIGNMENT);
+        dtmfPanel.setOpaque(false);
+
+        JPanel dtmfDescriptionPanel = new JPanel(new GridLayout(1, 1));
+        dtmfDescriptionPanel.setOpaque(false);
+
+        JPanel dtmfDesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        dtmfDesPanel.setOpaque(false);
+
+        JLabel dtmfSelectLabel = new JLabel("DTMF : ");
+        dtmfDesPanel.add(dtmfSelectLabel);
+        dtmfDescriptionPanel.add(dtmfDesPanel);
+
+        JPanel dtmfCheckPanel = new JPanel(new GridLayout(1, 1));
+        dtmfCheckPanel.setOpaque(false);
+
+        dtmfCheck = new JCheckBox("", false);
+        dtmfCheck.addActionListener(new DtmfCheckListener());
+        if (configManager.isDtmf()) {
+            dtmfCheck.setSelected(true);
+        }
+
+        dtmfCheckPanel.add(dtmfCheck);
+        dtmfPanel.add(dtmfDescriptionPanel);
+        dtmfPanel.add(dtmfCheckPanel);
+        mediaPanel.add(dtmfPanel);
+        mediaPanel.add(Box.createVerticalStrut(5));
+        //
+
         return mediaPanel;
     }
 
@@ -764,6 +796,26 @@ public class ClientFrame extends JFrame {
 
                 configManager.setRawFile(rawFileCheck.isSelected());
                 configManager.setIniValue(ConfigManager.SECTION_RECORD, ConfigManager.FIELD_RAW_FILE, String.valueOf(rawFileCheck.isSelected()));
+            }
+        }
+    }
+
+    class DtmfCheckListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if(e.getSource() == dtmfCheck) {
+                ConfigManager configManager = AppInstance.getInstance().getConfigManager();
+                logger.debug("DTMF option is changed. (before=[{}], after=[{}])", configManager.isDtmf(), dtmfCheck.isSelected());
+                appendText("DTMF option is changed. ([" + configManager.isDtmf() + "] > [" + dtmfCheck.isSelected() + "])\n");
+
+                configManager.setDtmf(dtmfCheck.isSelected());
+                configManager.setIniValue(ConfigManager.SECTION_MEDIA, ConfigManager.FIELD_DTMF, String.valueOf(dtmfCheck.isSelected()));
+
+                JButton[] dtmfButtons = DtmfPanel.getDtmfButtons();
+                for (JButton dtmfButton : dtmfButtons) {
+                    dtmfButton.setEnabled(dtmfCheck.isSelected());
+                }
             }
         }
     }
@@ -976,6 +1028,14 @@ public class ClientFrame extends JFrame {
                 encFileCheck.setEnabled(false);
                 decFileCheck.setEnabled(false);
 
+                dtmfCheck.setEnabled(false);
+                if (dtmfCheck.isSelected()) {
+                    JButton[] dtmfButtons = DtmfPanel.getDtmfButtons();
+                    for (JButton dtmfButton : dtmfButtons) {
+                        dtmfButton.setEnabled(true);
+                    }
+                }
+
                 appendText("> Phone is on.\n");
             }
         }
@@ -1027,6 +1087,12 @@ public class ClientFrame extends JFrame {
                 rawFileCheck.setEnabled(true);
                 encFileCheck.setEnabled(true);
                 decFileCheck.setEnabled(true);
+
+                dtmfCheck.setEnabled(true);
+                JButton[] dtmfButtons = DtmfPanel.getDtmfButtons();
+                for (JButton dtmfButton : dtmfButtons) {
+                    dtmfButton.setEnabled(false);
+                }
 
                 appendText("> Phone is off.\n");
             }

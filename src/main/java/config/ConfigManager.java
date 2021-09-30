@@ -42,6 +42,7 @@ public class ConfigManager {
     public static final String FIELD_DEFAULT_REGISTER_EXPIRES = "DEFAULT_REGISTER_EXPIRES";
     public static final String FIELD_CALL_RECV_DURATION = "CALL_RECV_DURATION";
 
+    public static final String FIELD_DTMF = "DTMF";
     public static final String FIELD_PRIORITY_CODEC = "PRIORITY_CODEC";
     public static final String FIELD_NETTY_SERVER_CONSUMER_COUNT = "NETTY_SERVER_CONSUMER_COUNT";
     public static final String FIELD_NETTY_SERVER_IP = "NETTY_SERVER_IP";
@@ -74,6 +75,7 @@ public class ConfigManager {
     private int callRecvDuration = 0; // 호 시작 시 상대방이 전화 받을 때까지 대기하는 시간 > 설정된 시간이 지나면 자동으로 Cancel 보낸다.
 
     // MEDIA
+    private boolean dtmf = false;
     private String priorityAudioCodec;
     private int nettyServerConsumerCount = 0; // Netty Server 당 Consumer 개수
     private String nettyServerIp; // Netty Server IP List
@@ -190,6 +192,8 @@ public class ConfigManager {
      * @brief MEDIA Section 을 로드하는 함수
      */
     private void loadMediaConfig() {
+        this.dtmf = Boolean.parseBoolean(getIniValue(SECTION_MEDIA, FIELD_DTMF));
+
         this.priorityAudioCodec = getIniValue(SECTION_MEDIA, FIELD_PRIORITY_CODEC);
         MediaManager.getInstance().setPriorityCodec(this.priorityAudioCodec);
 
@@ -472,5 +476,13 @@ public class ConfigManager {
 
     public void setUseProxy(boolean useProxy) {
         this.useProxy = useProxy;
+    }
+
+    public boolean isDtmf() {
+        return dtmf;
+    }
+
+    public void setDtmf(boolean dtmf) {
+        this.dtmf = dtmf;
     }
 }

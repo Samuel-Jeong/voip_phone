@@ -1,6 +1,7 @@
 package media.module.codec.evs;
 
 import client.VoipClient;
+import client.module.base.MediaFrame;
 import media.module.codec.evs.base.EvsTaskUnit;
 import media.module.mixing.base.ConcurrentCyclicFIFO;
 import media.record.RecordManager;
@@ -8,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.base.TaskUnit;
 
+import javax.print.attribute.standard.Media;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
@@ -62,10 +64,10 @@ public class EvsManager {
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    public void startUdpSenderTask(ConcurrentCyclicFIFO<byte[]> outputBuffer) {
+    public void startUdpSenderTask(ConcurrentCyclicFIFO<MediaFrame> outputBuffer) {
         if (udpSenderTaskUnit == null) {
             udpSenderTaskUnit = new EvsTaskUnit(10);
-            udpSenderTaskUnit.setOutputBuffer(outputBuffer);
+            udpSenderTaskUnit.setOutputMediaFrameBuffer(outputBuffer);
 
             ScheduledThreadPoolExecutor udpSenderTaskExecutor = udpSenderTaskUnit.getTaskExecutor();
             if (udpSenderTaskExecutor == null) {
@@ -98,7 +100,7 @@ public class EvsManager {
 
             ScheduledThreadPoolExecutor udpSenderTaskExecutor = udpSenderTaskUnit.getTaskExecutor();
             if (udpSenderTaskExecutor != null) {
-                udpSenderTaskUnit.setOutputBuffer(null);
+                udpSenderTaskUnit.setOutputByteBuffer(null);
                 udpSenderTaskExecutor.shutdown();
                 logger.debug("EvsManager UdpSenderTask is removed.");
             }
@@ -122,10 +124,10 @@ public class EvsManager {
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    public void startUdpReceiverTask(ConcurrentCyclicFIFO<byte[]> outputBuffer) {
+    public void startUdpReceiverTask(ConcurrentCyclicFIFO<MediaFrame> outputBuffer) {
         if (udpReceiverTaskUnit == null) {
             udpReceiverTaskUnit = new EvsTaskUnit(10);
-            udpReceiverTaskUnit.setOutputBuffer(outputBuffer);
+            udpReceiverTaskUnit.setOutputMediaFrameBuffer(outputBuffer);
 
             ScheduledThreadPoolExecutor udpReceiverTaskExecutor = udpReceiverTaskUnit.getTaskExecutor();
             if (udpReceiverTaskExecutor == null) {
@@ -158,7 +160,7 @@ public class EvsManager {
 
             ScheduledThreadPoolExecutor udpReceiverTaskExecutor = udpReceiverTaskUnit.getTaskExecutor();
             if (udpReceiverTaskExecutor != null) {
-                udpReceiverTaskUnit.setOutputBuffer(null);
+                udpReceiverTaskUnit.setOutputByteBuffer(null);
                 udpReceiverTaskExecutor.shutdown();
                 logger.debug("EvsManager UdpReceiverTask is removed.");
             }
@@ -190,7 +192,7 @@ public class EvsManager {
 
         if (audioMixerTaskUnit == null) {
             audioMixerTaskUnit = new EvsTaskUnit(10);
-            audioMixerTaskUnit.setOutputBuffer(outputBuffer);
+            audioMixerTaskUnit.setOutputByteBuffer(outputBuffer);
 
             ScheduledThreadPoolExecutor audioMixerTaskExecutor = audioMixerTaskUnit.getTaskExecutor();
             if (audioMixerTaskExecutor == null) {
@@ -224,7 +226,7 @@ public class EvsManager {
 
             ScheduledThreadPoolExecutor audioMixerTaskExecutor = audioMixerTaskUnit.getTaskExecutor();
             if (audioMixerTaskExecutor != null) {
-                audioMixerTaskUnit.setOutputBuffer(null);
+                audioMixerTaskUnit.setOutputByteBuffer(null);
                 audioMixerTaskExecutor.shutdown();
                 logger.debug("EvsManager AudioMixerTask is removed.");
             }
@@ -306,11 +308,16 @@ public class EvsManager {
 
                     // send
                     totalDataLength = 0;
-                    if (udpSenderTaskUnit.getOutputBuffer() != null) {
+                    if (udpSenderTaskUnit.getOutputMediaFrameBuffer() != null) {
                         for (int i = 0; i < curDataCount; i++) {
                             curData = new byte[EVS_ENC_DATA_SIZE];
                             System.arraycopy(newData, totalDataLength, curData, 0, EVS_ENC_DATA_SIZE);
-                            udpSenderTaskUnit.getOutputBuffer().offer(curData);
+                            udpSenderTaskUnit.getOutputMediaFrameBuffer().offer(
+                                    new MediaFrame(
+                                            false,
+                                            curData
+                                    )
+                            );
                             totalDataLength += EVS_ENC_DATA_SIZE;
                         }
                     }
@@ -396,11 +403,11 @@ public class EvsManager {
 
                     // send
                     totalDataLength = 0;
-                    if (udpReceiverTaskUnit.getOutputBuffer() != null) {
+                    if (udpReceiverTaskUnit.getOutputByteBuffer() != null) {
                         for (int i = 0; i < curDataCount; i++) {
                             curData = new byte[EVS_DEC_DATA_SIZE];
                             System.arraycopy(newData, totalDataLength, curData, 0, EVS_DEC_DATA_SIZE);
-                            udpReceiverTaskUnit.getOutputBuffer().offer(curData);
+                            udpReceiverTaskUnit.getOutputByteBuffer().offer(curData);
                             totalDataLength += EVS_DEC_DATA_SIZE;
                             //logger.debug("udpReceiverTaskUnit > curDataSize={} (output)", curData.length);
                         }
@@ -481,11 +488,11 @@ public class EvsManager {
 
                     // send
                     totalDataLength = 0;
-                    if (audioMixerTaskUnit.getOutputBuffer() != null) {
+                    if (audioMixerTaskUnit.getOutputByteBuffer() != null) {
                         for (int i = 0; i < curDataCount; i++) {
                             curData = new byte[EVS_DEC_DATA_SIZE];
                             System.arraycopy(newData, totalDataLength, curData, 0, EVS_DEC_DATA_SIZE);
-                            audioMixerTaskUnit.getOutputBuffer().offer(curData);
+                            audioMixerTaskUnit.getOutputByteBuffer().offer(curData);
                             totalDataLength += EVS_DEC_DATA_SIZE;
                             //logger.debug("audioMixerTaskUnit > curDataSize={} (output)", curData.length);
                         }

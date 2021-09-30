@@ -1,6 +1,16 @@
 package client.gui.model;
 
+import client.VoipClient;
+import client.module.SoundHandler;
+import client.module.base.MediaFrame;
+import client.module.base.UdpReceiver;
+import client.module.base.UdpSender;
 import config.ConfigManager;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
+import media.MediaManager;
+import media.dtmf.DtmfUnit;
+import media.protocol.rtp.RtpPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.AppInstance;
@@ -21,6 +31,8 @@ public class DtmfPanel {
     private static final Logger logger = LoggerFactory.getLogger(DtmfPanel.class);
 
     private static final JButton[] dtmfButtons = new JButton[12];
+
+    ////////////////////////////////////////////////////////////////////////////////
 
     public static JPanel createKeypadPanel() {
         JPanel keypadPanel = new JPanel();
@@ -79,11 +91,14 @@ public class DtmfPanel {
             }
 
             //buttons[i].setPreferredSize(new Dimension(20, 20));
+            dtmfButtons[i].setEnabled(false);
             keypadPanel.add(dtmfButtons[i]);
         }
 
         return keypadPanel;
     }
+
+    ////////////////////////////////////////////////////////////////////////////////
 
     static class Dtmf1Listener implements ActionListener {
 
@@ -97,8 +112,43 @@ public class DtmfPanel {
 
             // 1
             if(e.getSource() == dtmfButtons[0]) {
-                logger.debug("DTMF: 1");
-                appendText("DTMF: 1\n");
+                if (VoipClient.getInstance().isStarted()) {
+                    SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
+                    if (soundHandler == null) {
+                        return;
+                    }
+
+                    DtmfUnit dtmfUnit = new DtmfUnit(
+                            DtmfUnit.DIGIT_1,
+                            true,
+                            false,
+                            (short) 12,
+                            400
+                    );
+
+                    UdpSender udpSender = soundHandler.getUdpSender();
+                    if (udpSender != null) {
+                        udpSender.getSendBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    UdpReceiver udpReceiver = soundHandler.getUdpReceiver();
+                    if (udpReceiver != null) {
+                        udpReceiver.getRecvBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    logger.debug("DTMF: 1");
+                    appendText("DTMF: 1\n");
+                }
             }
         }
     }
@@ -115,8 +165,43 @@ public class DtmfPanel {
 
             // 2
             if(e.getSource() == dtmfButtons[1]) {
-                logger.debug("DTMF: 2");
-                appendText("DTMF: 2\n");
+                if (VoipClient.getInstance().isStarted()) {
+                    SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
+                    if (soundHandler == null) {
+                        return;
+                    }
+
+                    DtmfUnit dtmfUnit = new DtmfUnit(
+                            DtmfUnit.DIGIT_2,
+                            true,
+                            false,
+                            (short) 12,
+                            400
+                    );
+
+                    UdpSender udpSender = soundHandler.getUdpSender();
+                    if (udpSender != null) {
+                        udpSender.getSendBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    UdpReceiver udpReceiver = soundHandler.getUdpReceiver();
+                    if (udpReceiver != null) {
+                        udpReceiver.getRecvBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    logger.debug("DTMF: 2");
+                    appendText("DTMF: 2\n");
+                }
             }
         }
     }
@@ -133,8 +218,43 @@ public class DtmfPanel {
 
             // 3
             if(e.getSource() == dtmfButtons[2]) {
-                logger.debug("DTMF: 3");
-                appendText("DTMF: 3\n");
+                if (VoipClient.getInstance().isStarted()) {
+                    SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
+                    if (soundHandler == null) {
+                        return;
+                    }
+
+                    DtmfUnit dtmfUnit = new DtmfUnit(
+                            DtmfUnit.DIGIT_3,
+                            true,
+                            false,
+                            (short) 12,
+                            400
+                    );
+
+                    UdpSender udpSender = soundHandler.getUdpSender();
+                    if (udpSender != null) {
+                        udpSender.getSendBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    UdpReceiver udpReceiver = soundHandler.getUdpReceiver();
+                    if (udpReceiver != null) {
+                        udpReceiver.getRecvBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    logger.debug("DTMF: 3");
+                    appendText("DTMF: 3\n");
+                }
             }
         }
     }
@@ -151,8 +271,43 @@ public class DtmfPanel {
 
             // 4
             if(e.getSource() == dtmfButtons[3]) {
-                logger.debug("DTMF: 4");
-                appendText("DTMF: 4\n");
+                if (VoipClient.getInstance().isStarted()) {
+                    SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
+                    if (soundHandler == null) {
+                        return;
+                    }
+
+                    DtmfUnit dtmfUnit = new DtmfUnit(
+                            DtmfUnit.DIGIT_4,
+                            true,
+                            false,
+                            (short) 12,
+                            400
+                    );
+
+                    UdpSender udpSender = soundHandler.getUdpSender();
+                    if (udpSender != null) {
+                        udpSender.getSendBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    UdpReceiver udpReceiver = soundHandler.getUdpReceiver();
+                    if (udpReceiver != null) {
+                        udpReceiver.getRecvBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    logger.debug("DTMF: 4");
+                    appendText("DTMF: 4\n");
+                }
             }
         }
     }
@@ -169,8 +324,43 @@ public class DtmfPanel {
 
             // 5
             if(e.getSource() == dtmfButtons[4]) {
-                logger.debug("DTMF: 5");
-                appendText("DTMF: 5\n");
+                if (VoipClient.getInstance().isStarted()) {
+                    SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
+                    if (soundHandler == null) {
+                        return;
+                    }
+
+                    DtmfUnit dtmfUnit = new DtmfUnit(
+                            DtmfUnit.DIGIT_5,
+                            true,
+                            false,
+                            (short) 12,
+                            400
+                    );
+
+                    UdpSender udpSender = soundHandler.getUdpSender();
+                    if (udpSender != null) {
+                        udpSender.getSendBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    UdpReceiver udpReceiver = soundHandler.getUdpReceiver();
+                    if (udpReceiver != null) {
+                        udpReceiver.getRecvBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    logger.debug("DTMF: 5");
+                    appendText("DTMF: 5\n");
+                }
             }
         }
     }
@@ -187,8 +377,43 @@ public class DtmfPanel {
 
             // 6
             if(e.getSource() == dtmfButtons[5]) {
-                logger.debug("DTMF: 6");
-                appendText("DTMF: 6\n");
+                if (VoipClient.getInstance().isStarted()) {
+                    SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
+                    if (soundHandler == null) {
+                        return;
+                    }
+
+                    DtmfUnit dtmfUnit = new DtmfUnit(
+                            DtmfUnit.DIGIT_6,
+                            true,
+                            false,
+                            (short) 12,
+                            400
+                    );
+
+                    UdpSender udpSender = soundHandler.getUdpSender();
+                    if (udpSender != null) {
+                        udpSender.getSendBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    UdpReceiver udpReceiver = soundHandler.getUdpReceiver();
+                    if (udpReceiver != null) {
+                        udpReceiver.getRecvBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    logger.debug("DTMF: 6");
+                    appendText("DTMF: 6\n");
+                }
             }
         }
     }
@@ -205,8 +430,43 @@ public class DtmfPanel {
 
             // 7
             if(e.getSource() == dtmfButtons[6]) {
-                logger.debug("DTMF: 7");
-                appendText("DTMF: 7\n");
+                if (VoipClient.getInstance().isStarted()) {
+                    SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
+                    if (soundHandler == null) {
+                        return;
+                    }
+
+                    DtmfUnit dtmfUnit = new DtmfUnit(
+                            DtmfUnit.DIGIT_7,
+                            true,
+                            false,
+                            (short) 12,
+                            400
+                    );
+
+                    UdpSender udpSender = soundHandler.getUdpSender();
+                    if (udpSender != null) {
+                        udpSender.getSendBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    UdpReceiver udpReceiver = soundHandler.getUdpReceiver();
+                    if (udpReceiver != null) {
+                        udpReceiver.getRecvBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    logger.debug("DTMF: 7");
+                    appendText("DTMF: 7\n");
+                }
             }
         }
     }
@@ -223,8 +483,43 @@ public class DtmfPanel {
 
             // 8
             if(e.getSource() == dtmfButtons[7]) {
-                logger.debug("DTMF: 8");
-                appendText("DTMF: 8\n");
+                if (VoipClient.getInstance().isStarted()) {
+                    SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
+                    if (soundHandler == null) {
+                        return;
+                    }
+
+                    DtmfUnit dtmfUnit = new DtmfUnit(
+                            DtmfUnit.DIGIT_8,
+                            true,
+                            false,
+                            (short) 12,
+                            400
+                    );
+
+                    UdpSender udpSender = soundHandler.getUdpSender();
+                    if (udpSender != null) {
+                        udpSender.getSendBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    UdpReceiver udpReceiver = soundHandler.getUdpReceiver();
+                    if (udpReceiver != null) {
+                        udpReceiver.getRecvBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    logger.debug("DTMF: 8");
+                    appendText("DTMF: 8\n");
+                }
             }
         }
     }
@@ -241,8 +536,43 @@ public class DtmfPanel {
 
             // 9
             if(e.getSource() == dtmfButtons[8]) {
-                logger.debug("DTMF: 9");
-                appendText("DTMF: 9\n");
+                if (VoipClient.getInstance().isStarted()) {
+                    SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
+                    if (soundHandler == null) {
+                        return;
+                    }
+
+                    DtmfUnit dtmfUnit = new DtmfUnit(
+                            DtmfUnit.DIGIT_9,
+                            true,
+                            false,
+                            (short) 12,
+                            400
+                    );
+
+                    UdpSender udpSender = soundHandler.getUdpSender();
+                    if (udpSender != null) {
+                        udpSender.getSendBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    UdpReceiver udpReceiver = soundHandler.getUdpReceiver();
+                    if (udpReceiver != null) {
+                        udpReceiver.getRecvBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    logger.debug("DTMF: 9");
+                    appendText("DTMF: 9\n");
+                }
             }
         }
     }
@@ -259,8 +589,43 @@ public class DtmfPanel {
 
             // *
             if(e.getSource() == dtmfButtons[9]) {
-                logger.debug("DTMF: *");
-                appendText("DTMF: *\n");
+                if (VoipClient.getInstance().isStarted()) {
+                    SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
+                    if (soundHandler == null) {
+                        return;
+                    }
+
+                    DtmfUnit dtmfUnit = new DtmfUnit(
+                            DtmfUnit.DIGIT_10,
+                            true,
+                            false,
+                            (short) 12,
+                            400
+                    );
+
+                    UdpSender udpSender = soundHandler.getUdpSender();
+                    if (udpSender != null) {
+                        udpSender.getSendBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    UdpReceiver udpReceiver = soundHandler.getUdpReceiver();
+                    if (udpReceiver != null) {
+                        udpReceiver.getRecvBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    logger.debug("DTMF: *");
+                    appendText("DTMF: *\n");
+                }
             }
         }
     }
@@ -277,8 +642,43 @@ public class DtmfPanel {
 
             // 0
             if(e.getSource() == dtmfButtons[10]) {
-                logger.debug("DTMF: 0");
-                appendText("DTMF: 0\n");
+                if (VoipClient.getInstance().isStarted()) {
+                    SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
+                    if (soundHandler == null) {
+                        return;
+                    }
+
+                    DtmfUnit dtmfUnit = new DtmfUnit(
+                            DtmfUnit.DIGIT_0,
+                            true,
+                            false,
+                            (short) 12,
+                            400
+                    );
+
+                    UdpSender udpSender = soundHandler.getUdpSender();
+                    if (udpSender != null) {
+                        udpSender.getSendBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    UdpReceiver udpReceiver = soundHandler.getUdpReceiver();
+                    if (udpReceiver != null) {
+                        udpReceiver.getRecvBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    logger.debug("DTMF: 0");
+                    appendText("DTMF: 0\n");
+                }
             }
         }
     }
@@ -295,10 +695,49 @@ public class DtmfPanel {
 
             // #
             if(e.getSource() == dtmfButtons[11]) {
-                logger.debug("DTMF: #");
-                appendText("DTMF: #\n");
+                if (VoipClient.getInstance().isStarted()) {
+                    SoundHandler soundHandler = VoipClient.getInstance().getSoundHandler();
+                    if (soundHandler == null) {
+                        return;
+                    }
+
+                    DtmfUnit dtmfUnit = new DtmfUnit(
+                            DtmfUnit.DIGIT_11,
+                            true,
+                            false,
+                            (short) 12,
+                            400
+                    );
+
+                    UdpSender udpSender = soundHandler.getUdpSender();
+                    if (udpSender != null) {
+                        udpSender.getSendBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    UdpReceiver udpReceiver = soundHandler.getUdpReceiver();
+                    if (udpReceiver != null) {
+                        udpReceiver.getRecvBuffer().offer(
+                                new MediaFrame(
+                                        true,
+                                        dtmfUnit.getData()
+                                )
+                        );
+                    }
+
+                    logger.debug("DTMF: #");
+                    appendText("DTMF: #\n");
+                }
             }
         }
+    }
+
+    public static JButton[] getDtmfButtons() {
+        return dtmfButtons;
     }
 
 }

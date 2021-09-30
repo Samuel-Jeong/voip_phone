@@ -444,4 +444,11 @@ public class SoundHandler {
         return sourceLineMap;
     }
 
+    public UdpSender getUdpSender() {
+        return udpSender;
+    }
+
+    public UdpReceiver getUdpReceiver() {
+        return udpReceiver;
+    }
 }

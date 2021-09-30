@@ -43,7 +43,7 @@ public class UdpSender extends TaskUnit {
     /* Mike Data Buffer */
     private final ConcurrentCyclicFIFO<byte[]> mikeBuffer;
 
-    private final ConcurrentCyclicFIFO<byte[]> sendBuffer = new ConcurrentCyclicFIFO<>();
+    private final ConcurrentCyclicFIFO<MediaFrame> sendBuffer = new ConcurrentCyclicFIFO<>();
     private ScheduledThreadPoolExecutor executor;
 
     /* JRtp Message object */
@@ -213,7 +213,12 @@ public class UdpSender extends TaskUnit {
                 }
             }
 
-            sendBuffer.offer(data);
+            sendBuffer.offer(
+                    new MediaFrame(
+                            false,
+                            data
+                    )
+            );
         } catch (Exception e){
             logger.warn("Fail to read the data.", e);
         }
@@ -229,10 +234,13 @@ public class UdpSender extends TaskUnit {
 
         @Override
         public void run() {
-            byte[] data = sendBuffer.poll();
-            if (data == null) {
+            MediaFrame mediaFrame = sendBuffer.poll();
+            if (mediaFrame == null) {
                 return;
             }
+
+            boolean isDtmf = mediaFrame.isDtmf();
+            byte[] data = mediaFrame.getData();
 
             // 2) Broadcast the rtp packet.
             Map<String, CallInfo> callInfoMap = CallManager.getInstance().getCloneCallMap();
@@ -250,16 +258,30 @@ public class UdpSender extends TaskUnit {
                 }
 
                 // 3) Insert the encoded data into a rtp packet.
-                int seqNum = callInfo.getSeqNum();
-                rtpPacket.setValue(
-                        2, 0, 0, 0, 0, MediaManager.getInstance().getPriorityCodecId(),
-                        seqNum,
-                        callInfo.getTimestamp(),
-                        callInfo.getSsrc(),
-                        data,
-                        data.length
-                );
-                callInfo.setSeqNum(seqNum + 1);
+                int seqNum;
+                if (isDtmf) {
+                    seqNum = callInfo.getDtmfSeqNum();
+                    rtpPacket.setValue(
+                            2, 0, 0, 0, 0, MediaManager.getInstance().getPriorityCodecId(),
+                            seqNum,
+                            callInfo.getDtmfTimestamp(),
+                            callInfo.getDtmfSsrc(),
+                            data,
+                            data.length
+                    );
+                    callInfo.setDtmfSeqNum(seqNum + 1);
+                } else {
+                    seqNum = callInfo.getAudioSeqNum();
+                    rtpPacket.setValue(
+                            2, 0, 0, 0, 0, MediaManager.getInstance().getPriorityCodecId(),
+                            seqNum,
+                            callInfo.getAudioTimestamp(),
+                            callInfo.getAudioSsrc(),
+                            data,
+                            data.length
+                    );
+                    callInfo.setAudioSeqNum(seqNum + 1);
+                }
 
                 // Set final data
                 ConfigManager configManager = AppInstance.getInstance().getConfigManager();
@@ -302,11 +324,28 @@ public class UdpSender extends TaskUnit {
                     );
                 }
 
-                callInfo.setTimestamp(callInfo.getTimestamp() + TIME_DELAY); // 20ms per 1 rtp packet (sampling-rate: 8000)
-                if (callInfo.getSeqNum() >= CallInfo.MAX_SEQ_NUM) {  callInfo.initSeqNum();  }
-                if (callInfo.getTimestamp() >= Long.MAX_VALUE - 1) {  callInfo.initTimestamp();  }
+                if (isDtmf) {
+                    callInfo.setDtmfTimestamp(callInfo.getDtmfTimestamp() + TIME_DELAY); // 20ms per 1 rtp packet (sampling-rate: 8000)
+                    if (callInfo.getDtmfSeqNum() >= CallInfo.MAX_SEQ_NUM) {
+                        callInfo.initDtmfSeqNum();
+                    }
+                    if (callInfo.getDtmfTimestamp() >= Long.MAX_VALUE - 1) {
+                        callInfo.initDtmfTimestamp();
+                    }
+                } else {
+                    callInfo.setAudioTimestamp(callInfo.getAudioTimestamp() + TIME_DELAY); // 20ms per 1 rtp packet (sampling-rate: 8000)
+                    if (callInfo.getAudioSeqNum() >= CallInfo.MAX_SEQ_NUM) {
+                        callInfo.initAudioSeqNum();
+                    }
+                    if (callInfo.getAudioTimestamp() >= Long.MAX_VALUE - 1) {
+                        callInfo.initAudioTimestamp();
+                    }
+                }
             }
         }
     }
 
+    public ConcurrentCyclicFIFO<MediaFrame> getSendBuffer() {
+        return sendBuffer;
+    }
 }

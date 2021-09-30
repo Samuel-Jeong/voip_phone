@@ -574,6 +574,10 @@ public class VoipClient {
         soundHandler.getSpeakerBuffer().offer(audioFrame);
     }
 
+    public SoundHandler getSoundHandler() {
+        return soundHandler;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////
 
     public SourceDataLine getSourceLine() {

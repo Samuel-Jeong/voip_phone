@@ -55,9 +55,13 @@ public class CallInfo {
 
     private final AtomicBoolean isRoomEntered = new AtomicBoolean(false);
 
-    private int seqNum;
-    private long timestamp;
-    private final long ssrc;
+    private int audioSeqNum;
+    private long audioTimestamp;
+    private final long audioSsrc;
+
+    private int dtmfSeqNum;
+    private long dtmfTimestamp;
+    private final long dtmfSsrc;
 
     private final Random random = new Random();
 
@@ -77,9 +81,13 @@ public class CallInfo {
         this.toSipIp = toSipIp.trim();
         this.toSipPort = toSipPort;
 
-        seqNum = random.nextInt(MAX_RANDOM_SEQ_NUM);
-        timestamp = random.nextInt(MAX_RANDOM_TIME_STAMP);
-        ssrc = random.nextInt(MAX_RANDOM_SSRC);
+        audioSeqNum = random.nextInt(MAX_RANDOM_SEQ_NUM);
+        audioTimestamp = random.nextInt(MAX_RANDOM_TIME_STAMP);
+        audioSsrc = random.nextInt(MAX_RANDOM_SSRC);
+
+        dtmfSeqNum = random.nextInt(MAX_RANDOM_SEQ_NUM);
+        dtmfTimestamp = random.nextInt(MAX_RANDOM_TIME_STAMP);
+        dtmfSsrc = random.nextInt(MAX_RANDOM_SSRC);
 
         logger.debug("{} CallInfo(callId={}, ip={}, port={}) is created.",
                 LogFormatter.getCallLogHeader(sessionId, callId, fromNo, toNo), this.callId, this.toSipIp, this.toSipPort
@@ -92,32 +100,60 @@ public class CallInfo {
         return sessionId;
     }
 
-    public int getSeqNum() {
-        return seqNum;
+    public int getAudioSeqNum() {
+        return audioSeqNum;
     }
 
-    public void setSeqNum(int seqNum) {
-        this.seqNum = seqNum;
+    public void setAudioSeqNum(int audioSeqNum) {
+        this.audioSeqNum = audioSeqNum;
     }
 
-    public void initSeqNum() {
-        this.seqNum = random.nextInt(MAX_RANDOM_SEQ_NUM);
+    public void initAudioSeqNum() {
+        this.audioSeqNum = random.nextInt(MAX_RANDOM_SEQ_NUM);
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    public long getAudioTimestamp() {
+        return audioTimestamp;
     }
 
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
+    public void setAudioTimestamp(long audioTimestamp) {
+        this.audioTimestamp = audioTimestamp;
     }
 
-    public void initTimestamp() {
-        this.timestamp = random.nextInt(MAX_RANDOM_TIME_STAMP);
+    public void initAudioTimestamp() {
+        this.audioTimestamp = random.nextInt(MAX_RANDOM_TIME_STAMP);
     }
 
-    public long getSsrc() {
-        return ssrc;
+    public long getAudioSsrc() {
+        return audioSsrc;
+    }
+
+    public int getDtmfSeqNum() {
+        return dtmfSeqNum;
+    }
+
+    public void setDtmfSeqNum(int dtmfSeqNum) {
+        this.dtmfSeqNum = dtmfSeqNum;
+    }
+
+    public void initDtmfSeqNum() {
+        this.dtmfSeqNum = random.nextInt(MAX_RANDOM_SEQ_NUM);
+    }
+
+    public long getDtmfTimestamp() {
+        return dtmfTimestamp;
+    }
+
+    public void setDtmfTimestamp(long dtmfTimestamp) {
+        this.dtmfTimestamp = dtmfTimestamp;
+    }
+
+    public void initDtmfTimestamp() {
+        this.dtmfTimestamp = random.nextInt(MAX_RANDOM_TIME_STAMP);
+    }
+
+    public long getDtmfSsrc() {
+        return dtmfSsrc;
     }
 
     public long getCreatedTime() {

@@ -58,7 +58,7 @@ public class ByteUtil {
         return Short.parseShort(s, 16);
     }
 
-    public static byte[] intToBytes(int i) {
+    public static byte[]  intToBytes(int i) {
         ByteBuffer byteBuffer = ByteBuffer.allocate(NUM_BYTES_IN_INT);
         byteBuffer.putInt(i);
         return byteBuffer.array();
