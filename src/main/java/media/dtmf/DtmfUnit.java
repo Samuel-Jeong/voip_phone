@@ -59,67 +59,60 @@ public class DtmfUnit {
     public static final char DIGIT_10 = 0x00001010;
     public static final char DIGIT_11 = 0x00001011;
 
-    // 8 bytes
+    // 4 bytes
     private byte[] data = null;
 
-    // 4 bytes
-    private char digit = 0; // 2 byte
-    private boolean isEndOfEvent = false; // 2 bits
-    private boolean isReserved = false; // 2 bits
-    private short volume = 0; // 12 bits
+    // 2 bytes
+    private char digit = 0; // 1 byte
+    private boolean isEndOfEvent = false; // 1 bit
+    private boolean isReserved = false; // 1 bit
+    private short volume = 0; // 6 bits
 
-    // 4 bytes
+    // 2 bytes
     private int eventDuration = 0;
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    // Unpacking object
+    // Packing object
     public DtmfUnit(byte[] data) {
-        if (data != null && data.length == 8) {
+        if (data != null && data.length == 4) {
             this.data = data;
 
-            byte[] digitData = { data[0], data[1] };
-            this.digit = (char) ByteUtil.bytesToShort(digitData, false);
+            this.digit = (char) data[0];
 
-            this.isEndOfEvent = (data[2] & 0x1000) == 0x1000;
-            this.isReserved = (data[2] & 0x0100) == 0x0100;
+            this.isEndOfEvent = (data[1] & 0x10000000) == 0x10000000;
+            this.isReserved = (data[1] & 0x01000000) == 0x01000000;
 
-            byte[] volumeData = {(byte) (data[2] & 0x0011), (byte) (data[3] & 0x1111)};
+            byte[] volumeData = {(byte) (data[1] & 0x00111111)};
             this.volume = ByteUtil.bytesToShort(volumeData, false);
 
-            byte[] durationData = new byte[4];
-            durationData[0] = data[4];
-            durationData[1] = data[5];
-            durationData[2] = data[6];
-            durationData[3] = data[7];
+            byte[] durationData = new byte[2];
+            durationData[0] = data[2];
+            durationData[1] = data[3];
             this.eventDuration = ByteUtil.bytesToInt(durationData);
         }
     }
 
-    // Packing object
+    // Unpacking object
     public DtmfUnit(char digit, boolean isEndOfEvent, boolean isReserved, short volume, int eventDuration) {
-        byte[] newData = new byte[8];
+        byte[] newData = new byte[4];
 
-        newData[0] = 0;
-        newData[1] = (byte) digit;
+        newData[0] = (byte) digit;
         this.digit = digit;
 
-        newData[2] |= (isEndOfEvent ? 0x1000 : 0);
+        newData[1] = (byte) (isEndOfEvent ? 0x1000 : 0);
         this.isEndOfEvent = isEndOfEvent;
 
-        newData[2] |= (isReserved? 0x0100 : 0);
+        newData[1] |= (isReserved? 0x0100 : 0);
         this.isReserved = isReserved;
 
         byte[] volumeData = ByteUtil.shortToBytes(volume, false);
-        newData[2] |= volumeData[0] & 0x0011;
-        newData[3] |= volumeData[1] & 0x1111;
+        newData[1] |= volumeData[0];
         this.volume = volume;
 
         byte[] durationData = ByteUtil.intToBytes(eventDuration);
-        newData[4] = durationData[0];
-        newData[5] = durationData[1];
-        newData[6] = durationData[2];
-        newData[7] = durationData[3];
+        newData[2] = durationData[0];
+        newData[3] = durationData[1];
         this.eventDuration = eventDuration;
 
         this.data = newData;
