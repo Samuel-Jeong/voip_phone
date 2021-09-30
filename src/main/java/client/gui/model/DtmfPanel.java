@@ -11,11 +11,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.AppInstance;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
 
 import static client.gui.model.ClientFrame.appendText;
 
@@ -29,80 +34,104 @@ public class DtmfPanel {
 
     private static final JButton[] dtmfButtons = new JButton[12];
 
-    Clip toneZero;
-    Clip toneOne;
-    Clip toneTwo;
-    Clip toneThree;
-    Clip toneFour;
-    Clip toneFive;
-    Clip toneSix;
-    Clip toneSeven;
-    Clip toneEight;
-    Clip toneNine;
-    Clip toneStar;
-    Clip toneHash;
+    private static Clip toneZero;
+    private static Clip toneOne;
+    private static Clip toneTwo;
+    private static Clip toneThree;
+    private static Clip toneFour;
+    private static Clip toneFive;
+    private static Clip toneSix;
+    private static Clip toneSeven;
+    private static Clip toneEight;
+    private static Clip toneNine;
+    private static Clip toneStar;
+    private static Clip toneHash;
 
     ////////////////////////////////////////////////////////////////////////////////
 
     public static JPanel createKeypadPanel() {
         JPanel keypadPanel = new JPanel();
-        keypadPanel.setLayout(new GridLayout(4, 3));
 
-        for (int i = 0; i < dtmfButtons.length; i++) {
-            if (i == 9) {
-                dtmfButtons[i] = new JButton("*");
-            } else if (i == 10) {
-                dtmfButtons[i] = new JButton("0");
-            } else if (i == 11) {
-                dtmfButtons[i] = new JButton("#");
-            } else {
-                dtmfButtons[i] = new JButton(String.valueOf(i + 1));
+        try {
+            //
+            AudioInputStream toneZeroInputStream = AudioSystem.getAudioInputStream(
+                    new BufferedInputStream(
+                            new FileInputStream(
+                                    "/src/main/resources/dtmf/zero.au"
+                            )
+                    )
+            );
+            toneZero = AudioSystem.getClip();
+            toneZero.open(toneZeroInputStream);
+            //
+
+            keypadPanel.setLayout(new GridLayout(4, 3));
+            for (int i = 0; i < dtmfButtons.length; i++) {
+                if (i == 9) {
+                    dtmfButtons[i] = new JButton("*");
+                } else if (i == 10) {
+                    dtmfButtons[i] = new JButton("0");
+                } else if (i == 11) {
+                    dtmfButtons[i] = new JButton("#");
+                } else {
+                    dtmfButtons[i] = new JButton(String.valueOf(i + 1));
+                }
+
+                switch (i) {
+                    case 0:
+                        dtmfButtons[i].addActionListener(new Dtmf1Listener());
+                        break;
+                    case 1:
+                        dtmfButtons[i].addActionListener(new Dtmf2Listener());
+                        break;
+                    case 2:
+                        dtmfButtons[i].addActionListener(new Dtmf3Listener());
+                        break;
+                    case 3:
+                        dtmfButtons[i].addActionListener(new Dtmf4Listener());
+                        break;
+                    case 4:
+                        dtmfButtons[i].addActionListener(new Dtmf5Listener());
+                        break;
+                    case 5:
+                        dtmfButtons[i].addActionListener(new Dtmf6Listener());
+                        break;
+                    case 6:
+                        dtmfButtons[i].addActionListener(new Dtmf7Listener());
+                        break;
+                    case 7:
+                        dtmfButtons[i].addActionListener(new Dtmf8Listener());
+                        break;
+                    case 8:
+                        dtmfButtons[i].addActionListener(new Dtmf9Listener());
+                        break;
+                    case 9:
+                        dtmfButtons[i].addActionListener(new Dtmf10Listener());
+                        break;
+                    case 10:
+                        dtmfButtons[i].addActionListener(new Dtmf11Listener());
+                        break;
+                    case 11:
+                        dtmfButtons[i].addActionListener(new Dtmf12Listener());
+                        break;
+                    default:
+                        throw new IllegalStateException("Unexpected value: " + i);
+                }
+
+                //buttons[i].setPreferredSize(new Dimension(20, 20));
+                dtmfButtons[i].setEnabled(false);
+                keypadPanel.add(dtmfButtons[i]);
             }
-
-            switch (i) {
-                case 0:
-                    dtmfButtons[i].addActionListener(new Dtmf1Listener());
-                    break;
-                case 1:
-                    dtmfButtons[i].addActionListener(new Dtmf2Listener());
-                    break;
-                case 2:
-                    dtmfButtons[i].addActionListener(new Dtmf3Listener());
-                    break;
-                case 3:
-                    dtmfButtons[i].addActionListener(new Dtmf4Listener());
-                    break;
-                case 4:
-                    dtmfButtons[i].addActionListener(new Dtmf5Listener());
-                    break;
-                case 5:
-                    dtmfButtons[i].addActionListener(new Dtmf6Listener());
-                    break;
-                case 6:
-                    dtmfButtons[i].addActionListener(new Dtmf7Listener());
-                    break;
-                case 7:
-                    dtmfButtons[i].addActionListener(new Dtmf8Listener());
-                    break;
-                case 8:
-                    dtmfButtons[i].addActionListener(new Dtmf9Listener());
-                    break;
-                case 9:
-                    dtmfButtons[i].addActionListener(new Dtmf10Listener());
-                    break;
-                case 10:
-                    dtmfButtons[i].addActionListener(new Dtmf11Listener());
-                    break;
-                case 11:
-                    dtmfButtons[i].addActionListener(new Dtmf12Listener());
-                    break;
-                default:
-                    throw new IllegalStateException("Unexpected value: " + i);
+        } catch (Exception e) {
+            logger.warn("DtmfPanel.createDtmfPanel.Exception", e);
+        } finally {
+            if (toneZero != null) {
+                try {
+                    toneZero.close();
+                } catch (Exception e) {
+                    logger.warn("Fail to close the toneZero.", e);
+                }
             }
-
-            //buttons[i].setPreferredSize(new Dimension(20, 20));
-            dtmfButtons[i].setEnabled(false);
-            keypadPanel.add(dtmfButtons[i]);
         }
 
         return keypadPanel;
@@ -158,6 +187,10 @@ public class DtmfPanel {
 
                     logger.debug("DTMF: 1");
                     appendText("DTMF: 1\n");
+
+                    if (toneZero != null) {
+                        toneZero.start();
+                    }
                 }
             }
         }
