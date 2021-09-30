@@ -30,7 +30,7 @@ public class ClientFrame extends JFrame {
 
     //////////////////////////////////////////////////////////////////////
     // Text
-    private static final JTextArea logTextArea = new JTextArea(19, 38);
+    private static final JTextArea logTextArea = new JTextArea(18, 35);
     private final JTextField proxyTextField;
     private final JTextField remoteTextField;
     private final JTextField hostNameTextField = new JTextField(23);
