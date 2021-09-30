@@ -52,12 +52,14 @@ public class DtmfPanel {
     public static JPanel createKeypadPanel() {
         JPanel keypadPanel = new JPanel();
 
+        String curUserDir = System.getProperty("user.dir");
+
         try {
             //
             AudioInputStream toneZeroInputStream = AudioSystem.getAudioInputStream(
                     new BufferedInputStream(
                             new FileInputStream(
-                                    "zero.au"
+                                    curUserDir + "/src/main/resources/dtmf/zero_au"
                             )
                     )
             );
