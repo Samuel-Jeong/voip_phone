@@ -44,6 +44,8 @@ import media.protocol.base.ByteUtil;
  */
 public class DtmfUnit {
 
+    public static final int DTMF_TYPE = 101;
+
     public static final char DIGIT_0 = 0x00000000;
     public static final char DIGIT_1 = 0x00000001;
     public static final char DIGIT_2 = 0x00000010;

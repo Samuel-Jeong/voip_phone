@@ -519,7 +519,7 @@ public class AudioMixer {
 
                 //logger.debug("AudioMixer.MixTask > data.length: {}", data.length);
 
-                AudioFrame audioFrame = new AudioFrame();
+                AudioFrame audioFrame = new AudioFrame(false);
                 audioFrame.setData(data, false);
                 mix(audioFrame.getConvertedData());
             } catch (Exception e) {

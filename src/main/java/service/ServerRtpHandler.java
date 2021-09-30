@@ -3,6 +3,7 @@ package service;
 import config.ConfigManager;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import media.dtmf.DtmfUnit;
 import media.module.mixing.AudioMixManager;
 import media.netty.NettyChannelManager;
 import media.netty.module.NettyChannel;
@@ -132,15 +133,17 @@ public class ServerRtpHandler extends TaskUnit {
 
             // 4) Mix Audio
             RtpPacket rtpPacket = new RtpPacket(rtpData, rtpData.length);
-            AudioMixManager.getInstance().perform(
-                    callInfo.getSessionId(),
-                    callInfo.getCallId(),
-                    samplingRate,
-                    sampleSize,
-                    channelSize,
-                    gain,
-                    rtpPacket.getPayload()
-            );
+            if (rtpPacket.getPayloadType() != DtmfUnit.DTMF_TYPE) {
+                AudioMixManager.getInstance().perform(
+                        callInfo.getSessionId(),
+                        callInfo.getCallId(),
+                        samplingRate,
+                        sampleSize,
+                        channelSize,
+                        gain,
+                        rtpPacket.getPayload()
+                );
+            }
             //
         } catch (Exception e) {
             logger.warn("({}) Fail to process the rtp data.", key, e);

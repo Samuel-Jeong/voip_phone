@@ -129,72 +129,75 @@ public class UdpReceiver extends TaskUnit {
                 return;
             }
 
+            boolean isDtmf = audioFrame.isDtmf();
             byte[] data = audioFrame.getData(true);
             if (data == null || data.length == 0 || isByteArrayFullOfZero(data)) {
                 return;
             }
 
             // PCM
-            if (voipClient.getSourceAudioFormat().getEncoding().toString().equals(
-                    AudioFormat.Encoding.PCM_SIGNED.toString())) {
-                // Decode pcm data to other codec data
-                // ALAW
-                if (MediaManager.getInstance().getPriorityCodec().equals(AudioFormat.Encoding.ALAW.toString())) {
-                    RecordManager aLawRecordManager = voipClient.getSourceALawRecordManager();
-                    if (aLawRecordManager != null) {
-                        aLawRecordManager.addData(data);
-                        //aLawRecordManager.writeFileStream(data);
+            if (!isDtmf) {
+                if (voipClient.getSourceAudioFormat().getEncoding().toString().equals(
+                        AudioFormat.Encoding.PCM_SIGNED.toString())) {
+                    // Decode pcm data to other codec data
+                    // ALAW
+                    if (MediaManager.getInstance().getPriorityCodec().equals(AudioFormat.Encoding.ALAW.toString())) {
+                        RecordManager aLawRecordManager = voipClient.getSourceALawRecordManager();
+                        if (aLawRecordManager != null) {
+                            aLawRecordManager.addData(data);
+                            //aLawRecordManager.writeFileStream(data);
+                        }
+
+                        data = ALawTranscoder.decode(
+                                data
+                        );
+                    }
+                    // ULAW
+                    else if (MediaManager.getInstance().getPriorityCodec().equals(AudioFormat.Encoding.ULAW.toString())) {
+                        RecordManager uLawRecordManager = voipClient.getSourceULawRecordManager();
+                        if (uLawRecordManager != null) {
+                            uLawRecordManager.addData(data);
+                        }
+
+                        data = ULawTranscoder.decode(
+                                data
+                        );
+                    }
+                    // EVS
+                    else if (MediaManager.getInstance().getPriorityCodec().equals("EVS")) {
+                        EvsManager.getInstance().addUdpReceiverInputData(data);
+                        return;
+                    }
+                    // AMR-NB
+                    else if (MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_NB)) {
+                        RecordManager amrNbRecordManager = voipClient.getSourceAmrNbRecordManager();
+                        if (amrNbRecordManager != null) {
+                            amrNbRecordManager.addData(data);
+                        }
+
+                        data = AmrManager.getInstance().decAmrNb(
+                                curRtpPayloadLength,
+                                data
+                        );
+                    }
+                    // AMR-WB
+                    else if (MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_WB)) {
+                        RecordManager amrWbRecordManager = voipClient.getSourceAmrWbRecordManager();
+                        if (amrWbRecordManager != null) {
+                            amrWbRecordManager.addData(data);
+                        }
+
+                        data = AmrManager.getInstance().decAmrWb(
+                                curRtpPayloadLength,
+                                data
+                        );
                     }
 
-                    data = ALawTranscoder.decode(
-                            data
-                    );
-                }
-                // ULAW
-                else if (MediaManager.getInstance().getPriorityCodec().equals(AudioFormat.Encoding.ULAW.toString())) {
-                    RecordManager uLawRecordManager = voipClient.getSourceULawRecordManager();
-                    if (uLawRecordManager != null) {
-                        uLawRecordManager.addData(data);
+                    if (data == null) {
+                        return;
                     }
-
-                    data = ULawTranscoder.decode(
-                            data
-                    );
+                    //
                 }
-                // EVS
-                else if (MediaManager.getInstance().getPriorityCodec().equals("EVS")) {
-                    EvsManager.getInstance().addUdpReceiverInputData(data);
-                    return;
-                }
-                // AMR-NB
-                else if (MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_NB)) {
-                    RecordManager amrNbRecordManager = voipClient.getSourceAmrNbRecordManager();
-                    if (amrNbRecordManager != null) {
-                        amrNbRecordManager.addData(data);
-                    }
-
-                    data = AmrManager.getInstance().decAmrNb(
-                            curRtpPayloadLength,
-                            data
-                    );
-                }
-                // AMR-WB
-                else if (MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_WB)) {
-                    RecordManager amrWbRecordManager = voipClient.getSourceAmrWbRecordManager();
-                    if (amrWbRecordManager != null) {
-                        amrWbRecordManager.addData(data);
-                    }
-
-                    data = AmrManager.getInstance().decAmrWb(
-                            curRtpPayloadLength,
-                            data
-                    );
-                }
-
-                if (data == null) {
-                    return;
-                }
-                //
             }
 
             addData(data);

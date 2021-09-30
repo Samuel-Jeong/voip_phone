@@ -3,6 +3,7 @@ package client;
 import client.module.SoundHandler;
 import config.ConfigManager;
 import media.MediaManager;
+import media.dtmf.DtmfUnit;
 import media.module.mixing.base.AudioFrame;
 import media.record.RecordManager;
 import media.record.base.wav.WavFile;
@@ -568,8 +569,8 @@ public class VoipClient {
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    public void writeToSpeaker(byte[] data) {
-        AudioFrame audioFrame = new AudioFrame();
+    public void writeToSpeaker(byte[] data, int payloadType) {
+        AudioFrame audioFrame = new AudioFrame(payloadType == DtmfUnit.DTMF_TYPE);
         audioFrame.setData(data, true);
         soundHandler.getSpeakerBuffer().offer(audioFrame);
     }

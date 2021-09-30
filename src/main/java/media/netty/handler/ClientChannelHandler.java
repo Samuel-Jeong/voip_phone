@@ -95,7 +95,7 @@ public class ClientChannelHandler extends SimpleChannelInboundHandler<DatagramPa
 
                 // 3) Write the audio data to the speaker
                 if (payload.length > 0) {
-                    voipClient.writeToSpeaker(payload);
+                    voipClient.writeToSpeaker(payload, rtpPacket.getPayloadType());
                     logger.trace("Recv RTP. (remoteHostName={}, payloadLength={})", voipClient.getRemoteHostName(), payload.length);
                 }
                 //

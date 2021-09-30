@@ -1,5 +1,6 @@
 package media.module.mixing;
 
+import media.dtmf.DtmfUnit;
 import media.module.mixing.base.AudioBuffer;
 import media.module.mixing.base.AudioFrame;
 import media.module.mixing.base.AudioMixer;
@@ -80,7 +81,7 @@ public class AudioMixManager {
 
 
         // 2) Offer the data (Sampling-rate: 8000, Codec: PCM_SIGNED, Byte-order: little_endian)
-        AudioFrame audioFrame = new AudioFrame();
+        AudioFrame audioFrame = new AudioFrame(false);
         audioFrame.setData(rtpData, true);
         audioFrame.setGain(gain);
         audioFrame.setSamplingRate(samplingRate);

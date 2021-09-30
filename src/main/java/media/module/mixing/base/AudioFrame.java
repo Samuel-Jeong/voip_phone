@@ -20,11 +20,12 @@ public class AudioFrame {
     private int sampleSize;
     /* Channel size */
     private int channelSize;
+    private boolean isDtmf = false;
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    public AudioFrame() {
-        // Nothing
+    public AudioFrame(boolean isDtmf) {
+        this.isDtmf = isDtmf;
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -119,5 +120,13 @@ public class AudioFrame {
 
     public void setSampleSize(int sampleSize) {
         this.sampleSize = sampleSize;
+    }
+
+    public boolean isDtmf() {
+        return isDtmf;
+    }
+
+    public void setDtmf(boolean dtmf) {
+        isDtmf = dtmf;
     }
 }
