@@ -2,6 +2,7 @@ package client.module.base;
 
 import client.VoipClient;
 import media.MediaManager;
+import media.dtmf.DtmfUnit;
 import media.module.codec.amr.AmrManager;
 import media.module.codec.evs.EvsManager;
 import media.module.codec.pcm.ALawTranscoder;
@@ -295,7 +296,8 @@ public class UdpReceiver extends TaskUnit {
                     }
                 }
             } else {
-
+                DtmfUnit dtmfUnit = new DtmfUnit(data);
+                logger.debug("DTMF digit: {}", dtmfUnit.getDigit());
             }
 
             SourceDataLine sourceDataLine = VoipClient.getInstance().getSourceLine();
