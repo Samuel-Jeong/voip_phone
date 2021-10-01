@@ -42,6 +42,8 @@ public class ConfigManager {
     public static final String FIELD_DEFAULT_REGISTER_EXPIRES = "DEFAULT_REGISTER_EXPIRES";
     public static final String FIELD_CALL_RECV_DURATION = "CALL_RECV_DURATION";
 
+    public static final String FIELD_SEND_WAV = "SEND_WAV";
+    public static final String FIELD_LAST_WAV_PATH = "LAST_WAV_PATH";
     public static final String FIELD_DTMF = "DTMF";
     public static final String FIELD_PRIORITY_CODEC = "PRIORITY_CODEC";
     public static final String FIELD_NETTY_SERVER_CONSUMER_COUNT = "NETTY_SERVER_CONSUMER_COUNT";
@@ -75,6 +77,8 @@ public class ConfigManager {
     private int callRecvDuration = 0; // 호 시작 시 상대방이 전화 받을 때까지 대기하는 시간 > 설정된 시간이 지나면 자동으로 Cancel 보낸다.
 
     // MEDIA
+    private boolean sendWav = false;
+    private String lastWavPath = null;
     private boolean dtmf = false;
     private String priorityAudioCodec;
     private int nettyServerConsumerCount = 0; // Netty Server 당 Consumer 개수
@@ -192,6 +196,9 @@ public class ConfigManager {
      * @brief MEDIA Section 을 로드하는 함수
      */
     private void loadMediaConfig() {
+        this.sendWav = Boolean.parseBoolean(getIniValue(SECTION_MEDIA, FIELD_SEND_WAV));
+        this.lastWavPath = getIniValue(SECTION_MEDIA, FIELD_LAST_WAV_PATH);
+
         this.dtmf = Boolean.parseBoolean(getIniValue(SECTION_MEDIA, FIELD_DTMF));
 
         this.priorityAudioCodec = getIniValue(SECTION_MEDIA, FIELD_PRIORITY_CODEC);
@@ -484,5 +491,21 @@ public class ConfigManager {
 
     public void setDtmf(boolean dtmf) {
         this.dtmf = dtmf;
+    }
+
+    public boolean isSendWav() {
+        return sendWav;
+    }
+
+    public void setSendWav(boolean sendWav) {
+        this.sendWav = sendWav;
+    }
+
+    public String getLastWavPath() {
+        return lastWavPath;
+    }
+
+    public void setLastWavPath(String lastWavPath) {
+        this.lastWavPath = lastWavPath;
     }
 }

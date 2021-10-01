@@ -2,6 +2,7 @@ package client.gui.model;
 
 import client.VoipClient;
 import client.gui.model.dtmf.DtmfPanel;
+import client.gui.model.wav.WavPanel;
 import config.ConfigManager;
 import media.MediaManager;
 import org.slf4j.Logger;
@@ -14,9 +15,12 @@ import signal.module.CallManager;
 
 import javax.sound.sampled.*;
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Map;
 
 /**
@@ -42,6 +46,7 @@ public class ClientFrame extends JFrame {
     private final JTextField mediaIpTextField = new JTextField(23);
     private final JTextField mediaPortTextField = new JTextField(23);
     private final JTextField recordPathTextField = new JTextField(23);
+    private final JTextField fieldWavFile = new JTextField(34);
 
     //////////////////////////////////////////////////////////////////////
     // Button
@@ -53,6 +58,7 @@ public class ClientFrame extends JFrame {
     private final JButton stopButton;
     private final JButton exitButton;
     private JButton optionApplyButton;
+    private final JButton fileUploadButton;
 
     //////////////////////////////////////////////////////////////////////
     // CheckBox
@@ -64,6 +70,7 @@ public class ClientFrame extends JFrame {
     private JCheckBox encFileCheck;
     private JCheckBox decFileCheck;
     private JCheckBox dtmfCheck;
+    private JCheckBox sendWavCheck;
 
     //////////////////////////////////////////////////////////////////////
     // ComboBox
@@ -196,6 +203,14 @@ public class ClientFrame extends JFrame {
         // Keypad Panel
         JPanel keypadPanel = DtmfPanel.createKeypadPanel();
 
+        // Wav Panel
+        fileUploadButton = new JButton("Upload");
+        fileUploadButton.addActionListener(new FileUploadClickListener());
+        fileUploadButton.setEnabled(configManager.isSendWav());
+
+        fieldWavFile.setEditable(false);
+        JPanel wavPanel = WavPanel.createWavPanel(fileUploadButton, fieldWavFile);
+
         /////////////////////////////////////////////
         // Tab Panel
 
@@ -204,13 +219,15 @@ public class ClientFrame extends JFrame {
 
         jTabbedPane.addTab("phone", mainPanel);
         jTabbedPane.addTab("keypad", keypadPanel);
+        jTabbedPane.addTab("wav", wavPanel);
         jTabbedPane.addTab("option", optionPanel);
         jTabbedPane.addTab("media", mediaPanel);
 
         jTabbedPane.setBackgroundAt(0, Color.GRAY);
         jTabbedPane.setBackgroundAt(1, Color.GRAY);
         jTabbedPane.setBackgroundAt(2, Color.GRAY);
-        jTabbedPane.setBackgroundAt(3, Color.GRAY);
+        jTabbedPane.setBackgroundAt(2, Color.GRAY);
+        jTabbedPane.setBackgroundAt(4, Color.GRAY);
 
         proxyTextField.setEnabled(false);
         remoteTextField.setEnabled(false);
@@ -600,14 +617,43 @@ public class ClientFrame extends JFrame {
 
         dtmfCheck = new JCheckBox("", false);
         dtmfCheck.addActionListener(new DtmfCheckListener());
-        if (configManager.isDtmf()) {
-            dtmfCheck.setSelected(true);
-        }
+        dtmfCheck.setSelected(configManager.isDtmf());
 
         dtmfCheckPanel.add(dtmfCheck);
         dtmfPanel.add(dtmfDescriptionPanel);
         dtmfPanel.add(dtmfCheckPanel);
         mediaPanel.add(dtmfPanel);
+        mediaPanel.add(Box.createVerticalStrut(5));
+        //
+
+        // Wav Checkbox
+        JPanel wavPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        wavPanel.setAlignmentX(LEFT_ALIGNMENT);
+        wavPanel.setOpaque(false);
+
+        JPanel wavDescriptionPanel = new JPanel(new GridLayout(1, 1));
+        wavDescriptionPanel.setOpaque(false);
+
+        JPanel wavDesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        wavDesPanel.setOpaque(false);
+
+        JLabel wavSelectLabel = new JLabel("Send Wav : ");
+        wavDesPanel.add(wavSelectLabel);
+        wavDescriptionPanel.add(wavDesPanel);
+
+        JPanel wavCheckPanel = new JPanel(new GridLayout(1, 1));
+        wavCheckPanel.setOpaque(false);
+
+        sendWavCheck = new JCheckBox("", false);
+        sendWavCheck.addActionListener(new SendWavCheckListener());
+        if (configManager.isSendWav()) {
+            sendWavCheck.setSelected(true);
+        }
+
+        wavCheckPanel.add(sendWavCheck);
+        wavPanel.add(wavDescriptionPanel);
+        wavPanel.add(wavCheckPanel);
+        mediaPanel.add(wavPanel);
         mediaPanel.add(Box.createVerticalStrut(5));
         //
 
@@ -821,6 +867,22 @@ public class ClientFrame extends JFrame {
         }
     }
 
+    class SendWavCheckListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if(e.getSource() == sendWavCheck) {
+                ConfigManager configManager = AppInstance.getInstance().getConfigManager();
+                logger.debug("Send Wav option is changed. (before=[{}], after=[{}])", configManager.isSendWav(), sendWavCheck.isSelected());
+                appendText("Send Wav option is changed. ([" + configManager.isSendWav() + "] > [" + sendWavCheck.isSelected() + "])\n");
+
+                fileUploadButton.setEnabled(sendWavCheck.isSelected());
+                configManager.setSendWav(sendWavCheck.isSelected());
+                configManager.setIniValue(ConfigManager.SECTION_MEDIA, ConfigManager.FIELD_SEND_WAV, String.valueOf(sendWavCheck.isSelected()));
+            }
+        }
+    }
+
     class EncFileCheckListener implements ActionListener {
 
         @Override
@@ -847,6 +909,64 @@ public class ClientFrame extends JFrame {
 
                 configManager.setDecFile(decFileCheck.isSelected());
                 configManager.setIniValue(ConfigManager.SECTION_RECORD, ConfigManager.FIELD_DEC_FILE, String.valueOf(decFileCheck.isSelected()));
+            }
+        }
+    }
+
+    class FileUploadClickListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if(e.getSource() == fileUploadButton) {
+                ConfigManager configManager = AppInstance.getInstance().getConfigManager();
+                if (!configManager.isSendWav()) {
+                    return;
+                }
+
+                try {
+                    JFileChooser jFileChooser;
+                    if (configManager.getLastWavPath() != null) {
+                         jFileChooser = new JFileChooser(configManager.getLastWavPath());
+                    } else {
+                        jFileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+                    }
+
+                    FileNameExtensionFilter fileNameExtensionFilter = new FileNameExtensionFilter(
+                            "*.wav",
+                            "wav"
+                    );
+                    jFileChooser.setFileFilter(fileNameExtensionFilter);
+
+                    int returnValue = jFileChooser.showOpenDialog(null);
+                    // int returnValue = jfc.showSaveDialog(null);
+                    if (returnValue == JFileChooser.APPROVE_OPTION) {
+                        File selectedFile = jFileChooser.getSelectedFile();
+
+                        if (selectedFile != null && selectedFile.length() > 0 &&
+                                selectedFile.getAbsolutePath().endsWith("wav")) {
+                            String absolutePath = selectedFile.getAbsolutePath();
+
+                            logger.debug("Success to upload the wav file. (path=[{}])",
+                                    absolutePath
+                            );
+                            appendText("Success to upload the wav file. (path=["
+                                    + absolutePath +
+                                    "])\n"
+                            );
+
+                            configManager.setLastWavPath(selectedFile.getPath());
+                            configManager.setIniValue(ConfigManager.SECTION_MEDIA, ConfigManager.FIELD_LAST_WAV_PATH, selectedFile.getPath());
+
+                            fieldWavFile.setText(absolutePath);
+                            VoipClient.getInstance().setSendWavFile(selectedFile);
+                        } else {
+                            logger.debug("Fail to upload the wav file.");
+                            appendText("Fail to upload the wav file.\n");
+                        }
+                    }
+                } catch (Exception e1) {
+                    logger.warn("WavPanel.FileUploadClickListener.actionPerformed.Exception", e1);
+                }
             }
         }
     }
@@ -1036,6 +1156,9 @@ public class ClientFrame extends JFrame {
                         dtmfButton.setEnabled(true);
                     }
                 }
+                sendWavCheck.setEnabled(false);
+
+                fileUploadButton.setEnabled(false);
 
                 appendText("> Phone is on.\n");
             }
@@ -1094,6 +1217,9 @@ public class ClientFrame extends JFrame {
                 for (JButton dtmfButton : dtmfButtons) {
                     dtmfButton.setEnabled(false);
                 }
+                sendWavCheck.setEnabled(true);
+
+                fileUploadButton.setEnabled(configManager.isSendWav());
 
                 appendText("> Phone is off.\n");
             }

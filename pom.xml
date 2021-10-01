@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>voip_phone</groupId>
-    <artifactId>VOIP_Phone</artifactId>
+    <artifactId>voip_phone</artifactId>
     <version>1.0.0</version>
 
     <properties>
@@ -80,12 +80,6 @@
             <version>4.1.52.Final</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.jcodec</groupId>
-            <artifactId>jcodec</artifactId>
-            <version>0.2.5</version>
-        </dependency>
-
     </dependencies>
 
     <build>
@@ -112,40 +106,6 @@
             </plugin>
 
             <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.8</version>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <configuration>
-                            <tasks name="generatePropertiesFile">
-                                <mkdir dir="target/classes/"/>
-                                <propertyfile file="target/classes/build.properties"
-                                              comment="BUILD">
-                                    <entry key="build" value="${buildNumber}"/>
-                                </propertyfile>
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.ant</groupId>
-                        <artifactId>ant-nodeps</artifactId>
-                        <version>1.8.1</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.ant</groupId>
-                        <artifactId>ant-jsch</artifactId>
-                        <version>1.8.2</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>2.1</version>
@@ -165,31 +125,6 @@
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>build-App</id>
-                        <goals>
-                            <goal>attached</goal>
-                        </goals>
-                        <phase>package</phase>
-                        <configuration>
-                            <descriptorRefs>
-                                <descriptorRef>jar-with-dependencies</descriptorRef>
-                            </descriptorRefs>
-                            <finalName>voip_phone</finalName>
-                            <archive>
-                                <manifest>
-                                    <mainClass>VoipPhoneMain</mainClass>
-                                </manifest>
-                            </archive>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.1</version>
                 <configuration>
@@ -197,18 +132,6 @@
                     <target>1.8</target>
                     <compilerArgument>-Xlint:all</compilerArgument>
                     <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <archive>
-                        <manifest>
-                            <mainClass>AuditMain</mainClass>
-                        </manifest>
-                    </archive>
                 </configuration>
             </plugin>
 
@@ -225,9 +148,9 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <copyright>2021, JamesJ</copyright>
-                    <group>Service</group>
-                    <description>VOIP_Phone Module</description>
+                    <copyright>2021, Uangel</copyright>
+                    <group>Simulator</group>
+                    <description>voip_phone</description>
                     <release>${rpm.release.version}</release>
                     <autoRequires>false</autoRequires>
                     <targetOS>linux</targetOS>
@@ -239,30 +162,27 @@
                         <mapping>
                             <directory>/home/voip_phone/</directory>
                         </mapping>
-                        <mapping>
-                            <directory>/home/voip_phone/voip_phone/</directory>
-                        </mapping>
 
                         <mapping>
-                            <directory>/home/voip_phone/voip_phone/lib/</directory>
+                            <directory>/home/voip_phone/lib/</directory>
                             <filemode>755</filemode>
                         </mapping>
                         <mapping>
-                            <directory>/home/voip_phone/voip_phone/lib/</directory>
+                            <directory>/home/voip_phone/lib/</directory>
                             <directoryIncluded>false</directoryIncluded>
                             <sources>
                                 <source>
-                                    <location>${project.basedir}/target/voip_phone-jar-with-dependencies.jar</location>
+                                    <location>${project.basedir}/target/voip_phone-1.0.0.jar</location>
                                 </source>
                             </sources>
                         </mapping>
 
                         <mapping>
-                            <directory>/home/voip_phone/voip_phone/bin/</directory>
+                            <directory>/home/voip_phone/bin/</directory>
                             <filemode>755</filemode>
                         </mapping>
                         <mapping>
-                            <directory>/home/voip_phone/voip_phone/bin/</directory>
+                            <directory>/home/voip_phone/bin/</directory>
                             <filemode>755</filemode>
                             <directoryIncluded>false</directoryIncluded>
                             <sources>
@@ -273,13 +193,10 @@
                         </mapping>
                         <mapping>
                             <configuration>noreplace</configuration>
-                            <directory>/home/voip_phone/voip_phone/config/</directory>
+                            <directory>/home/voip_phone/config/</directory>
                             <sources>
                                 <source>
                                     <location>${project.basedir}/src/main/resources/config/user_conf.ini</location>
-                                </source>
-                                <source>
-                                    <location>${project.basedir}/src/main/resources/config/server_conf.ini</location>
                                 </source>
                                 <source>
                                     <location>${project.basedir}/src/main/resources/config/logback.xml</location>
@@ -287,8 +204,62 @@
                             </sources>
                         </mapping>
                         <mapping>
-                            <directory>/home/voip_phone/voip_phone/logs/</directory>
+                            <directory>/home/voip_phone/logs/</directory>
                             <filemode>755</filemode>
+                        </mapping>
+                        <mapping>
+                            <directory>/home/voip_phone/resources/</directory>
+                            <filemode>755</filemode>
+                            <sources>
+                                <source>
+                                    <location>${project.basedir}/src/main/resources/dtmf/zero.au</location>
+                                </source>
+                                <source>
+                                    <location>${project.basedir}/src/main/resources/dtmf/one.au</location>
+                                </source>
+                                <source>
+                                    <location>${project.basedir}/src/main/resources/dtmf/two.au</location>
+                                </source>
+                                <source>
+                                    <location>${project.basedir}/src/main/resources/dtmf/three.au</location>
+                                </source>
+                                <source>
+                                    <location>${project.basedir}/src/main/resources/dtmf/four.au</location>
+                                </source>
+                                <source>
+                                    <location>${project.basedir}/src/main/resources/dtmf/five.au</location>
+                                </source>
+                                <source>
+                                    <location>${project.basedir}/src/main/resources/dtmf/six.au</location>
+                                </source>
+                                <source>
+                                    <location>${project.basedir}/src/main/resources/dtmf/seven.au</location>
+                                </source>
+                                <source>
+                                    <location>${project.basedir}/src/main/resources/dtmf/eight.au</location>
+                                </source>
+                                <source>
+                                    <location>${project.basedir}/src/main/resources/dtmf/nine.au</location>
+                                </source>
+                                <source>
+                                    <location>${project.basedir}/src/main/resources/dtmf/star.au</location>
+                                </source>
+                                <source>
+                                    <location>${project.basedir}/src/main/resources/dtmf/hash.au</location>
+                                </source>
+                                <source>
+                                    <location>${project.basedir}/src/main/resources/dtmf/A.au</location>
+                                </source>
+                                <source>
+                                    <location>${project.basedir}/src/main/resources/dtmf/B.au</location>
+                                </source>
+                                <source>
+                                    <location>${project.basedir}/src/main/resources/dtmf/C.au</location>
+                                </source>
+                                <source>
+                                    <location>${project.basedir}/src/main/resources/dtmf/D.au</location>
+                                </source>
+                            </sources>
                         </mapping>
                     </mappings>
                 </configuration>

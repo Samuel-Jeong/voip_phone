@@ -15,6 +15,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.Line;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -56,6 +57,8 @@ public class VoipClient {
 
     private String[] evsEncArgv = null;
     private String[] evsDecArgv = null;
+
+    private File sendWavFile = null;
 
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -699,4 +702,11 @@ public class VoipClient {
         return mike;
     }
 
+    public File getSendWavFile() {
+        return sendWavFile;
+    }
+
+    public void setSendWavFile(File sendWavFile) {
+        this.sendWavFile = sendWavFile;
+    }
 }

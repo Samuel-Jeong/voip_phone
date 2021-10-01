@@ -35,6 +35,7 @@ public class DtmfPanel {
 
     public static JPanel createKeypadPanel() {
         JPanel keypadPanel = new JPanel();
+        keypadPanel.setOpaque(false);
 
         try {
             keypadPanel.setLayout(new GridLayout(4, 3));
