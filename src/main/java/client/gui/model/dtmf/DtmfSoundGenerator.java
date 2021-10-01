@@ -156,15 +156,17 @@ public class DtmfSoundGenerator {
                 //logger.debug("({}) ms={}, len={}", curToneName, curTone.getMicrosecondLength(), curTone.getFrameLength());
             } catch (Exception e1) {
                 logger.warn("DtmfSoundGenerator.PlayTask.Exception (toneName={})", curToneName, e1);
-            } finally {
+            }
+            // close 코드있으면 재생이 안됨...
+            /*finally {
                 if (curTone != null) {
-                    /*try {
+                    try {
                         curTone.close();
                     } catch (Exception e2) {
                         logger.warn("Fail to close the tone. (toneName={})", curToneName, e2);
-                    }*/
+                    }
                 }
-            }
+            }*/
         }
     }
 
