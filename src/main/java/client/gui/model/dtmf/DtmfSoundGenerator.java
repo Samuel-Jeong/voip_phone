@@ -6,11 +6,9 @@ import org.slf4j.LoggerFactory;
 import service.base.TaskUnit;
 
 import javax.sound.sampled.*;
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
+import java.io.File;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @class public class DtmfSoundGenerator
@@ -42,10 +40,10 @@ public class DtmfSoundGenerator {
     public void start () {
         try {
             if (playTaskExecutor == null) {
-                playTaskExecutor = new ScheduledThreadPoolExecutor(5);
+                playTaskExecutor = new ScheduledThreadPoolExecutor(10);
 
                 PlayTask playTask = new PlayTask(
-                        10
+                        5
                 );
 
                 playTaskExecutor.scheduleAtFixedRate(
@@ -123,6 +121,8 @@ public class DtmfSoundGenerator {
 
     private class PlayTask extends TaskUnit {
 
+        private final String CUR_USER_DIR = System.getProperty("user.dir");
+
         protected PlayTask(int interval) {
             super(interval);
         }
@@ -136,40 +136,34 @@ public class DtmfSoundGenerator {
 
             Clip curTone = null;
             try {
-                String curUserDir = System.getProperty("user.dir");
-
-                AudioInputStream toneInputStream = AudioSystem.getAudioInputStream(
-                        new BufferedInputStream(
-                                new FileInputStream(
-                                        curUserDir +
+                curTone = AudioSystem.getClip();
+                curTone.open(
+                        AudioSystem.getAudioInputStream(
+                                new File(
+                                        CUR_USER_DIR +
                                                 "/src/main/resources/dtmf/" + curToneName + ".au"
                                 )
                         )
                 );
 
-                AudioFormat format = toneInputStream.getFormat();
-                DataLine.Info info = new DataLine.Info(Clip.class, format);
-                curTone = (Clip) AudioSystem.getLine(info);
-
-                //curTone = AudioSystem.getClip();
-                curTone.open(toneInputStream);
-
-                logger.debug("Current Tone : {}", curToneName);
+                //curTone.loop(1);
                 curTone.start();
-                /*while (curTone.isRunning()) {
-
+                /*for (int i = 0; i < 10; i++) {
+                    logger.debug("...");
                 }
                 curTone.stop();*/
+
+                //logger.debug("({}) ms={}, len={}", curToneName, curTone.getMicrosecondLength(), curTone.getFrameLength());
             } catch (Exception e1) {
                 logger.warn("DtmfSoundGenerator.PlayTask.Exception (toneName={})", curToneName, e1);
             } finally {
                 if (curTone != null) {
-                    try {
+                    /*try {
                         curTone.close();
                     } catch (Exception e2) {
                         logger.warn("Fail to close the tone. (toneName={})", curToneName, e2);
-                    }}
-
+                    }*/
+                }
             }
         }
     }

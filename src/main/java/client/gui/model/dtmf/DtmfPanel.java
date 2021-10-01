@@ -132,7 +132,7 @@ public class DtmfPanel {
                             true,
                             false,
                             volume,
-                            400
+                            1000
                     );
 
                     UdpSender udpSender = soundHandler.getUdpSender();
@@ -187,7 +187,7 @@ public class DtmfPanel {
                             true,
                             false,
                             volume,
-                            400
+                            1000
                     );
 
                     UdpSender udpSender = soundHandler.getUdpSender();
@@ -242,7 +242,7 @@ public class DtmfPanel {
                             true,
                             false,
                             volume,
-                            400
+                            1000
                     );
 
                     UdpSender udpSender = soundHandler.getUdpSender();
@@ -297,7 +297,7 @@ public class DtmfPanel {
                             true,
                             false,
                             volume,
-                            400
+                            1000
                     );
 
                     UdpSender udpSender = soundHandler.getUdpSender();
@@ -352,7 +352,7 @@ public class DtmfPanel {
                             true,
                             false,
                             volume,
-                            400
+                            1000
                     );
 
                     UdpSender udpSender = soundHandler.getUdpSender();
@@ -408,7 +408,7 @@ public class DtmfPanel {
                             true,
                             false,
                             volume,
-                            400
+                            1000
                     );
 
                     UdpSender udpSender = soundHandler.getUdpSender();
@@ -463,7 +463,7 @@ public class DtmfPanel {
                             true,
                             false,
                             volume,
-                            400
+                            1000
                     );
 
                     UdpSender udpSender = soundHandler.getUdpSender();
@@ -508,7 +508,7 @@ public class DtmfPanel {
                             true,
                             false,
                             volume,
-                            400
+                            1000
                     );
 
                     UdpSender udpSender = soundHandler.getUdpSender();
@@ -563,7 +563,7 @@ public class DtmfPanel {
                             true,
                             false,
                             volume,
-                            400
+                            1000
                     );
 
                     UdpSender udpSender = soundHandler.getUdpSender();
@@ -618,7 +618,7 @@ public class DtmfPanel {
                             true,
                             false,
                             volume,
-                            400
+                            1000
                     );
 
                     UdpSender udpSender = soundHandler.getUdpSender();
@@ -673,7 +673,7 @@ public class DtmfPanel {
                             true,
                             false,
                             volume,
-                            400
+                            1000
                     );
 
                     UdpSender udpSender = soundHandler.getUdpSender();
@@ -728,7 +728,7 @@ public class DtmfPanel {
                             true,
                             false,
                             volume,
-                            400
+                            1000
                     );
 
                     UdpSender udpSender = soundHandler.getUdpSender();
