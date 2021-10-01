@@ -69,14 +69,10 @@ public class ServiceManager {
             frameManager.start(CLIENT_FRAME_NAME);
         }
 
-        DtmfSoundGenerator.getInstance().open();
-
         logger.debug("All services are opened.");
     }
 
     public void stop () {
-        DtmfSoundGenerator.getInstance().close();
-
         taskManager.stop();
 
         mediaManager.stop();
