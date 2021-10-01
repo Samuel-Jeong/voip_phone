@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<project name="maven-antrun-" default="generatePropertiesFile"  >
-<target name="generatePropertiesFile">
-  <mkdir dir="target/classes/"/>
-  <propertyfile file="target/classes/build.properties" comment="BUILD">
-    <entry value="${buildNumber}" key="build"/>
-  </propertyfile>
-</target>
-</project>
