@@ -1,6 +1,7 @@
 package service;
 
 import client.gui.FrameManager;
+import client.gui.model.dtmf.DtmfSoundGenerator;
 import config.ConfigManager;
 import media.MediaManager;
 import org.slf4j.Logger;
@@ -68,10 +69,14 @@ public class ServiceManager {
             frameManager.start(CLIENT_FRAME_NAME);
         }
 
+        DtmfSoundGenerator.getInstance().open();
+
         logger.debug("All services are opened.");
     }
 
     public void stop () {
+        DtmfSoundGenerator.getInstance().close();
+
         taskManager.stop();
 
         mediaManager.stop();
