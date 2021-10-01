@@ -11,9 +11,9 @@ import java.nio.ByteOrder;
  * @class public class WavFile
  * @brief WavFile class
  */
-public class WavFile {
+public class WavFileInfo {
 
-    private static final Logger logger = LoggerFactory.getLogger(WavFile.class);
+    private static final Logger logger = LoggerFactory.getLogger(WavFileInfo.class);
 
     public static byte[] getHeader (short channelSize, int samplingRate, int sampleSize) {
         return WavHeader.getData(channelSize, samplingRate, (short) sampleSize);

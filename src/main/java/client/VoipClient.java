@@ -6,7 +6,7 @@ import media.MediaManager;
 import media.dtmf.DtmfUnit;
 import media.module.mixing.base.AudioFrame;
 import media.record.RecordManager;
-import media.record.base.wav.WavFile;
+import media.record.base.wav.WavFileInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.AppInstance;
@@ -158,7 +158,7 @@ public class VoipClient {
                         true
                 );
                 sourcePcmRecordManager.writeFileStream(
-                        WavFile.getHeader(
+                        WavFileInfo.getHeader(
                                 (short) voipClient.getSourceAudioFormat().getChannels(),
                                 //(int) voipClient.getSourceAudioFormat().getSampleRate(),
                                 MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_WB)? 16000 : 8000,
@@ -270,7 +270,7 @@ public class VoipClient {
         if (sourcePcmRecordManager != null) {
             sourcePcmRecordManager.stop();
             sourcePcmRecordManager.closeFileStream();
-            WavFile.setChunkSizeInFile(
+            WavFileInfo.setChunkSizeInFile(
                     sourcePcmRecordManager.getFullFilePath(),
                     sourcePcmRecordManager.getTotalDataSize() * getSourceChannelSize() * getSourceSampleSize() / 8
             );
@@ -338,7 +338,7 @@ public class VoipClient {
                         true
                 );
                 targetPcmRecordManager.writeFileStream(
-                        WavFile.getHeader(
+                        WavFileInfo.getHeader(
                                 (short) voipClient.getTargetAudioFormat().getChannels(),
                                 //(int) voipClient.getTargetAudioFormat().getSampleRate(),
                                 MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_WB)? 16000 : 8000,
@@ -453,7 +453,7 @@ public class VoipClient {
         if (targetPcmRecordManager != null) {
             targetPcmRecordManager.stop();
             targetPcmRecordManager.closeFileStream();
-            WavFile.setChunkSizeInFile(
+            WavFileInfo.setChunkSizeInFile(
                     targetPcmRecordManager.getFullFilePath(),
                     targetPcmRecordManager.getTotalDataSize() * getTargetChannelSize() * getTargetSampleSize() / 8
             );

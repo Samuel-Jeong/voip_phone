@@ -1,12 +1,16 @@
 package client.module.base;
 
+import client.VoipClient;
+import config.ConfigManager;
 import media.MediaManager;
 import media.module.mixing.base.ConcurrentCyclicFIFO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import service.AppInstance;
 import service.base.TaskUnit;
 
 import javax.sound.sampled.AudioInputStream;
+import java.io.File;
 
 /**
  * @class public class PcmGenerator extends TaskUnit
@@ -24,13 +28,28 @@ public class PcmGenerator extends TaskUnit {
     /* Mike Data Buffer */
     private final ConcurrentCyclicFIFO<byte[]> mikeBuffer;
 
+    private boolean isSendWav;
+
     public PcmGenerator(ConcurrentCyclicFIFO<byte[]> mikeBuffer, AudioInputStream stream, int interval) {
         super(interval);
 
-        BUFFER_LENGTH = MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_WB)? 640 : 320;
-
         this.stream = stream;
         this.mikeBuffer = mikeBuffer;
+
+        ConfigManager configManager = AppInstance.getInstance().getConfigManager();
+        this.isSendWav = configManager.isSendWav();
+
+        if (isSendWav) {
+            File wavFile = VoipClient.getInstance().getSendWavFile();
+            if (wavFile == null) {
+                BUFFER_LENGTH = MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_WB) ? 640 : 320;
+                isSendWav = false;
+            } else {
+                BUFFER_LENGTH = 320;
+            }
+        } else {
+            BUFFER_LENGTH = MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_WB) ? 640 : 320;
+        }
     }
 
     @Override
@@ -38,10 +57,18 @@ public class PcmGenerator extends TaskUnit {
         byte[] data = new byte[BUFFER_LENGTH]; // RtpPacket.MAX_PAYLOAD_BUFFER_SIZE not used
 
         try {
-            if (stream.read(data) != -1) {
+            if (isSendWav) {
+                // TODO
+
+
                 mikeBuffer.offer(data);
+            } else {
+                if (stream.read(data) != -1) {
+                    mikeBuffer.offer(data);
+                }
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             logger.warn("PcmGenerator.run.Exception", e);
         }
     }

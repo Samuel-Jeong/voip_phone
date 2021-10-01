@@ -7,7 +7,7 @@ import media.module.codec.evs.EvsManager;
 import media.module.codec.pcm.ALawTranscoder;
 import media.module.codec.pcm.ULawTranscoder;
 import media.record.RecordManager;
-import media.record.base.wav.WavFile;
+import media.record.base.wav.WavFileInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.AppInstance;
@@ -105,7 +105,7 @@ public class AudioMixer {
                 mixRecordManager.start();
                 mixRecordManager.openFileStream(mixFileName, true, true);
                 mixRecordManager.writeFileStream(
-                        WavFile.getHeader(
+                        WavFileInfo.getHeader(
                                 channelSize,
                                 MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_WB) ? 16000 : 8000,
                                 sampleSize
@@ -195,7 +195,7 @@ public class AudioMixer {
         if (mixRecordManager != null) {
             mixRecordManager.stop();
             mixRecordManager.closeFileStream();
-            WavFile.setChunkSizeInFile(
+            WavFileInfo.setChunkSizeInFile(
                     mixFileName,
                     mixRecordManager.getTotalDataSize() * getChannelSize() * getSampleSize() / 8
             );

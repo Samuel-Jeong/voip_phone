@@ -958,6 +958,12 @@ public class ClientFrame extends JFrame {
                             configManager.setIniValue(ConfigManager.SECTION_MEDIA, ConfigManager.FIELD_LAST_WAV_PATH, selectedFile.getPath());
 
                             fieldWavFile.setText(absolutePath);
+
+                            // TODO
+                            // 1. codec : priority codec
+                            // 2. sampling-rate
+
+
                             VoipClient.getInstance().setSendWavFile(selectedFile);
                         } else {
                             logger.debug("Fail to upload the wav file.");
