@@ -73,7 +73,7 @@ public class UdpSender extends TaskUnit {
                 executor = new ScheduledThreadPoolExecutor(5);
 
                 SendTask sendTask = new SendTask(
-                        1
+                        20
                         //MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_WB)? 40 : 20
                 );
                 executor.scheduleAtFixedRate(
