@@ -182,8 +182,15 @@ public class ByteUtil {
         }
     }
 
-    public static byte [] convertDoubleToByteArray(double number) {
+    public static byte [] convertDoubleToByteArray(double number, boolean isBigEndian) {
         ByteBuffer byteBuffer = ByteBuffer.allocate(Double.BYTES);
+
+        if (isBigEndian) {
+            byteBuffer.order(ByteOrder.BIG_ENDIAN);
+        } else {
+            byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
+        }
+
         byteBuffer.putDouble(number);
         return byteBuffer.array();
     }
@@ -196,7 +203,7 @@ public class ByteUtil {
         byte[] bytes = new byte[data.length * Double.BYTES];
         for (int i = 0; i < data.length; i++) {
             System.arraycopy(
-                    convertDoubleToByteArray(data[i]), 0,
+                    convertDoubleToByteArray(data[i], false), 0,
                     bytes, i * Double.BYTES,
                     Double.BYTES
             );
