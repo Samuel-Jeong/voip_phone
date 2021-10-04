@@ -5,6 +5,7 @@ import client.gui.model.dtmf.DtmfPanel;
 import client.gui.model.wav.WavPanel;
 import config.ConfigManager;
 import media.MediaManager;
+import media.record.wav.WavFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.AppInstance;
@@ -963,8 +964,24 @@ public class ClientFrame extends JFrame {
                             // 1. codec : priority codec
                             // 2. sampling-rate
 
+                            WavFile wavFile = VoipClient.getInstance().getWavFile();
+                            if (wavFile != null) {
+                                wavFile.close();
+                            }
 
-                            VoipClient.getInstance().setSendWavFile(selectedFile);
+                            VoipClient.getInstance().setWavFile(
+                                    new WavFile(
+                                            new File(
+                                                    absolutePath
+                                            )
+                                    )
+                            );
+
+                            wavFile = VoipClient.getInstance().getWavFile();
+                            if (wavFile != null) {
+                                wavFile.open();
+                                logger.debug("WavFile: {}", wavFile);
+                            }
                         } else {
                             logger.debug("Fail to upload the wav file.");
                             appendText("Fail to upload the wav file.\n");

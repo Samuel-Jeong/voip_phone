@@ -4,6 +4,8 @@ import client.VoipClient;
 import config.ConfigManager;
 import media.MediaManager;
 import media.module.mixing.base.ConcurrentCyclicFIFO;
+import media.protocol.base.ByteUtil;
+import media.record.wav.WavFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.AppInstance;
@@ -40,12 +42,16 @@ public class PcmGenerator extends TaskUnit {
         this.isSendWav = configManager.isSendWav();
 
         if (isSendWav) {
-            File wavFile = VoipClient.getInstance().getSendWavFile();
+            WavFile wavFile = VoipClient.getInstance().getWavFile();
             if (wavFile == null) {
                 BUFFER_LENGTH = MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_WB) ? 640 : 320;
                 isSendWav = false;
             } else {
-                BUFFER_LENGTH = 320;
+                if (wavFile.getSampleRate() == 16000) {
+                    BUFFER_LENGTH = 640;
+                } else {
+                    BUFFER_LENGTH = 320;
+                }
             }
         } else {
             BUFFER_LENGTH = MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_WB) ? 640 : 320;
@@ -54,15 +60,22 @@ public class PcmGenerator extends TaskUnit {
 
     @Override
     public void run() {
-        byte[] data = new byte[BUFFER_LENGTH]; // RtpPacket.MAX_PAYLOAD_BUFFER_SIZE not used
-
         try {
             if (isSendWav) {
-                // TODO
+                WavFile wavFile = VoipClient.getInstance().getWavFile();
+                if (wavFile == null) {
+                    return;
+                }
 
-
-                mikeBuffer.offer(data);
+                double[] frameData = new double[BUFFER_LENGTH / Double.BYTES];
+                int readBytes = wavFile.readFrames(frameData);
+                if (readBytes > 0) {
+                    mikeBuffer.offer(
+                            ByteUtil.convertDoubleArrayToByteArray(frameData)
+                    );
+                }
             } else {
+                byte[] data = new byte[BUFFER_LENGTH];
                 if (stream.read(data) != -1) {
                     mikeBuffer.offer(data);
                 }

@@ -7,7 +7,7 @@ import media.module.codec.evs.EvsManager;
 import media.module.codec.pcm.ALawTranscoder;
 import media.module.codec.pcm.ULawTranscoder;
 import media.record.RecordManager;
-import media.record.base.wav.WavFileInfo;
+import media.record.wav.WavFileInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.AppInstance;

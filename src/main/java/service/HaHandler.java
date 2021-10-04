@@ -1,5 +1,6 @@
 package service;
 
+import client.VoipClient;
 import config.ConfigManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,13 +36,15 @@ public class HaHandler extends TaskUnit {
         String memoryUsageStr = systemManager.getHeapMemoryUsage();
 
         if (configManager.isUseClient()) {
-            logger.debug("[CLIENT] Call=[{}] | cpu=[{}], mem=[{}]",
+            logger.debug("[CLIENT ({})] Call=[{}] | cpu=[{}], mem=[{}]",
+                    configManager.getHostName(),
                     CallManager.getInstance().getCallMapSize(),
                     cpuUsageStr,
                     memoryUsageStr
             );
         } else {
-            logger.debug("[SERVER] Regi=[{}], Room=[{}], Call=[{}] | cpu=[{}], mem=[{}]",
+            logger.debug("[SERVER ({})] Regi=[{}], Room=[{}], Call=[{}] | cpu=[{}], mem=[{}]",
+                    configManager.getHostName(),
                     RegiManager.getInstance().getRegiMapSize(),
                     GroupCallManager.getInstance().getRoomMapSize(),
                     CallManager.getInstance().getCallMapSize(),

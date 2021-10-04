@@ -6,16 +6,13 @@ import media.MediaManager;
 import media.dtmf.DtmfUnit;
 import media.module.mixing.base.AudioFrame;
 import media.record.RecordManager;
-import media.record.base.wav.WavFileInfo;
+import media.record.wav.WavFileInfo;
+import media.record.wav.WavFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.AppInstance;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.Line;
-import javax.sound.sampled.SourceDataLine;
-import javax.sound.sampled.TargetDataLine;
-import java.io.File;
+import javax.sound.sampled.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -58,7 +55,7 @@ public class VoipClient {
     private String[] evsEncArgv = null;
     private String[] evsDecArgv = null;
 
-    private File sendWavFile = null;
+    private WavFile wavFile = null;
 
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -702,11 +699,11 @@ public class VoipClient {
         return mike;
     }
 
-    public File getSendWavFile() {
-        return sendWavFile;
+    public WavFile getWavFile() {
+        return wavFile;
     }
 
-    public void setSendWavFile(File sendWavFile) {
-        this.sendWavFile = sendWavFile;
+    public void setWavFile(WavFile wavFile) {
+        this.wavFile = wavFile;
     }
 }

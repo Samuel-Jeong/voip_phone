@@ -1,5 +1,8 @@
 package media.protocol.base;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -178,4 +181,27 @@ public class ByteUtil {
                     (byteArray[3] << 24);
         }
     }
+
+    public static byte [] convertDoubleToByteArray(double number) {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(Double.BYTES);
+        byteBuffer.putDouble(number);
+        return byteBuffer.array();
+    }
+
+    public static byte[] convertDoubleArrayToByteArray(double[] data) {
+        if (data == null) {
+            return null;
+        }
+
+        byte[] bytes = new byte[data.length * Double.BYTES];
+        for (int i = 0; i < data.length; i++) {
+            System.arraycopy(convertDoubleToByteArray(
+                    data[i]), 0,
+                    bytes, i * Double.BYTES,
+                    Double.BYTES
+            );
+        }
+        return bytes;
+    }
+
 }

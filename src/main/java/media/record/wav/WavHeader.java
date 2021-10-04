@@ -1,4 +1,4 @@
-package media.record.base.wav;
+package media.record.wav;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
