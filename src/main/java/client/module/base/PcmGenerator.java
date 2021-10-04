@@ -70,10 +70,10 @@ public class PcmGenerator extends TaskUnit {
                 double[] frameData = new double[BUFFER_LENGTH / Double.BYTES];
                 int readBytes = wavFile.readFrames(frameData);
                 if (readBytes > 0) {
-                    logger.debug("READ: {}, [{}]", readBytes, frameData);
+                    //logger.debug("READ: {}, [{}]", readBytes, frameData);
                     byte[] data = ByteUtil.convertDoubleArrayToByteArray(frameData);
                     if (data.length > 0) {
-                        logger.debug("SEND: {}, [{}]", data.length, data);
+                        //logger.debug("SEND: {}, [{}]", data.length, data);
                         mikeBuffer.offer(data);
                     }
                 }
