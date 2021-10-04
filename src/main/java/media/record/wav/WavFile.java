@@ -229,31 +229,6 @@ public class WavFile {
         return true;
     }
 
-    /**
-     * Returns a lone integer sample
-     *
-     * @return Sample in long
-     */
-    private long readSample(long offset) throws IOException {
-        long sample = 0;
-        byte[] buffer = new byte[bitsPerSample.convert() / 8];
-        long skipBytes = inputStream.skip(offset);
-        if (skipBytes > 0) {
-            logger.trace("Wav file's [{}] bytes is skipped.", skipBytes);
-        }
-
-        int delta = inputStream.read(buffer);
-        if (delta != -1) {
-            dataOffset += delta;
-        }
-
-        if (bitsPerSample.convert() == 16) {
-            sample = bytesToShort(buffer);
-        }
-
-        return sample;
-    }
-
     ////////////////////////////////////////////////////////////////////////////////
 
     public boolean isStereo() {
@@ -281,6 +256,27 @@ public class WavFile {
     }
 
     ////////////////////////////////////////////////////////////////////////////////
+
+    private long readSample(long offset) throws IOException {
+        long sample = 0;
+        byte[] buffer = new byte[bitsPerSample.convert() / 8];
+        long skipBytes = inputStream.skip(offset);
+        if (skipBytes > 0) {
+            logger.trace("Wav file's [{}] bytes is skipped.", skipBytes);
+        }
+
+        int delta = inputStream.read(buffer);
+        if (delta != -1) {
+            dataOffset += delta;
+        }
+
+        if (bitsPerSample.convert() == 16) {
+            sample = bytesToShort(buffer);
+        }
+
+        return sample;
+    }
+
     public int readFrames(double[] frameBuffer) throws IOException {
         return readFrames(frameBuffer, 0);
     }

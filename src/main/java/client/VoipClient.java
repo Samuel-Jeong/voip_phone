@@ -541,6 +541,14 @@ public class VoipClient {
             closeMike();
             closeSpeaker();
         }
+
+        try {
+            if (wavFile != null) {
+                wavFile.close();
+            }
+        } catch (Exception e) {
+            logger.warn("VoipClient.stop.Exception", e);
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////

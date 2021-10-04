@@ -957,13 +957,9 @@ public class ClientFrame extends JFrame {
 
                             configManager.setLastWavPath(selectedFile.getPath());
                             configManager.setIniValue(ConfigManager.SECTION_MEDIA, ConfigManager.FIELD_LAST_WAV_PATH, selectedFile.getPath());
-
                             fieldWavFile.setText(absolutePath);
 
-                            // TODO
-                            // 1. codec : priority codec
-                            // 2. sampling-rate
-
+                            //
                             WavFile wavFile = VoipClient.getInstance().getWavFile();
                             if (wavFile != null) {
                                 wavFile.close();
@@ -982,6 +978,7 @@ public class ClientFrame extends JFrame {
                                 wavFile.open();
                                 logger.debug("WavFile: {}", wavFile);
                             }
+                            //
                         } else {
                             logger.debug("Fail to upload the wav file.");
                             appendText("Fail to upload the wav file.\n");
