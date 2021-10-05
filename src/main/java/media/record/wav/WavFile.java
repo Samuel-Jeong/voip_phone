@@ -61,10 +61,13 @@ public class WavFile {
     //ByteBuffer for conversion from byte[] to integers
     private ByteBuffer bb;
 
+    private final long totalLength;
+
     ////////////////////////////////////////////////////////////////////////////////
 
     public WavFile(File inputFile) {
         this.inputFile = inputFile;
+        totalLength = inputFile.length();
 
         try {
             inputStream = new FileInputStream(inputFile);
@@ -374,26 +377,21 @@ public class WavFile {
 
     @Override
     public String toString() {
-        try {
-            return "WavFile{" +
-                    "\n\tsize=" + inputStream.available() +
-                    "\n\tchunkID=" + chunkID +
-                    ", \n\tchunkSize=" + chunkSize +
-                    ", \n\tformat=" + format +
-                    ", \n\tsubchunk1ID=" + subChunk1ID +
-                    ", \n\tsubchunk1Size=" + subChunk1Size +
-                    ", \n\taudioFormat=" + audioFormat +
-                    ", \n\tnumChannels=" + numChannels +
-                    ", \n\tsamplerate=" + sampleRate +
-                    ", \n\tbyteRate=" + byteRate +
-                    ", \n\tblockAlign=" + blockAlign +
-                    ", \n\tbitsPerSample=" + bitsPerSample +
-                    ", \n\tsubchunk2ID=" + subChunk2ID +
-                    ", \n\tsubchunk2Size=" + subChunk2Size +
-                    "\n}";
-        } catch (IOException e) {
-            logger.warn("WavFile.toString.IOException", e);
-            return "";
-        }
+        return "[" +
+                "\n\tsize=" + totalLength +
+                "\n\tchunkID=" + chunkID +
+                ", \n\tchunkSize=" + chunkSize +
+                ", \n\tformat=" + format +
+                ", \n\tsubChunk1ID=" + subChunk1ID +
+                ", \n\tsubChunk1Size=" + subChunk1Size +
+                ", \n\taudioFormat=" + audioFormat +
+                ", \n\tnumChannels=" + numChannels +
+                ", \n\tsampleRate=" + sampleRate +
+                ", \n\tbyteRate=" + byteRate +
+                ", \n\tblockAlign=" + blockAlign +
+                ", \n\tbitsPerSample=" + bitsPerSample +
+                ", \n\tsubChunk2ID=" + subChunk2ID +
+                ", \n\tsubChunk2Size=" + subChunk2Size +
+                "\n]";
     }
 }
