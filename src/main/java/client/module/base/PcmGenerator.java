@@ -63,6 +63,8 @@ public class PcmGenerator extends TaskUnit {
 
     @Override
     public void run() {
+        byte[] data;
+
         try {
             if (isSendWav) {
                 WavFile wavFile = VoipClient.getInstance().getWavFile();
@@ -81,11 +83,11 @@ public class PcmGenerator extends TaskUnit {
                     }
                 }*/
 
-                /*byte[] data = wavFile.convertWavToRawAll(
+                /*data = wavFile.convertWavToRawAll(
                         wavFile.audioToByte()
                 );*/
 
-                byte[] data = wavFile.audioToBytePartially(
+                data = wavFile.audioToBytePartially(
                         wavDataOffset,
                         wavDataOffset + BUFFER_LENGTH
                 );
@@ -95,7 +97,7 @@ public class PcmGenerator extends TaskUnit {
                     mikeBuffer.offer(data);
                 }
             } else {
-                byte[] data = new byte[BUFFER_LENGTH];
+                data = new byte[BUFFER_LENGTH];
                 if (stream.read(data) != -1) {
                     mikeBuffer.offer(data);
                 }

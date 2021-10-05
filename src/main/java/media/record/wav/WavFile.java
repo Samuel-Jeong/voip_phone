@@ -312,17 +312,13 @@ public class WavFile {
             return null;
         }
 
-        if (44 + start > end) {
-            start = end - 44;
-        }
-
         try {
             FileInputStream fileInputStream = new FileInputStream(inputFile);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
 
             byte[] data = new byte[end - start]; // [320 - 0], [640 - 320], [960 - 640], ...
-            int readBytes = bufferedInputStream.read(data, 44 + start, end);
+            int readBytes = bufferedInputStream.read(data, 44 + start, 44 + end);
 
             byteArrayOutputStream.write(data, 0, readBytes);
             byteArrayOutputStream.flush();
