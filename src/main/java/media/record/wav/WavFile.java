@@ -271,9 +271,9 @@ public class WavFile {
             dataOffset += delta;
         }
 
-        /*if (bitsPerSample.convert() == 16) {
+        if (bitsPerSample.convert() == 16) {
             sample = bytesToShort(buffer);
-        }*/
+        }
 
         return sample;
     }
@@ -371,7 +371,7 @@ public class WavFile {
 
     public short bytesToShort(byte[] bytes) {
         bb = ByteBuffer.wrap(bytes);
-        bb.order(ByteOrder.BIG_ENDIAN);
+        bb.order(ByteOrder.LITTLE_ENDIAN);
         return bb.getShort();
     }
 
