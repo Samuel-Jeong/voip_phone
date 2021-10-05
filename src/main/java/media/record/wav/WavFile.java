@@ -6,9 +6,11 @@ import media.record.wav.base.WavFileException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sound.sampled.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
 
 /**
  * @class public class WavFile
@@ -33,6 +35,8 @@ public class WavFile {
     private static final int SUBCHUNK2ID = 0x64617461;
     //Data should start at byte 44
     private static final int DATA_START_OFFSET = 44;
+
+    private final File inputFile;
 
     //Wave file header
     //RIFF section
@@ -61,11 +65,12 @@ public class WavFile {
     ////////////////////////////////////////////////////////////////////////////////
 
     public WavFile(File inputFile) {
+        this.inputFile = inputFile;
+
         try {
             inputStream = new FileInputStream(inputFile);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            System.err.println("Failed to get input stream for file");
+            logger.warn("Fail to set the wav file.");
         }
     }
 
@@ -283,13 +288,73 @@ public class WavFile {
 
     public int readFrames(double[] frameBuffer, int offset) throws IOException {
         int curLength = 0;
+
         for (int f = 0; f < frameBuffer.length; f++) {
             frameBuffer[f] = (double) readSample(offset) / (double) (Long.MAX_VALUE >> (64 - bitsPerSample.convert()));
             if (frameBuffer[f] != 0) {
                 curLength++;
             }
         }
+
         return curLength;
+    }
+
+    public byte[] convertWavToRawAll(byte[] data) {
+        return Arrays.copyOfRange(
+                data,
+                44,
+                data.length
+        );
+    }
+
+    public byte[] audioToBytePartially(int start, int end) {
+        if (inputFile == null || start > end) {
+            return null;
+        }
+
+        if (44 + start > end) {
+            start = end - 44;
+        }
+
+        try {
+            FileInputStream fileInputStream = new FileInputStream(inputFile);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
+
+            byte[] data = new byte[end - start]; // [320 - 0], [640 - 320], [960 - 640], ...
+            int readBytes = bufferedInputStream.read(data, 44 + start, end);
+
+            byteArrayOutputStream.write(data, 0, readBytes);
+            byteArrayOutputStream.flush();
+            return byteArrayOutputStream.toByteArray();
+        } catch (Exception e) {
+            logger.warn("WavFile.audioToBytePartially.Exception", e);
+            return null;
+        }
+    }
+
+    public byte[] audioToByteAll() {
+        if (inputFile == null) {
+            return null;
+        }
+
+        try {
+            FileInputStream fileInputStream = new FileInputStream(inputFile);
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
+
+            int read;
+            byte[] buff = new byte[1024];
+            while ((read = bufferedInputStream.read(buff)) > 0) {
+                byteArrayOutputStream.write(buff, 0, read);
+            }
+
+            byteArrayOutputStream.flush();
+            return byteArrayOutputStream.toByteArray();
+        } catch (Exception e) {
+            logger.warn("WavFile.audioToByteAll.Exception", e);
+            return null;
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////

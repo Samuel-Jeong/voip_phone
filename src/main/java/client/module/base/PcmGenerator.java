@@ -4,7 +4,6 @@ import client.VoipClient;
 import config.ConfigManager;
 import media.MediaManager;
 import media.module.mixing.base.ConcurrentCyclicFIFO;
-import media.protocol.base.ByteUtil;
 import media.record.wav.WavFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +11,6 @@ import service.AppInstance;
 import service.base.TaskUnit;
 
 import javax.sound.sampled.AudioInputStream;
-import java.io.File;
 
 /**
  * @class public class PcmGenerator extends TaskUnit
@@ -31,6 +29,9 @@ public class PcmGenerator extends TaskUnit {
     private final ConcurrentCyclicFIFO<byte[]> mikeBuffer;
 
     private boolean isSendWav;
+    private int wavDataOffset = 0;
+
+    ////////////////////////////////////////////////////////////////////////////////
 
     public PcmGenerator(ConcurrentCyclicFIFO<byte[]> mikeBuffer, AudioInputStream stream, int interval) {
         super(interval);
@@ -58,6 +59,8 @@ public class PcmGenerator extends TaskUnit {
         }
     }
 
+    ////////////////////////////////////////////////////////////////////////////////
+
     @Override
     public void run() {
         try {
@@ -67,7 +70,7 @@ public class PcmGenerator extends TaskUnit {
                     return;
                 }
 
-                double[] frameData = new double[BUFFER_LENGTH / Double.BYTES];
+                /*double[] frameData = new double[BUFFER_LENGTH / Double.BYTES];
                 int readBytes = wavFile.readFrames(frameData);
                 if (readBytes > 0) {
                     //logger.debug("READ: {}, [{}]", readBytes, frameData);
@@ -76,6 +79,19 @@ public class PcmGenerator extends TaskUnit {
                         //logger.debug("SEND: {}, [{}]", data.length, data);
                         mikeBuffer.offer(data);
                     }
+                }*/
+
+                /*byte[] data = wavFile.convertWavToRawAll(
+                        wavFile.audioToByte()
+                );*/
+
+                byte[] data = wavFile.audioToBytePartially(
+                        wavDataOffset,
+                        wavDataOffset + BUFFER_LENGTH
+                );
+
+                if (data != null && data.length > 0) {
+                    mikeBuffer.offer(data);
                 }
             } else {
                 byte[] data = new byte[BUFFER_LENGTH];
