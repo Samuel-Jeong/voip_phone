@@ -150,7 +150,7 @@ public class WavFile {
             //Audio Format
             readBytes = inputStream.read(shortByteBuffer);
             if (readBytes > 0) {
-                audioFormat = new LittleEndianShort(bytesToShort(shortByteBuffer));
+                audioFormat = new LittleEndianShort(bytesToShort(shortByteBuffer, true));
                 if (audioFormat.convert() != AUDIO_FORMAT) {
                     throw new WavFileException("COMPRESSED WAVE FILE NOT SUPPORTED: format[" + audioFormat.convert() + "]");
                 }
@@ -161,7 +161,7 @@ public class WavFile {
             //NumChannels
             readBytes = inputStream.read(shortByteBuffer);
             if (readBytes > 0) {
-                numChannels = new LittleEndianShort(bytesToShort(shortByteBuffer));
+                numChannels = new LittleEndianShort(bytesToShort(shortByteBuffer, true));
                 if (numChannels.convert() > 2 || numChannels.convert() < 0) {
                     throw new WavFileException("INVALID NUMBER OF CHANNELS: numChannels[" + numChannels.convert() + "]");
                 }
@@ -188,7 +188,7 @@ public class WavFile {
             //BlockAlign
             readBytes = inputStream.read(shortByteBuffer);
             if (readBytes > 0) {
-                blockAlign = new LittleEndianShort(bytesToShort(shortByteBuffer));
+                blockAlign = new LittleEndianShort(bytesToShort(shortByteBuffer, true));
             } else {
                 throw new WavFileException("Fail to read the file.");
             }
@@ -198,7 +198,7 @@ public class WavFile {
             //support floating point IEEE 32bit
             readBytes = inputStream.read(shortByteBuffer);
             if (readBytes > 0) {
-                bitsPerSample = new LittleEndianShort(bytesToShort(shortByteBuffer));
+                bitsPerSample = new LittleEndianShort(bytesToShort(shortByteBuffer, true));
             } else {
                 throw new WavFileException("Fail to read the file.");
             }
@@ -272,7 +272,7 @@ public class WavFile {
         }
 
         if (bitsPerSample.convert() == 16) {
-            sample = bytesToShort(buffer);
+            sample = bytesToShort(buffer, false);
         }
 
         return sample;
@@ -369,9 +369,9 @@ public class WavFile {
         return bb.getInt();
     }
 
-    public short bytesToShort(byte[] bytes) {
+    public short bytesToShort(byte[] bytes, boolean isBigEndian) {
         bb = ByteBuffer.wrap(bytes);
-        bb.order(ByteOrder.LITTLE_ENDIAN);
+        bb.order(isBigEndian? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
         return bb.getShort();
     }
 
