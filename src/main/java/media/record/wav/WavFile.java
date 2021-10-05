@@ -215,9 +215,9 @@ public class WavFile {
             }
 
             //Subchunk2Size
-            readBytes = inputStream.read(shortByteBuffer);
+            readBytes = inputStream.read(intByteBuffer);
             if (readBytes > 0) {
-                subChunk2Size = new LittleEndianInt(bytesToShort(shortByteBuffer));
+                subChunk2Size = new LittleEndianInt(bytesToInt(intByteBuffer));
             } else {
                 throw new WavFileException("Fail to read the file.");
             }
