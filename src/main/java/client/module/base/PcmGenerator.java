@@ -89,6 +89,7 @@ public class PcmGenerator extends TaskUnit {
                         wavDataOffset,
                         wavDataOffset + BUFFER_LENGTH
                 );
+                wavDataOffset += BUFFER_LENGTH;
 
                 if (data != null && data.length > 0) {
                     mikeBuffer.offer(data);
@@ -102,6 +103,12 @@ public class PcmGenerator extends TaskUnit {
         }
         catch (Exception e) {
             logger.warn("PcmGenerator.run.Exception", e);
+        }
+    }
+
+    public void resetWavDataOffset() {
+        if (this.isSendWav) {
+            this.wavDataOffset = 0;
         }
     }
 
