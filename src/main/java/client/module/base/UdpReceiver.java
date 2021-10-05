@@ -132,12 +132,12 @@ public class UdpReceiver extends TaskUnit {
 
             boolean isDtmf = audioFrame.isDtmf();
             byte[] data = audioFrame.getData(true);
-            if (data == null || data.length == 0 || isByteArrayFullOfZero(data)) {
+            if (data == null || data.length == 0) {
                 return;
             }
 
             // PCM
-            if (!isDtmf) {
+            if (!isDtmf && !isByteArrayFullOfZero(data)) {
                 if (voipClient.getSourceAudioFormat().getEncoding().toString().equals(
                         AudioFormat.Encoding.PCM_SIGNED.toString())) {
                     // Decode pcm data to other codec data
@@ -276,32 +276,36 @@ public class UdpReceiver extends TaskUnit {
 
         @Override
         public void run() {
+            byte[] data;
+
             MediaFrame mediaFrame = recvBuffer.poll();
             if (mediaFrame == null) {
                 return;
             }
 
             boolean isDtmf = mediaFrame.isDtmf();
-            byte[] data = mediaFrame.getData();
+            data = mediaFrame.getData();
 
-            if (!isDtmf) {
-                if (VoipClient.getInstance().getSourceAudioFormat().getEncoding().toString().equals(
-                        AudioFormat.Encoding.PCM_SIGNED.toString())) {
-                    RecordManager pcmRecordManager = VoipClient.getInstance().getSourcePcmRecordManager();
-                    if (pcmRecordManager != null) {
-                        pcmRecordManager.addData(data);
-                        //pcmRecordManager.writeFileStream(data);
-                    }
+            if (!isByteArrayFullOfZero(data)) {
+                if (!isDtmf) {
+                    if (VoipClient.getInstance().getSourceAudioFormat().getEncoding().toString().equals(
+                            AudioFormat.Encoding.PCM_SIGNED.toString())) {
+                        RecordManager pcmRecordManager = VoipClient.getInstance().getSourcePcmRecordManager();
+                        if (pcmRecordManager != null) {
+                            pcmRecordManager.addData(data);
+                            //pcmRecordManager.writeFileStream(data);
+                        }
 
-                    // Convert to big endian.
-                    if (VoipClient.getInstance().isSourceBigEndian()) {
-                        data = RtpUtil.changeByteOrder(data);
+                        // Convert to big endian.
+                        if (VoipClient.getInstance().isSourceBigEndian()) {
+                            data = RtpUtil.changeByteOrder(data);
+                        }
                     }
+                } else {
+                    logger.debug("DTMF is detected!");
+                    DtmfUnit dtmfUnit = new DtmfUnit(data);
+                    logger.debug("DTMF digit: {}", dtmfUnit);
                 }
-            } else {
-                logger.debug("DTMF is detected!");
-                DtmfUnit dtmfUnit = new DtmfUnit(data);
-                logger.debug("DTMF digit: {}", dtmfUnit);
             }
 
             SourceDataLine sourceDataLine = VoipClient.getInstance().getSourceLine();

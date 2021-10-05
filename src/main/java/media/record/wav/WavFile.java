@@ -272,7 +272,7 @@ public class WavFile {
         }
 
         if (bitsPerSample.convert() == 16) {
-            sample = bytesToShort(buffer, false);
+            sample = bytesToShort(buffer, true);
         }
 
         return sample;
@@ -283,16 +283,17 @@ public class WavFile {
     }
 
     public int readFrames(double[] frameBuffer, int offset) throws IOException {
-        int curLength = 0;
+        //int curLength = 0;
 
         for (int f = 0; f < frameBuffer.length; f++) {
             frameBuffer[f] = (double) readSample(offset) / (double) (Long.MAX_VALUE >> (64 - bitsPerSample.convert()));
-            if (frameBuffer[f] != 0) {
+            /*if (frameBuffer[f] != 0) {
                 curLength++;
-            }
+            }*/
         }
 
-        return curLength;
+        return frameBuffer.length;
+        //return curLength;
     }
 
     public byte[] convertWavToRawAll(byte[] data) {

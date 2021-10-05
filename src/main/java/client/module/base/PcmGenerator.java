@@ -100,7 +100,7 @@ public class PcmGenerator extends TaskUnit {
                 data = new byte[BUFFER_LENGTH];
                 if (stream.read(data) != -1) {
                     mikeBuffer.offer(data);
-                    logger.debug("data: {}", data);
+                    //logger.debug("data: {}", data);
                 }
             }
         }
