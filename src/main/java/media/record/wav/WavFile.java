@@ -318,10 +318,13 @@ public class WavFile {
             byte[] data = new byte[length];
             //int readBytes = inputStream.read(data, start, length);
             int readBytes = inputStream.read(data);
+            if (readBytes > 0) {
+                byteArrayOutputStream.write(data, 0, readBytes);
+                byteArrayOutputStream.flush();
+                return byteArrayOutputStream.toByteArray();
+            }
 
-            byteArrayOutputStream.write(data, 0, readBytes);
-            byteArrayOutputStream.flush();
-            return byteArrayOutputStream.toByteArray();
+            return null;
         } catch (Exception e) {
             logger.warn("WavFile.audioToBytePartially.Exception", e);
             System.exit(1);
