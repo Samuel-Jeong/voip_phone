@@ -87,9 +87,10 @@ public class PcmGenerator extends TaskUnit {
                         wavFile.audioToByte()
                 );*/
 
+                logger.debug("wavDataOffset: {}, BUFFER_LENGTH: {}", wavDataOffset, BUFFER_LENGTH);
                 data = wavFile.audioToBytePartially(
                         wavDataOffset,
-                        wavDataOffset + BUFFER_LENGTH
+                        BUFFER_LENGTH
                 );
                 wavDataOffset += BUFFER_LENGTH;
 
