@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import service.AppInstance;
 
 import javax.sound.sampled.*;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
@@ -55,6 +56,7 @@ public class VoipClient {
     private String[] evsEncArgv = null;
     private String[] evsDecArgv = null;
 
+    private String wavFilePath = null;
     private WavFile wavFile = null;
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -530,6 +532,16 @@ public class VoipClient {
     ////////////////////////////////////////////////////////////////////////////////
 
     public void start () {
+        if (wavFilePath != null && wavFile == null) {
+            try {
+                wavFile = new WavFile(new File(wavFilePath));
+                wavFile.open();
+                logger.debug("WavFile is opened. ({})", wavFile);
+            } catch (Exception e) {
+                logger.warn("VoipClient.start.Exception", e);
+            }
+        }
+
         if (!isStarted()) {
             openMike();
             openSpeaker();
@@ -545,6 +557,8 @@ public class VoipClient {
         try {
             if (wavFile != null) {
                 wavFile.close();
+                logger.debug("WavFile is closed. ({})", wavFile);
+                wavFile = null;
             }
         } catch (Exception e) {
             logger.warn("VoipClient.stop.Exception", e);
@@ -705,6 +719,14 @@ public class VoipClient {
 
     public Line getMike() {
         return mike;
+    }
+
+    public String getWavFilePath() {
+        return wavFilePath;
+    }
+
+    public void setWavFilePath(String wavFilePath) {
+        this.wavFilePath = wavFilePath;
     }
 
     public WavFile getWavFile() {

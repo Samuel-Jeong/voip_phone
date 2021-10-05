@@ -6,7 +6,6 @@ import media.record.wav.base.WavFileException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sound.sampled.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -44,17 +43,17 @@ public class WavFile {
     private LittleEndianInt chunkSize;
     private int format;
     //fmt section
-    private int subchunk1ID;
-    private LittleEndianInt subchunk1Size;
+    private int subChunk1ID;
+    private LittleEndianInt subChunk1Size;
     private LittleEndianShort audioFormat;
     private LittleEndianShort numChannels;
-    private LittleEndianInt samplerate;
+    private LittleEndianInt sampleRate;
     private LittleEndianInt byteRate;
     private LittleEndianShort blockAlign;
     private LittleEndianShort bitsPerSample;
     //Data header
-    private int subchunk2ID;
-    private LittleEndianInt subchunk2Size;
+    private int subChunk2ID;
+    private LittleEndianInt subChunk2Size;
     //Input stream
     private InputStream inputStream;
     //Sample position in bytes
@@ -76,13 +75,7 @@ public class WavFile {
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * Opens wav file stream.
-     * Must require RIFF PCM format. Others not supported yet
-     *
-     * @return Returns false if failed read or incorrect wave data
-     */
-    public boolean open() throws Exception {
+    public boolean open() {
         return readHeader();
     }
 
@@ -132,8 +125,8 @@ public class WavFile {
             //Subchunk1ID
             readBytes = inputStream.read(intByteBuffer);
             if (readBytes > 0) {
-                subchunk1ID = bytesToInt(intByteBuffer);
-                if (subchunk1ID != SUBCHUNK1ID) {
+                subChunk1ID = bytesToInt(intByteBuffer);
+                if (subChunk1ID != SUBCHUNK1ID) {
                     throw new WavFileException("INVALID SUBCHUNK 1 ID");
                 }
             } else {
@@ -143,9 +136,9 @@ public class WavFile {
             //SubChunk1Size
             readBytes = inputStream.read(intByteBuffer);
             if (readBytes > 0) {
-                subchunk1Size = new LittleEndianInt(bytesToInt(intByteBuffer));
-                if (subchunk1Size.convert() != SUBCHUNK1SIZE) {
-                    throw new WavFileException("NON PCM FILES ARE NOT SUPPORTED: chunk size[" + subchunk1Size.convert() + "]");
+                subChunk1Size = new LittleEndianInt(bytesToInt(intByteBuffer));
+                if (subChunk1Size.convert() != SUBCHUNK1SIZE) {
+                    throw new WavFileException("NON PCM FILES ARE NOT SUPPORTED: chunk size[" + subChunk1Size.convert() + "]");
                 }
             } else {
                 throw new WavFileException("Fail to read the file.");
@@ -176,7 +169,7 @@ public class WavFile {
             //SampleRate
             readBytes = inputStream.read(intByteBuffer);
             if (readBytes > 0) {
-                samplerate = new LittleEndianInt(bytesToInt(intByteBuffer));
+                sampleRate = new LittleEndianInt(bytesToInt(intByteBuffer));
             } else {
                 throw new WavFileException("Fail to read the file.");
             }
@@ -210,8 +203,8 @@ public class WavFile {
             //SubChunk2ID
             readBytes = inputStream.read(intByteBuffer);
             if (readBytes > 0) {
-                subchunk2ID = bytesToInt(intByteBuffer);
-                if (subchunk2ID != SUBCHUNK2ID) {
+                subChunk2ID = bytesToInt(intByteBuffer);
+                if (subChunk2ID != SUBCHUNK2ID) {
                     throw new WavFileException("INVALID DATA HEADER");
                 }
             } else {
@@ -221,7 +214,7 @@ public class WavFile {
             //Subchunk2Size
             readBytes = inputStream.read(shortByteBuffer);
             if (readBytes > 0) {
-                subchunk2Size = new LittleEndianInt(bytesToShort(shortByteBuffer));
+                subChunk2Size = new LittleEndianInt(bytesToShort(shortByteBuffer));
             } else {
                 throw new WavFileException("Fail to read the file.");
             }
@@ -245,7 +238,7 @@ public class WavFile {
     }
 
     public int getSampleRate() {
-        return samplerate.convert();
+        return sampleRate.convert();
     }
 
     public int getBitRate() {
@@ -253,7 +246,7 @@ public class WavFile {
     }
 
     public int getFileSize() {
-        return subchunk1Size.convert() + 8;
+        return subChunk1Size.convert() + 8;
     }
 
     public int getNumFrames() {
@@ -385,16 +378,16 @@ public class WavFile {
                 "\n\tchunkID=" + chunkID +
                 ", \n\tchunkSize=" + chunkSize +
                 ", \n\tformat=" + format +
-                ", \n\tsubchunk1ID=" + subchunk1ID +
-                ", \n\tsubchunk1Size=" + subchunk1Size +
+                ", \n\tsubchunk1ID=" + subChunk1ID +
+                ", \n\tsubchunk1Size=" + subChunk1Size +
                 ", \n\taudioFormat=" + audioFormat +
                 ", \n\tnumChannels=" + numChannels +
-                ", \n\tsamplerate=" + samplerate +
+                ", \n\tsamplerate=" + sampleRate +
                 ", \n\tbyteRate=" + byteRate +
                 ", \n\tblockAlign=" + blockAlign +
                 ", \n\tbitsPerSample=" + bitsPerSample +
-                ", \n\tsubchunk2ID=" + subchunk2ID +
-                ", \n\tsubchunk2Size=" + subchunk2Size +
+                ", \n\tsubchunk2ID=" + subChunk2ID +
+                ", \n\tsubchunk2Size=" + subChunk2Size +
                 "\n}";
     }
 }

@@ -960,24 +960,9 @@ public class ClientFrame extends JFrame {
                             fieldWavFile.setText(absolutePath);
 
                             //
-                            WavFile wavFile = VoipClient.getInstance().getWavFile();
-                            if (wavFile != null) {
-                                wavFile.close();
-                            }
-
-                            VoipClient.getInstance().setWavFile(
-                                    new WavFile(
-                                            new File(
-                                                    absolutePath
-                                            )
-                                    )
+                            VoipClient.getInstance().setWavFilePath(
+                                    absolutePath
                             );
-
-                            wavFile = VoipClient.getInstance().getWavFile();
-                            if (wavFile != null) {
-                                wavFile.open();
-                                logger.debug("WavFile: {}", wavFile);
-                            }
                             //
                         } else {
                             logger.debug("Fail to upload the wav file.");
