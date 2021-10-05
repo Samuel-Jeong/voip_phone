@@ -374,20 +374,26 @@ public class WavFile {
 
     @Override
     public String toString() {
-        return "WavFile{" +
-                "\n\tchunkID=" + chunkID +
-                ", \n\tchunkSize=" + chunkSize +
-                ", \n\tformat=" + format +
-                ", \n\tsubchunk1ID=" + subChunk1ID +
-                ", \n\tsubchunk1Size=" + subChunk1Size +
-                ", \n\taudioFormat=" + audioFormat +
-                ", \n\tnumChannels=" + numChannels +
-                ", \n\tsamplerate=" + sampleRate +
-                ", \n\tbyteRate=" + byteRate +
-                ", \n\tblockAlign=" + blockAlign +
-                ", \n\tbitsPerSample=" + bitsPerSample +
-                ", \n\tsubchunk2ID=" + subChunk2ID +
-                ", \n\tsubchunk2Size=" + subChunk2Size +
-                "\n}";
+        try {
+            return "WavFile{" +
+                    "\n\tsize=" + inputStream.available() +
+                    "\n\tchunkID=" + chunkID +
+                    ", \n\tchunkSize=" + chunkSize +
+                    ", \n\tformat=" + format +
+                    ", \n\tsubchunk1ID=" + subChunk1ID +
+                    ", \n\tsubchunk1Size=" + subChunk1Size +
+                    ", \n\taudioFormat=" + audioFormat +
+                    ", \n\tnumChannels=" + numChannels +
+                    ", \n\tsamplerate=" + sampleRate +
+                    ", \n\tbyteRate=" + byteRate +
+                    ", \n\tblockAlign=" + blockAlign +
+                    ", \n\tbitsPerSample=" + bitsPerSample +
+                    ", \n\tsubchunk2ID=" + subChunk2ID +
+                    ", \n\tsubchunk2Size=" + subChunk2Size +
+                    "\n}";
+        } catch (IOException e) {
+            logger.warn("WavFile.toString.IOException", e);
+            return "";
+        }
     }
 }

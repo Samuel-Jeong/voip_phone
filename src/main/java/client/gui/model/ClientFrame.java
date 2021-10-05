@@ -927,7 +927,12 @@ public class ClientFrame extends JFrame {
                 try {
                     JFileChooser jFileChooser;
                     if (configManager.getLastWavPath() != null) {
-                         jFileChooser = new JFileChooser(configManager.getLastWavPath());
+                        File lastWaveFile = new File(configManager.getLastWavPath());
+                        if (lastWaveFile.exists()) {
+                            jFileChooser = new JFileChooser(configManager.getLastWavPath());
+                        } else {
+                            jFileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+                        }
                     } else {
                         jFileChooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
                     }
