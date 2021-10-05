@@ -94,6 +94,7 @@ public class PcmGenerator extends TaskUnit {
                 wavDataOffset += BUFFER_LENGTH;
 
                 if (data != null && data.length > 0) {
+                    logger.debug("Data offered.");
                     mikeBuffer.offer(data);
                 }
             } else {

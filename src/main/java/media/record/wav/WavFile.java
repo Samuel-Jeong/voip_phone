@@ -313,12 +313,11 @@ public class WavFile {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             //BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
 
-            logger.debug("start: {}, length: {}, fileLen: {}", start, length, inputStream.available());
-
             byte[] data = new byte[length];
             //int readBytes = inputStream.read(data, start, length);
             int readBytes = inputStream.read(data);
             if (readBytes > 0) {
+                logger.debug("start: {}, length: {}, fileLen: {}, readBytes: {}", start, length, inputStream.available(), readBytes);
                 byteArrayOutputStream.write(data, 0, readBytes);
                 byteArrayOutputStream.flush();
                 return byteArrayOutputStream.toByteArray();
