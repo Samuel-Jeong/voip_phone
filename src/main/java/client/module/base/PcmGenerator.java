@@ -4,6 +4,7 @@ import client.VoipClient;
 import config.ConfigManager;
 import media.MediaManager;
 import media.module.mixing.base.ConcurrentCyclicFIFO;
+import media.protocol.base.ByteUtil;
 import media.record.wav.WavFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,22 +73,21 @@ public class PcmGenerator extends TaskUnit {
                     return;
                 }
 
-                /*double[] frameData = new double[BUFFER_LENGTH / Double.BYTES];
+                double[] frameData = new double[BUFFER_LENGTH / Double.BYTES];
                 int readBytes = wavFile.readFrames(frameData);
                 if (readBytes > 0) {
-                    //logger.debug("READ: {}, [{}]", readBytes, frameData);
-                    byte[] data = ByteUtil.convertDoubleArrayToByteArray(frameData);
+                    data = ByteUtil.convertDoubleArrayToByteArray(frameData);
                     if (data.length > 0) {
-                        //logger.debug("SEND: {}, [{}]", data.length, data);
                         mikeBuffer.offer(data);
+                        logger.debug("data: {}", data);
                     }
-                }*/
+                }
 
                 /*data = wavFile.convertWavToRawAll(
                         wavFile.audioToByte()
                 );*/
 
-                data = wavFile.audioToBytePartially(
+                /*data = wavFile.audioToBytePartially(
                         wavDataOffset,
                         BUFFER_LENGTH
                 );
@@ -95,15 +95,14 @@ public class PcmGenerator extends TaskUnit {
 
                 if (data != null && data.length > 0) {
                     mikeBuffer.offer(data);
-                }
+                }*/
             } else {
                 data = new byte[BUFFER_LENGTH];
                 if (stream.read(data) != -1) {
                     mikeBuffer.offer(data);
+                    logger.debug("data: {}", data);
                 }
             }
-
-            logger.debug("data: {}", data);
         }
         catch (Exception e) {
             logger.warn("PcmGenerator.run.Exception", e);
