@@ -203,7 +203,7 @@ public class ByteUtil {
         byte[] bytes = new byte[data.length * Double.BYTES];
         for (int i = 0; i < data.length; i++) {
             System.arraycopy(
-                    convertDoubleToByteArray(data[i], false), 0,
+                    convertDoubleToByteArray(data[i], true), 0,
                     bytes, i * Double.BYTES,
                     Double.BYTES
             );

@@ -79,7 +79,7 @@ public class PcmGenerator extends TaskUnit {
                     data = ByteUtil.convertDoubleArrayToByteArray(frameData);
                     if (data.length > 0) {
                         mikeBuffer.offer(data);
-                        logger.debug("{} data: {}", data.length, data);
+                        //logger.debug("{} data: {}", data.length, data);
                     }
                 }
 
