@@ -271,9 +271,9 @@ public class WavFile {
             dataOffset += delta;
         }
 
-        if (bitsPerSample.convert() == 16) {
+        /*if (bitsPerSample.convert() == 16) {
             sample = bytesToShort(buffer);
-        }
+        }*/
 
         return sample;
     }
@@ -317,7 +317,7 @@ public class WavFile {
             //int readBytes = inputStream.read(data, start, length);
             int readBytes = inputStream.read(data);
             if (readBytes > 0) {
-                logger.debug("start: {}, length: {}, fileLen: {}, readBytes: {}", start, length, inputStream.available(), readBytes);
+                logger.debug("start: {}, length: {}, remain: {}, readBytes: {}", start, length, inputStream.available(), readBytes);
                 byteArrayOutputStream.write(data, 0, readBytes);
                 byteArrayOutputStream.flush();
                 return byteArrayOutputStream.toByteArray();
