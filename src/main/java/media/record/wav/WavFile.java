@@ -327,6 +327,7 @@ public class WavFile {
             return byteArrayOutputStream.toByteArray();
         } catch (Exception e) {
             logger.warn("WavFile.audioToBytePartially.Exception", e);
+            System.exit(1);
             return null;
         }
     }
