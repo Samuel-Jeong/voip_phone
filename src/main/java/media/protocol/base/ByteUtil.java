@@ -30,26 +30,14 @@ public class ByteUtil {
 
     public static byte[] shortToBytes(short s, boolean isBigEndian) {
         ByteBuffer byteBuffer = ByteBuffer.allocate(NUM_BYTES_IN_SHORT);
-
-        if (isBigEndian) {
-            byteBuffer.order(ByteOrder.BIG_ENDIAN);
-        } else {
-            byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        }
-
+        byteBuffer.order(isBigEndian? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
         byteBuffer.putShort(s);
         return byteBuffer.array();
     }
 
     public static short bytesToShort(byte[] bytes, boolean isBigEndian) {
         ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
-
-        if (isBigEndian) {
-            byteBuffer.order(ByteOrder.BIG_ENDIAN);
-        } else {
-            byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        }
-
+        byteBuffer.order(isBigEndian? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
         return byteBuffer.getShort();
     }
 
@@ -184,18 +172,12 @@ public class ByteUtil {
 
     public static byte [] convertDoubleToByteArray(double number, boolean isBigEndian) {
         ByteBuffer byteBuffer = ByteBuffer.allocate(Double.BYTES);
-
-        if (isBigEndian) {
-            byteBuffer.order(ByteOrder.BIG_ENDIAN);
-        } else {
-            byteBuffer.order(ByteOrder.LITTLE_ENDIAN);
-        }
-
+        byteBuffer.order(isBigEndian? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
         byteBuffer.putDouble(number);
         return byteBuffer.array();
     }
 
-    public static byte[] convertDoubleArrayToByteArray(double[] data) {
+    public static byte[] convertDoubleArrayToByteArray(double[] data, boolean isBigEndian) {
         if (data == null) {
             return null;
         }
@@ -203,7 +185,7 @@ public class ByteUtil {
         byte[] bytes = new byte[data.length * Double.BYTES];
         for (int i = 0; i < data.length; i++) {
             System.arraycopy(
-                    convertDoubleToByteArray(data[i], true), 0,
+                    convertDoubleToByteArray(data[i], isBigEndian), 0,
                     bytes, i * Double.BYTES,
                     Double.BYTES
             );

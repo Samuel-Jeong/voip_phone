@@ -76,7 +76,7 @@ public class PcmGenerator extends TaskUnit {
                 double[] frameData = new double[BUFFER_LENGTH / Double.BYTES];
                 int readBytes = wavFile.readFrames(frameData);
                 if (readBytes > 0) {
-                    data = ByteUtil.convertDoubleArrayToByteArray(frameData);
+                    data = ByteUtil.convertDoubleArrayToByteArray(frameData, true);
                     if (data.length > 0) {
                         mikeBuffer.offer(data);
                         //logger.debug("{} data: {}", data.length, data);
