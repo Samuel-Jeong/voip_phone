@@ -308,19 +308,20 @@ public class WavFile {
     }
 
     public byte[] audioToBytePartially(int start, int length) {
-        if (inputFile == null || length <= 0) {
+        if (inputFile == null || inputStream == null || length <= 0) {
             return null;
         }
 
-        logger.debug("start: {}, length: {}", start, length);
-
         try {
-            FileInputStream fileInputStream = new FileInputStream(inputFile);
+            //FileInputStream fileInputStream = new FileInputStream(inputFile);
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
+            //BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
+
+            logger.debug("start: {}, length: {}, fileLen: {}", start, length, inputStream.available());
 
             byte[] data = new byte[length];
-            int readBytes = bufferedInputStream.read(data, 44 + start, length);
+            //int readBytes = inputStream.read(data, start, length);
+            int readBytes = inputStream.read(data);
 
             byteArrayOutputStream.write(data, 0, readBytes);
             byteArrayOutputStream.flush();
