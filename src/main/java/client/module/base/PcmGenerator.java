@@ -5,6 +5,7 @@ import config.ConfigManager;
 import media.MediaManager;
 import media.module.mixing.base.ConcurrentCyclicFIFO;
 import media.protocol.base.ByteUtil;
+import media.protocol.rtp.util.RtpUtil;
 import media.record.wav.WavFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,10 +100,18 @@ public class PcmGenerator extends TaskUnit {
                     }
                 }*/
                 if (wavStream.read(data) != -1) {
+                    // Convert to little endian.
+                    /*if (VoipClient.getInstance().isTargetBigEndian()) {
+                        data = RtpUtil.changeByteOrder(data);
+                    }*/
                     mikeBuffer.offer(data);
                 }
             } else {
                 if (stream.read(data) != -1) {
+                    // Convert to little endian.
+                    if (VoipClient.getInstance().isTargetBigEndian()) {
+                        data = RtpUtil.changeByteOrder(data);
+                    }
                     mikeBuffer.offer(data);
                 }
             }
