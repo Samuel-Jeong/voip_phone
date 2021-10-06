@@ -12,6 +12,8 @@ import service.AppInstance;
 import service.base.TaskUnit;
 
 import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 
@@ -27,7 +29,7 @@ public class PcmGenerator extends TaskUnit {
 
     /* Audio Data input stream (using fd) */
     private final AudioInputStream stream;
-    //private AudioInputStream wavStream = null;
+    private AudioInputStream wavStream = null;
 
     /* Mike Data Buffer */
     private final ConcurrentCyclicFIFO<byte[]> mikeBuffer;
@@ -51,17 +53,19 @@ public class PcmGenerator extends TaskUnit {
                 BUFFER_LENGTH = MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_WB) ? 640 : 320;
                 isSendWav = false;
             } else {
-                if (wavFile.getSampleRate() == 16000) {
+                /*if (wavFile.getSampleRate() == 16000) {
                     BUFFER_LENGTH = 640;
                 } else {
                     BUFFER_LENGTH = 320;
-                }
+                }*/
 
-                /*try {
+                BUFFER_LENGTH = 320;
+
+                try {
                     wavStream = wavFile.loadWavFileToAudioInputStream();
                 } catch (Exception e) {
                     logger.warn("PcmGenerator.Exception", e);
-                }*/
+                }
             }
         } else {
             BUFFER_LENGTH = MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_WB) ? 640 : 320;
@@ -80,7 +84,7 @@ public class PcmGenerator extends TaskUnit {
 
         try {
             if (isSendWav) {
-                WavFile wavFile = VoipClient.getInstance().getWavFile();
+                /*WavFile wavFile = VoipClient.getInstance().getWavFile();
                 if (wavFile == null) {
                     return;
                 }
@@ -93,10 +97,10 @@ public class PcmGenerator extends TaskUnit {
                         mikeBuffer.offer(data);
                         //logger.debug("{} data: {}", data.length, data);
                     }
-                }
-               /* if (wavStream.read(data) != -1) {
-                    mikeBuffer.offer(data);
                 }*/
+                if (wavStream.read(data) != -1) {
+                    mikeBuffer.offer(data);
+                }
             } else {
                 if (stream.read(data) != -1) {
                     mikeBuffer.offer(data);

@@ -146,14 +146,14 @@ public class UdpSender extends TaskUnit {
             // PCM
             if (voipClient.getTargetAudioFormat().getEncoding().toString().equals(
                     AudioFormat.Encoding.PCM_SIGNED.toString())) {
-                // Convert to little endian.
-                if (voipClient.isTargetBigEndian()) {
-                    data = RtpUtil.changeByteOrder(data);
-                }
-
                 RecordManager pcmRecordManager = voipClient.getTargetPcmRecordManager();
                 if (pcmRecordManager != null) {
                     pcmRecordManager.addData(data);
+                }
+
+                // Convert to little endian.
+                if (voipClient.isTargetBigEndian()) {
+                    data = RtpUtil.changeByteOrder(data);
                 }
 
                 // ALAW
