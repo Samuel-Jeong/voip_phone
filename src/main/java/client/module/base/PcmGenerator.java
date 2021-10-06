@@ -95,20 +95,6 @@ public class PcmGenerator extends TaskUnit {
                     }
                 }*/
 
-                /*data = wavFile.convertWavToRawAll(
-                        wavFile.audioToByte()
-                );*/
-
-                /*data = wavFile.audioToBytePartially(
-                        wavDataOffset,
-                        BUFFER_LENGTH
-                );
-                wavDataOffset += BUFFER_LENGTH;
-
-                if (data != null && data.length > 0) {
-                    mikeBuffer.offer(data);
-                }*/
-
                 if (audioData != null) {
                     int curOffSet = wavDataOffset - BUFFER_LENGTH; // 1280 - 320
                     if (curOffSet >= audioData.length) { // 960 >= 960 : exit
@@ -123,7 +109,7 @@ public class PcmGenerator extends TaskUnit {
                         }
 
                         if (curLength > 0) {
-                            //logger.debug("curOffSet: {}, curLength: {}, totalLength: {}", curOffSet, curLength, audioData.length);
+                            logger.debug("curOffSet: {}, curLength: {}, totalLength: {}", curOffSet, curLength, audioData.length);
                             System.arraycopy(audioData, curOffSet, data, 0, curLength);
                         }
                     }

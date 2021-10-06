@@ -262,6 +262,7 @@ public class WavFile {
 
     ////////////////////////////////////////////////////////////////////////////////
 
+    //
     public AudioInputStream loadWavFileToAudioInputStream() throws IOException, UnsupportedAudioFileException {
         if (inputFile != null) {
             return AudioSystem.getAudioInputStream(inputFile);
@@ -271,22 +272,35 @@ public class WavFile {
     }
 
     public byte[] convertAudioInputStream2ByteArray(AudioInputStream stream) {
-        byte[] array;
+        if (stream == null) {
+            return new byte[0];
+        }
+
         try {
-            array = new byte[(int) (stream.getFrameLength() * stream.getFormat().getFrameSize())];
-            stream.read(array);
+            byte[] array = new byte[(int) (stream.getFrameLength() *
+                            stream.getFormat().getFrameSize())];
+            if (stream.read(array) > 0) {
+                return array;
+            }
         } catch (Exception e) {
             logger.warn("WavFile.convertAudioInputStream2ByteArray.IOException", e);
             return new byte[0];
         }
-        return array;
+
+        return new byte[0];
     }
 
     public static AudioInputStream convertByteArray2AudioInputStream(byte[] array, AudioFormat format) {
-        ByteArrayInputStream bis = new ByteArrayInputStream(array);
-        return new AudioInputStream(bis, format, (array.length / (2L * format.getChannels())));
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(array);
+        return new AudioInputStream(
+                byteArrayInputStream,
+                format,
+                (array.length / (2L * format.getChannels()))
+        );
     }
+    //
 
+    //
     private long readSample(long offset) throws IOException {
         long sample = 0;
         byte[] buffer = new byte[bitsPerSample.convert() / 8];
@@ -324,41 +338,15 @@ public class WavFile {
         return frameBuffer.length;
         //return curLength;
     }
+    //
 
+    //
     public byte[] convertWavToRawAll(byte[] data) {
         return Arrays.copyOfRange(
                 data,
                 DATA_START_OFFSET,
                 data.length
         );
-    }
-
-    public byte[] audioToBytePartially(int start, int length) {
-        if (inputFile == null || inputStream == null || length <= 0) {
-            return null;
-        }
-
-        try {
-            //FileInputStream fileInputStream = new FileInputStream(inputFile);
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            //BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream);
-
-            byte[] data = new byte[length];
-            //int readBytes = inputStream.read(data, start, length);
-            int readBytes = inputStream.read(data);
-            if (readBytes > 0) {
-                logger.debug("start: {}, length: {}, remain: {}, readBytes: {}", start, length, inputStream.available(), readBytes);
-                byteArrayOutputStream.write(data, 0, readBytes);
-                byteArrayOutputStream.flush();
-                return byteArrayOutputStream.toByteArray();
-            }
-
-            return null;
-        } catch (Exception e) {
-            logger.warn("WavFile.audioToBytePartially.Exception", e);
-            System.exit(1);
-            return null;
-        }
     }
 
     public byte[] audioToByteAll() {
@@ -383,16 +371,30 @@ public class WavFile {
             }
 
             byteArrayOutputStream.flush();
-
-            byte [] data = byteArrayOutputStream.toByteArray();
             return byteArrayOutputStream.toByteArray();
         } catch (Exception e) {
             logger.warn("WavFile.audioToByteAll.Exception", e);
             return null;
         }
     }
+    //
 
     ////////////////////////////////////////////////////////////////////////////////
+
+    public static byte[] convertDoubleArray2ByteArray(double[] array) {
+        double max16bit = 32768.0; // 16 bits
+        byte[] output = new byte[2 * array.length];
+
+        for (int i = 0; i < array.length; i++) {
+            int b = (array[i] == 1.0) ? Short.MAX_VALUE : (short) (array[i] * max16bit);
+
+            // little endian
+            output[2 * i] = (byte) b;
+            output[2 * i + 1] = (byte) (b >> 8);
+        }
+
+        return output;
+    }
 
     public long bytesToLong(byte[] bytes) {
         bb = ByteBuffer.wrap(bytes);
