@@ -12,6 +12,7 @@ import service.AppInstance;
 import service.base.TaskUnit;
 
 import javax.sound.sampled.AudioInputStream;
+import java.io.ByteArrayOutputStream;
 
 /**
  * @class public class PcmGenerator extends TaskUnit
@@ -31,6 +32,7 @@ public class PcmGenerator extends TaskUnit {
 
     private boolean isSendWav;
     private int wavDataOffset = 0;
+    private byte[] audioData = null;
 
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -54,6 +56,8 @@ public class PcmGenerator extends TaskUnit {
                 } else {
                     BUFFER_LENGTH = 320;
                 }
+
+                audioData = wavFile.audioToByteAll();
             }
         } else {
             BUFFER_LENGTH = MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_WB) ? 640 : 320;
@@ -73,7 +77,7 @@ public class PcmGenerator extends TaskUnit {
                     return;
                 }
 
-                double[] frameData = new double[BUFFER_LENGTH / Double.BYTES];
+                /*double[] frameData = new double[BUFFER_LENGTH / Double.BYTES];
                 int readBytes = wavFile.readFrames(frameData);
                 if (readBytes > 0) {
                     data = ByteUtil.convertDoubleArrayToByteArray(frameData, true);
@@ -81,7 +85,7 @@ public class PcmGenerator extends TaskUnit {
                         mikeBuffer.offer(data);
                         //logger.debug("{} data: {}", data.length, data);
                     }
-                }
+                }*/
 
                 /*data = wavFile.convertWavToRawAll(
                         wavFile.audioToByte()
@@ -96,11 +100,17 @@ public class PcmGenerator extends TaskUnit {
                 if (data != null && data.length > 0) {
                     mikeBuffer.offer(data);
                 }*/
+
+                if (audioData != null) {
+                    data = new byte[BUFFER_LENGTH];
+                    System.arraycopy(audioData, wavDataOffset, data, 0, BUFFER_LENGTH);
+                    wavDataOffset += BUFFER_LENGTH;
+                    mikeBuffer.offer(data);
+                }
             } else {
                 data = new byte[BUFFER_LENGTH];
                 if (stream.read(data) != -1) {
                     mikeBuffer.offer(data);
-                    //logger.debug("data: {}", data);
                 }
             }
         }

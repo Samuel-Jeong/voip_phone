@@ -311,7 +311,7 @@ public class UdpReceiver extends TaskUnit {
             SourceDataLine sourceDataLine = VoipClient.getInstance().getSourceLine();
             if (sourceDataLine != null) {
                 sourceDataLine.write(data, 0, data.length);
-                logger.debug("RECV {} data: {}", data.length, data);
+                //logger.debug("RECV {} data: {}", data.length, data);
             }
         }
     }
