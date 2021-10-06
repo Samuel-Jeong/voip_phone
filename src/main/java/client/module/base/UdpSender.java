@@ -142,6 +142,8 @@ public class UdpSender extends TaskUnit {
                 return;
             }
 
+            logger.debug("SEND: dataLen={}", data.length);
+
             // 1) Pre-process the audio data.
             // PCM
             if (voipClient.getTargetAudioFormat().getEncoding().toString().equals(
