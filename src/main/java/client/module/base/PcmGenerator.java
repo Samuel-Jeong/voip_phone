@@ -13,6 +13,7 @@ import service.base.TaskUnit;
 
 import javax.sound.sampled.AudioInputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 
 /**
  * @class public class PcmGenerator extends TaskUnit
@@ -68,7 +69,7 @@ public class PcmGenerator extends TaskUnit {
 
     @Override
     public void run() {
-        byte[] data;
+        byte[] data = new byte[BUFFER_LENGTH];
 
         try {
             if (isSendWav) {
@@ -101,14 +102,20 @@ public class PcmGenerator extends TaskUnit {
                     mikeBuffer.offer(data);
                 }*/
 
-                if (audioData != null && wavDataOffset <= audioData.length) {
-                    data = new byte[BUFFER_LENGTH];
-                    System.arraycopy(audioData, wavDataOffset, data, 0, BUFFER_LENGTH);
-                    wavDataOffset += BUFFER_LENGTH;
+                if (audioData != null) {
+                    int curOffSet = wavDataOffset - BUFFER_LENGTH; // 1280 - 320
+                    if (curOffSet >= audioData.length) { // 960 >= 960 : exit
+                        Arrays.fill(data, (byte) 0);
+                    } else { // 640 < 960 : continue
+                        curOffSet = wavDataOffset;
+                        wavDataOffset += BUFFER_LENGTH;
+
+                        System.arraycopy(audioData, curOffSet, data, 0, BUFFER_LENGTH);
+                    }
+
                     mikeBuffer.offer(data);
                 }
             } else {
-                data = new byte[BUFFER_LENGTH];
                 if (stream.read(data) != -1) {
                     mikeBuffer.offer(data);
                 }
