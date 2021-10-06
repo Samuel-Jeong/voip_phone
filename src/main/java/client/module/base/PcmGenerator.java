@@ -53,9 +53,9 @@ public class PcmGenerator extends TaskUnit {
                 isSendWav = false;
             } else {
                 if (wavFile.getSampleRate() == 16000) {
-                    BUFFER_LENGTH = 640;
-                } else {
                     BUFFER_LENGTH = 320;
+                } else {
+                    BUFFER_LENGTH = 160;
                 }
 
                 //audioData = wavFile.audioToByteAll();
@@ -110,7 +110,7 @@ public class PcmGenerator extends TaskUnit {
                         }
 
                         if (curLength > 0) {
-                            logger.debug("curOffSet: {}, curLength: {}, totalLength: {}", curOffSet, curLength, audioData.length);
+                            //logger.debug("curOffSet: {}, curLength: {}, totalLength: {}", curOffSet, curLength, audioData.length);
                             System.arraycopy(audioData, curOffSet, data, 0, curLength);
                         }
                     }
