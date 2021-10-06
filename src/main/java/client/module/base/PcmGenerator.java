@@ -53,12 +53,13 @@ public class PcmGenerator extends TaskUnit {
                 BUFFER_LENGTH = MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_WB) ? 640 : 320;
                 isSendWav = false;
             } else {
-                if (wavFile.getSampleRate() == 16000) {
+                /*if (wavFile.getSampleRate() == 16000) {
                     BUFFER_LENGTH = 640;
                 } else {
                     BUFFER_LENGTH = 320;
-                }
+                }*/
 
+                BUFFER_LENGTH = 320;
                 //audioData = wavFile.audioToByteAll();
 
                 try {
