@@ -101,7 +101,7 @@ public class WavFile {
             //ChunkID
             int readBytes = inputStream.read(intByteBuffer);
             if (readBytes > 0) {
-                chunkID = bytesToInt(intByteBuffer);
+                chunkID = bytesToInt(intByteBuffer, true);
                 //Check to see if valid RIFF file
                 if (chunkID != RIFF_CHUNK_ID) {
                     throw new WavFileException("NOT A VALID RIFF FILE: chunkid [" + chunkID + "]");
@@ -113,7 +113,7 @@ public class WavFile {
             //ChunkSize
             readBytes = inputStream.read(intByteBuffer);
             if (readBytes > 0) {
-                chunkSize = new LittleEndianInt(bytesToInt(intByteBuffer));
+                chunkSize = new LittleEndianInt(bytesToInt(intByteBuffer, true));
             } else {
                 throw new WavFileException("Fail to read the file.");
             }
@@ -121,7 +121,7 @@ public class WavFile {
             //Format
             readBytes = inputStream.read(intByteBuffer);
             if (readBytes > 0) {
-                format = bytesToInt(intByteBuffer);
+                format = bytesToInt(intByteBuffer, true);
                 if (format != WAVE_FORMAT) {
                     throw new WavFileException("INVALID WAV FORMAT");
                 }
@@ -132,7 +132,7 @@ public class WavFile {
             //Subchunk1ID
             readBytes = inputStream.read(intByteBuffer);
             if (readBytes > 0) {
-                subChunk1ID = bytesToInt(intByteBuffer);
+                subChunk1ID = bytesToInt(intByteBuffer, true);
                 if (subChunk1ID != SUBCHUNK1ID) {
                     throw new WavFileException("INVALID SUBCHUNK 1 ID");
                 }
@@ -143,7 +143,7 @@ public class WavFile {
             //SubChunk1Size
             readBytes = inputStream.read(intByteBuffer);
             if (readBytes > 0) {
-                subChunk1Size = new LittleEndianInt(bytesToInt(intByteBuffer));
+                subChunk1Size = new LittleEndianInt(bytesToInt(intByteBuffer, true));
                 if (subChunk1Size.convert() != SUBCHUNK1SIZE) {
                     throw new WavFileException("NON PCM FILES ARE NOT SUPPORTED: chunk size[" + subChunk1Size.convert() + "]");
                 }
@@ -176,7 +176,7 @@ public class WavFile {
             //SampleRate
             readBytes = inputStream.read(intByteBuffer);
             if (readBytes > 0) {
-                sampleRate = new LittleEndianInt(bytesToInt(intByteBuffer));
+                sampleRate = new LittleEndianInt(bytesToInt(intByteBuffer, true));
             } else {
                 throw new WavFileException("Fail to read the file.");
             }
@@ -184,7 +184,7 @@ public class WavFile {
             //ByteRate
             readBytes = inputStream.read(intByteBuffer);
             if (readBytes > 0) {
-                byteRate = new LittleEndianInt(bytesToInt(intByteBuffer));
+                byteRate = new LittleEndianInt(bytesToInt(intByteBuffer, true));
             } else {
                 throw new WavFileException("Fail to read the file.");
             }
@@ -210,7 +210,7 @@ public class WavFile {
             //SubChunk2ID
             readBytes = inputStream.read(intByteBuffer);
             if (readBytes > 0) {
-                subChunk2ID = bytesToInt(intByteBuffer);
+                subChunk2ID = bytesToInt(intByteBuffer, true);
                 if (subChunk2ID != SUBCHUNK2ID) {
                     throw new WavFileException("INVALID DATA HEADER");
                 }
@@ -221,7 +221,7 @@ public class WavFile {
             //Subchunk2Size
             readBytes = inputStream.read(intByteBuffer);
             if (readBytes > 0) {
-                subChunk2Size = new LittleEndianInt(bytesToInt(intByteBuffer));
+                subChunk2Size = new LittleEndianInt(bytesToInt(intByteBuffer, true));
             } else {
                 throw new WavFileException("Fail to read the file.");
             }
@@ -327,7 +327,7 @@ public class WavFile {
         }
 
         if (bitsPerSample.convert() == 16) {
-            sample = bytesToShort(buffer, true);
+            sample = bytesToInt(buffer, true);
         }
 
         return sample;
@@ -414,9 +414,9 @@ public class WavFile {
         return bb.getLong();
     }
 
-    public int bytesToInt(byte[] bytes) {
+    public int bytesToInt(byte[] bytes, boolean isBigEndian) {
         bb = ByteBuffer.wrap(bytes);
-        bb.order(ByteOrder.BIG_ENDIAN);
+        bb.order(isBigEndian? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
         return bb.getInt();
     }
 
