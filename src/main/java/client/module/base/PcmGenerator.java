@@ -115,8 +115,10 @@ public class PcmGenerator extends TaskUnit {
                             curLength = audioData.length - curOffSet;
                         }
 
-                        logger.debug("curOffSet: {}, curLength: {}, dataLength: {}", curOffSet, curLength, data.length);
-                        System.arraycopy(audioData, curOffSet, data, 0, curLength);
+                        if (curLength > 0) {
+                            logger.debug("curOffSet: {}, curLength: {}, totalLength: {}", curOffSet, curLength, audioData.length);
+                            System.arraycopy(audioData, curOffSet, data, 0, curLength);
+                        }
                     }
 
                     mikeBuffer.offer(data);
