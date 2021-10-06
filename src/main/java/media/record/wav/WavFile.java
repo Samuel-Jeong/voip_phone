@@ -287,6 +287,8 @@ public class WavFile {
                 return new byte[0];
             }
 
+            logger.debug("frameLength: {}, frameSize: {}, size: {}", stream.getFrameLength(), stream.getFormat().getFrameSize(), size);
+
             byte[] array = new byte[size];
             if (stream.read(array) > 0) {
                 return array;
