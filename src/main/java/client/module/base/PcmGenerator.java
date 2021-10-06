@@ -86,7 +86,7 @@ public class PcmGenerator extends TaskUnit {
                     return;
                 }
 
-                /*double[] frameData = new double[BUFFER_LENGTH / Double.BYTES];
+                double[] frameData = new double[BUFFER_LENGTH / Double.BYTES];
                 int readBytes = wavFile.readFrames(frameData);
                 if (readBytes > 0) {
                     data = ByteUtil.convertDoubleArrayToByteArray(frameData, true);
@@ -94,9 +94,9 @@ public class PcmGenerator extends TaskUnit {
                         mikeBuffer.offer(data);
                         //logger.debug("{} data: {}", data.length, data);
                     }
-                }*/
+                }
 
-                if (audioData != null && audioData.length > 0) {
+                /*if (audioData != null && audioData.length > 0) {
                     int curOffSet = wavDataOffset - BUFFER_LENGTH; // 1280 - 320
                     if (curOffSet >= audioData.length) { // 960 >= 960 : exit
                         Arrays.fill(data, (byte) 0);
@@ -116,7 +116,7 @@ public class PcmGenerator extends TaskUnit {
                     }
 
                     mikeBuffer.offer(data);
-                }
+                }*/
             } else {
                 if (stream.read(data) != -1) {
                     mikeBuffer.offer(data);
