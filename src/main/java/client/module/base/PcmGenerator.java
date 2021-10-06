@@ -58,7 +58,14 @@ public class PcmGenerator extends TaskUnit {
                     BUFFER_LENGTH = 320;
                 }
 
-                audioData = wavFile.audioToByteAll();
+                //audioData = wavFile.audioToByteAll();
+
+                try {
+                    AudioInputStream audioInputStream = wavFile.loadWavFileToAudioInputStream();
+                    audioData = wavFile.convertAudioInputStream2ByteArray(audioInputStream);
+                } catch (Exception e) {
+                    logger.warn("PcmGenerator.Exception", e);
+                }
             }
         } else {
             BUFFER_LENGTH = MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_WB) ? 640 : 320;
@@ -116,7 +123,7 @@ public class PcmGenerator extends TaskUnit {
                         }
 
                         if (curLength > 0) {
-                            logger.debug("curOffSet: {}, curLength: {}, totalLength: {}", curOffSet, curLength, audioData.length);
+                            //logger.debug("curOffSet: {}, curLength: {}, totalLength: {}", curOffSet, curLength, audioData.length);
                             System.arraycopy(audioData, curOffSet, data, 0, curLength);
                         }
                     }

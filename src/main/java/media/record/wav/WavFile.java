@@ -6,6 +6,10 @@ import media.record.wav.base.WavFileException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -258,6 +262,31 @@ public class WavFile {
 
     ////////////////////////////////////////////////////////////////////////////////
 
+    public AudioInputStream loadWavFileToAudioInputStream() throws IOException, UnsupportedAudioFileException {
+        if (inputFile != null) {
+            return AudioSystem.getAudioInputStream(inputFile);
+        }
+
+        return null;
+    }
+
+    public byte[] convertAudioInputStream2ByteArray(AudioInputStream stream) {
+        byte[] array;
+        try {
+            array = new byte[(int) (stream.getFrameLength() * stream.getFormat().getFrameSize())];
+            stream.read(array);
+        } catch (Exception e) {
+            logger.warn("WavFile.convertAudioInputStream2ByteArray.IOException", e);
+            return new byte[0];
+        }
+        return array;
+    }
+
+    public static AudioInputStream convertByteArray2AudioInputStream(byte[] array, AudioFormat format) {
+        ByteArrayInputStream bis = new ByteArrayInputStream(array);
+        return new AudioInputStream(bis, format, (array.length / (2L * format.getChannels())));
+    }
+
     private long readSample(long offset) throws IOException {
         long sample = 0;
         byte[] buffer = new byte[bitsPerSample.convert() / 8];
@@ -299,7 +328,7 @@ public class WavFile {
     public byte[] convertWavToRawAll(byte[] data) {
         return Arrays.copyOfRange(
                 data,
-                44,
+                DATA_START_OFFSET,
                 data.length
         );
     }
@@ -339,7 +368,7 @@ public class WavFile {
 
         try {
             FileInputStream fileInputStream = new FileInputStream(inputFile);
-            long skip = fileInputStream.skip(44);
+            long skip = fileInputStream.skip(DATA_START_OFFSET);
             if (skip > 0) {
                 logger.debug("Audio Data [{}] bytes is skipped. (path={})", skip, inputFile.getAbsolutePath());
             }
@@ -354,6 +383,8 @@ public class WavFile {
             }
 
             byteArrayOutputStream.flush();
+
+            byte [] data = byteArrayOutputStream.toByteArray();
             return byteArrayOutputStream.toByteArray();
         } catch (Exception e) {
             logger.warn("WavFile.audioToByteAll.Exception", e);
