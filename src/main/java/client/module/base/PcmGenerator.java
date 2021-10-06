@@ -27,6 +27,7 @@ public class PcmGenerator extends TaskUnit {
 
     /* Audio Data input stream (using fd) */
     private final AudioInputStream stream;
+    private AudioInputStream wavStream = null;
 
     /* Mike Data Buffer */
     private final ConcurrentCyclicFIFO<byte[]> mikeBuffer;
@@ -61,15 +62,19 @@ public class PcmGenerator extends TaskUnit {
                 //audioData = wavFile.audioToByteAll();
 
                 try {
-                    AudioInputStream audioInputStream = wavFile.loadWavFileToAudioInputStream();
-                    audioData = wavFile.convertAudioInputStream2ByteArray(audioInputStream);
-                    audioInputStream.close();
+                    wavStream = wavFile.loadWavFileToAudioInputStream();
+                    //audioData = wavFile.convertAudioInputStream2ByteArray(audioInputStream);
+                    //audioInputStream.close();
                 } catch (Exception e) {
                     logger.warn("PcmGenerator.Exception", e);
                 }
             }
         } else {
             BUFFER_LENGTH = MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_WB) ? 640 : 320;
+        }
+
+        if (wavStream == null) {
+            isSendWav = false;
         }
     }
 
@@ -81,10 +86,10 @@ public class PcmGenerator extends TaskUnit {
 
         try {
             if (isSendWav) {
-                WavFile wavFile = VoipClient.getInstance().getWavFile();
+                /*WavFile wavFile = VoipClient.getInstance().getWavFile();
                 if (wavFile == null) {
                     return;
-                }
+                }*/
 
                 /*double[] frameData = new double[BUFFER_LENGTH / Double.BYTES];
                 int readBytes = wavFile.readFrames(frameData);
@@ -96,7 +101,7 @@ public class PcmGenerator extends TaskUnit {
                     }
                 }*/
 
-                if (audioData != null && audioData.length > 0) {
+                /*if (audioData != null && audioData.length > 0) {
                     int curOffSet = wavDataOffset - BUFFER_LENGTH; // 1280 - 320
                     if (curOffSet >= audioData.length) { // 960 >= 960 : exit
                         Arrays.fill(data, (byte) 0);
@@ -115,6 +120,9 @@ public class PcmGenerator extends TaskUnit {
                         }
                     }
 
+                    mikeBuffer.offer(data);
+                }*/
+                if (wavStream.read(data) != -1) {
                     mikeBuffer.offer(data);
                 }
             } else {
