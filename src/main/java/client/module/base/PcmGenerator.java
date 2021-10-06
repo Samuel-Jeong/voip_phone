@@ -101,7 +101,7 @@ public class PcmGenerator extends TaskUnit {
                     mikeBuffer.offer(data);
                 }*/
 
-                if (audioData != null) {
+                if (audioData != null && wavDataOffset <= audioData.length) {
                     data = new byte[BUFFER_LENGTH];
                     System.arraycopy(audioData, wavDataOffset, data, 0, BUFFER_LENGTH);
                     wavDataOffset += BUFFER_LENGTH;
