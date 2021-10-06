@@ -324,10 +324,10 @@ public class WavFile {
         int delta = inputStream.read(buffer);
         if (delta != -1) {
             dataOffset += delta;
-        }
 
-        if (bitsPerSample.convert() == 16) {
-            sample = bytesToInt(buffer, true);
+            if (bitsPerSample.convert() == 16) {
+                sample = bytesToShort(buffer, true);
+            }
         }
 
         return sample;
@@ -341,7 +341,8 @@ public class WavFile {
         //int curLength = 0;
 
         for (int f = 0; f < frameBuffer.length; f++) {
-            frameBuffer[f] = (double) readSample(offset) / (double) (Long.MAX_VALUE >> (64 - bitsPerSample.convert()));
+            //frameBuffer[f] = (double) readSample(offset) / (double) (Long.MAX_VALUE >> (64 - bitsPerSample.convert()));
+            frameBuffer[f] = (double) readSample(offset) / 32768;
             /*if (frameBuffer[f] != 0) {
                 curLength++;
             }*/
