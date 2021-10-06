@@ -116,7 +116,7 @@ public class PcmGenerator extends TaskUnit {
                         }
 
                         if (curLength > 0) {
-                            //logger.debug("curOffSet: {}, curLength: {}, totalLength: {}", curOffSet, curLength, audioData.length);
+                            logger.debug("curOffSet: {}, curLength: {}, totalLength: {}", curOffSet, curLength, audioData.length);
                             System.arraycopy(audioData, curOffSet, data, 0, curLength);
                         }
                     }

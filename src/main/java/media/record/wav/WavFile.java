@@ -339,8 +339,9 @@ public class WavFile {
 
         try {
             FileInputStream fileInputStream = new FileInputStream(inputFile);
-            if (fileInputStream.skip(44) > 0) {
-                logger.debug("Audio Data [44] bytes is skipped. (path={})", inputFile.getAbsolutePath());
+            long skip = fileInputStream.skip(44);
+            if (skip > 0) {
+                logger.debug("Audio Data [{}] bytes is skipped. (path={})", skip, inputFile.getAbsolutePath());
             }
 
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
