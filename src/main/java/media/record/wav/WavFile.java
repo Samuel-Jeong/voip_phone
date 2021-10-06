@@ -282,7 +282,8 @@ public class WavFile {
                 logger.debug("Audio Data [{}] bytes is skipped. (path={})", skip, inputFile.getAbsolutePath());
             }
 
-            int size = (int) (stream.getFrameLength() * stream.getFormat().getFrameSize());
+            //int size = (int) (stream.getFrameLength() * stream.getFormat().getFrameSize());
+            int size = (int) (stream.getFrameLength());
             if (size <= 0) {
                 return new byte[0];
             }

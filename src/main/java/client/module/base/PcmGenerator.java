@@ -55,7 +55,7 @@ public class PcmGenerator extends TaskUnit {
                 if (wavFile.getSampleRate() == 16000) {
                     BUFFER_LENGTH = 640;
                 } else {
-                    BUFFER_LENGTH = 480;
+                    BUFFER_LENGTH = 320;
                 }
 
                 //audioData = wavFile.audioToByteAll();
