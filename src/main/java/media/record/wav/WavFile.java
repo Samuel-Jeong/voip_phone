@@ -83,8 +83,7 @@ public class WavFile {
     ////////////////////////////////////////////////////////////////////////////////
 
     public boolean open() {
-        //return readHeader();
-        return true;
+        return readHeader();
     }
 
     public void close() throws IOException {
