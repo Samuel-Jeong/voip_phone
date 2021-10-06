@@ -277,8 +277,17 @@ public class WavFile {
         }
 
         try {
-            byte[] array = new byte[(int) (stream.getFrameLength() *
-                            stream.getFormat().getFrameSize())];
+            long skip = stream.skip(DATA_START_OFFSET);
+            if (skip > 0) {
+                logger.debug("Audio Data [{}] bytes is skipped. (path={})", skip, inputFile.getAbsolutePath());
+            }
+
+            int size = (int) (stream.getFrameLength() * stream.getFormat().getFrameSize());
+            if (size <= 0) {
+                return new byte[0];
+            }
+
+            byte[] array = new byte[size];
             if (stream.read(array) > 0) {
                 return array;
             }

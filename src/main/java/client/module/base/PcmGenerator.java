@@ -63,6 +63,7 @@ public class PcmGenerator extends TaskUnit {
                 try {
                     AudioInputStream audioInputStream = wavFile.loadWavFileToAudioInputStream();
                     audioData = wavFile.convertAudioInputStream2ByteArray(audioInputStream);
+                    audioInputStream.close();
                 } catch (Exception e) {
                     logger.warn("PcmGenerator.Exception", e);
                 }
@@ -95,7 +96,7 @@ public class PcmGenerator extends TaskUnit {
                     }
                 }*/
 
-                if (audioData != null) {
+                if (audioData != null && audioData.length > 0) {
                     int curOffSet = wavDataOffset - BUFFER_LENGTH; // 1280 - 320
                     if (curOffSet >= audioData.length) { // 960 >= 960 : exit
                         Arrays.fill(data, (byte) 0);
