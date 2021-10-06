@@ -110,7 +110,12 @@ public class PcmGenerator extends TaskUnit {
                         curOffSet = wavDataOffset;
                         wavDataOffset += BUFFER_LENGTH;
 
-                        System.arraycopy(audioData, curOffSet, data, 0, BUFFER_LENGTH);
+                        int curLength = BUFFER_LENGTH;
+                        if (audioData.length - curOffSet < curLength) {
+                            curLength = audioData.length - curOffSet;
+                        }
+
+                        System.arraycopy(audioData, curOffSet, data, 0, curLength);
                     }
 
                     mikeBuffer.offer(data);
