@@ -54,13 +54,11 @@ public class PcmGenerator extends TaskUnit {
                 BUFFER_LENGTH = MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_WB) ? 640 : 320;
                 isSendWav = false;
             } else {
-                /*if (wavFile.getSampleRate() == 16000) {
+                if (wavFile.getSampleRate() == 16000) {
                     BUFFER_LENGTH = 640;
                 } else {
                     BUFFER_LENGTH = 320;
-                }*/
-
-                BUFFER_LENGTH = 320;
+                }
 
                 try {
                     wavStream = wavFile.loadWavFileToAudioInputStream();
@@ -85,26 +83,8 @@ public class PcmGenerator extends TaskUnit {
 
         try {
             if (isSendWav) {
-                /*WavFile wavFile = VoipClient.getInstance().getWavFile();
-                if (wavFile == null) {
-                    return;
-                }
-
-                double[] frameData = new double[BUFFER_LENGTH / Double.BYTES];
-                int readBytes = wavFile.readFrames(frameData);
-                if (readBytes > 0) {
-                    data = ByteUtil.convertDoubleArrayToByteArray(frameData, true);
-                    if (data.length > 0) {
-                        mikeBuffer.offer(data);
-                        //logger.debug("{} data: {}", data.length, data);
-                    }
-                }*/
                 if (wavStream.read(data) != -1) {
-                    // Convert to little endian.
-                    /*if (VoipClient.getInstance().isTargetBigEndian()) {
-                        data = RtpUtil.changeByteOrder(data);
-                    }*/
-                    mikeBuffer.offer(data);
+                    mikeBuffer.offer(data); // RIFF type > little-endian
                 }
             } else {
                 if (stream.read(data) != -1) {
@@ -112,7 +92,7 @@ public class PcmGenerator extends TaskUnit {
                     if (VoipClient.getInstance().isTargetBigEndian()) {
                         data = RtpUtil.changeByteOrder(data);
                     }
-                    mikeBuffer.offer(data);
+                    mikeBuffer.offer(data); // little-endian
                 }
             }
         }
