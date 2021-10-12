@@ -4,8 +4,8 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>voip_phone</groupId>
-    <artifactId>voip_phone</artifactId>
+    <groupId>voipphone</groupId>
+    <artifactId>voipphone</artifactId>
     <version>1.0.0</version>
 
     <properties>
@@ -148,41 +148,47 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <copyright>2021, Uangel</copyright>
+                    <copyright>2021, JAMESJ</copyright>
                     <group>Simulator</group>
-                    <description>voip_phone</description>
+                    <description>voipphone</description>
                     <release>${rpm.release.version}</release>
                     <autoRequires>false</autoRequires>
-                    <targetOS>linux</targetOS>
+                    <targetOS>darwin</targetOS>
                     <defaultDirmode>755</defaultDirmode>
                     <defaultFilemode>644</defaultFilemode>
-                    <defaultUsername>voip_phone</defaultUsername>
-                    <defaultGroupname>voip_phone</defaultGroupname>
+                    <defaultUsername>root</defaultUsername>
+                    <defaultGroupname>wheel</defaultGroupname>
                     <mappings>
                         <mapping>
-                            <directory>/home/voip_phone/</directory>
+                            <directory>/Users/voipphone/</directory>
                         </mapping>
 
                         <mapping>
-                            <directory>/home/voip_phone/lib/</directory>
+                            <directory>/Users/voipphone/lib/</directory>
                             <filemode>755</filemode>
                         </mapping>
                         <mapping>
-                            <directory>/home/voip_phone/lib/</directory>
+                            <directory>/Users/voipphone/lib/</directory>
                             <directoryIncluded>false</directoryIncluded>
                             <sources>
                                 <source>
-                                    <location>${project.basedir}/target/voip_phone-1.0.0.jar</location>
+                                    <location>${project.basedir}/out/artifacts/VOIP_Phone_jar/voipphone.jar</location>
+                                </source>
+                                <source>
+                                    <location>${project.basedir}/src/main/resources/lib/amr/libamrjni.so</location>
+                                </source>
+                                <source>
+                                    <location>${project.basedir}/src/main/resources/lib/evs/libevsjni.so</location>
                                 </source>
                             </sources>
                         </mapping>
 
                         <mapping>
-                            <directory>/home/voip_phone/bin/</directory>
+                            <directory>/Users/voipphone/bin/</directory>
                             <filemode>755</filemode>
                         </mapping>
                         <mapping>
-                            <directory>/home/voip_phone/bin/</directory>
+                            <directory>/Users/voipphone/bin/</directory>
                             <filemode>755</filemode>
                             <directoryIncluded>false</directoryIncluded>
                             <sources>
@@ -193,22 +199,22 @@
                         </mapping>
                         <mapping>
                             <configuration>noreplace</configuration>
-                            <directory>/home/voip_phone/config/</directory>
+                            <directory>/Users/voipphone/config/</directory>
                             <sources>
                                 <source>
                                     <location>${project.basedir}/src/main/resources/config/user_conf.ini</location>
                                 </source>
-                                <source>
+                                <!--<source>
                                     <location>${project.basedir}/src/main/resources/config/logback.xml</location>
-                                </source>
+                                </source>-->
                             </sources>
                         </mapping>
                         <mapping>
-                            <directory>/home/voip_phone/logs/</directory>
+                            <directory>/Users/voipphone/logs/</directory>
                             <filemode>755</filemode>
                         </mapping>
                         <mapping>
-                            <directory>/home/voip_phone/resources/</directory>
+                            <directory>/Users/voipphone/resources/dtmf/</directory>
                             <filemode>755</filemode>
                             <sources>
                                 <source>

@@ -535,8 +535,11 @@ public class VoipClient {
         if (wavFilePath != null && wavFile == null) {
             try {
                 wavFile = new WavFile(new File(wavFilePath));
-                wavFile.open();
-                logger.debug("WavFile is opened. ({})", wavFile);
+                if (!wavFile.open()) {
+                    logger.warn("Fail to open the wav file. ({})", wavFile);
+                } else {
+                    logger.debug("WavFile is opened. ({})", wavFile);
+                }
             } catch (Exception e) {
                 logger.warn("VoipClient.start.Exception", e);
             }
