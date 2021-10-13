@@ -1,6 +1,7 @@
 package media.module.codec.evs;
 
 import client.VoipClient;
+import client.gui.FrameManager;
 import client.module.base.MediaFrame;
 import media.module.codec.evs.base.EvsTaskUnit;
 import media.module.mixing.base.ConcurrentCyclicFIFO;
@@ -9,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.base.TaskUnit;
 
-import javax.print.attribute.standard.Media;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
@@ -36,9 +36,16 @@ public class EvsManager {
     ////////////////////////////////////////////////////////////////////////////////
 
     public EvsManager() {
-        //String curUserHomeDir = System.getProperty("user.home");
         String curUserDir = System.getProperty("user.dir");
-        System.load(curUserDir + "/src/main/resources/lib/evs/libevsjni.so");
+        curUserDir += "/src/main/resources/lib/evs/libevsjni.so";
+
+        try {
+            System.load(curUserDir);
+        } catch (Exception e) {
+            logger.warn("Fail to load the evs library. (path={})", curUserDir);
+            FrameManager.getInstance().popUpErrorMsg("Fail to load the evs library. (path=" + curUserDir + ")");
+            System.exit(1);
+        }
     }
 
     public static EvsManager getInstance () {

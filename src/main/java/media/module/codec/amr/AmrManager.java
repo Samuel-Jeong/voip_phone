@@ -1,19 +1,32 @@
 package media.module.codec.amr;
 
+import client.gui.FrameManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @class public class AmrManager
  * @brief AmrManager class
  */
 public class AmrManager {
 
+    private static final Logger logger = LoggerFactory.getLogger(AmrManager.class);
+
     private static AmrManager amrManager = null;
 
     ////////////////////////////////////////////////////////////////////////////////
 
     public AmrManager() {
-        //String curUserHomeDir = System.getProperty("user.home");
         String curUserDir = System.getProperty("user.dir");
-        System.load(curUserDir + "/src/main/resources/lib/amr/libamrjni.so");
+        curUserDir += "/src/main/resources/lib/amr/libamrjni.so";
+
+        try {
+            System.load(curUserDir);
+        } catch (Exception e) {
+            logger.warn("Fail to load the amr library. (path={})", curUserDir);
+            FrameManager.getInstance().popUpErrorMsg("Fail to load the amr library. (path=" + curUserDir + ")");
+            System.exit(1);
+        }
     }
 
     public static AmrManager getInstance () {

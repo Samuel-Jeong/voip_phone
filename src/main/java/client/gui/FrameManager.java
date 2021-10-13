@@ -119,6 +119,25 @@ public class FrameManager {
         return frame.popUpErrorMsg(msg);
     }
 
+    public void popUpErrorMsg(String msg) {
+        JOptionPane pane = new JOptionPane(
+                msg,
+                JOptionPane.ERROR_MESSAGE
+        );
+
+        JDialog d = pane.createDialog(null, "Error");
+        d.pack();
+        d.setModal(false);
+        d.setVisible(true);
+        while (pane.getValue() == JOptionPane.UNINITIALIZED_VALUE) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ie) {
+                // ignore
+            }
+        }
+    }
+
     public boolean processInviteToFrame(String name, String remoteHostName) {
         if (name == null) { return false; }
 

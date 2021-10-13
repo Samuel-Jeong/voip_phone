@@ -25,7 +25,6 @@ public class ServiceManager {
     private static final int DELAY = 1000;
 
     public static final String CLIENT_FRAME_NAME = "CLIENT";
-    public static final String CONFIG_ERROR_FRAME_NAME = "CONFIG_ERROR";
 
     private final AtomicBoolean isQuit = new AtomicBoolean(false);
 
@@ -48,22 +47,7 @@ public class ServiceManager {
     private void start () {
         ConfigManager configManager = AppInstance.getInstance().getConfigManager();
         if (!configManager.load()) {
-            JOptionPane pane = new JOptionPane(
-                    "Not found the config path.",
-                    JOptionPane.ERROR_MESSAGE
-            );
-
-            JDialog d = pane.createDialog(null, "Error");
-            d.pack();
-            d.setModal(false);
-            d.setVisible(true);
-            while (pane.getValue() == JOptionPane.UNINITIALIZED_VALUE) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException ie) {
-                    // ignore
-                }
-            }
+            FrameManager.getInstance().popUpErrorMsg("Not found the config path.");
             System.exit(1);
         }
 
