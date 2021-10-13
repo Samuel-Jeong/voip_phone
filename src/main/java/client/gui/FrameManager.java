@@ -138,6 +138,15 @@ public class FrameManager {
         }
     }
 
+    public void appendTextToFrame(String name, String msg) {
+        ClientFrame frame = getFrame(name);
+        if (frame == null) {
+            return;
+        }
+
+        frame.appendText(msg);
+    }
+
     public boolean processInviteToFrame(String name, String remoteHostName) {
         if (name == null) { return false; }
 
