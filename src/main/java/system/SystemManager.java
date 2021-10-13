@@ -60,4 +60,8 @@ public class SystemManager {
         );
     }
 
+    public String getOs () {
+        return System.getProperty("os.name").toLowerCase();
+    }
+
 }

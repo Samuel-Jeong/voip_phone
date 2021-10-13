@@ -4,8 +4,10 @@ import media.module.mixing.base.ConcurrentCyclicFIFO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.base.TaskUnit;
+import system.SystemManager;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import java.io.File;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +25,8 @@ public class DtmfSoundGenerator {
     private final ConcurrentCyclicFIFO<String> playBuffer = new ConcurrentCyclicFIFO<>();
     private ScheduledThreadPoolExecutor playTaskExecutor;
 
+    private int mode = 0;
+
     ////////////////////////////////////////////////////////////////////////////////
 
     public DtmfSoundGenerator() {
@@ -35,6 +39,10 @@ public class DtmfSoundGenerator {
 
         }
         return dtmfSoundGenerator;
+    }
+
+    public void setMode(int mode) {
+        this.mode = mode;
     }
 
     public void start () {
@@ -121,8 +129,6 @@ public class DtmfSoundGenerator {
 
     private class PlayTask extends TaskUnit {
 
-        private final String CUR_USER_DIR = System.getProperty("user.dir");
-
         protected PlayTask(int interval) {
             super(interval);
         }
@@ -134,14 +140,29 @@ public class DtmfSoundGenerator {
                 return;
             }
 
-            Clip curTone = null;
+            Clip curTone;
             try {
+                String curUserDir = System.getProperty("user.dir");
+
+                if (mode == 0) {
+                    curUserDir += "/src/main/resources/dtmf/";
+                } else if (mode == 1) {
+                    if (curUserDir.endsWith("bin")) {
+                        curUserDir = curUserDir.substring(0, curUserDir.lastIndexOf("bin") - 1);
+                    }
+
+                    if (SystemManager.getInstance().getOs().equals("win")) {
+                        curUserDir += "\\resources\\dtmf\\";
+                    } else {
+                        curUserDir += "/resources/dtmf/";
+                    }
+                }
+
                 curTone = AudioSystem.getClip();
                 curTone.open(
                         AudioSystem.getAudioInputStream(
                                 new File(
-                                        CUR_USER_DIR +
-                                                "/src/main/resources/dtmf/" + curToneName + ".au"
+                                        curUserDir + curToneName + ".au"
                                 )
                         )
                 );
