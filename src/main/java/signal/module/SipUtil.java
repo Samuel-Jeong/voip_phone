@@ -80,7 +80,7 @@ public class SipUtil implements SipListener {
     ////////////////////////////////////////////////////////////////////////////////
 
     public SipUtil() {
-        init();
+        // Nothing
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -144,7 +144,7 @@ public class SipUtil implements SipListener {
             sipStack = sipFactory.createSipStack(properties);
         } catch (Exception e) {
             logger.warn("{} PeerUnavailableException", LogFormatter.getCallLogHeader(null, null, null, null), e);
-            ServiceManager.getInstance().stop();
+            //ServiceManager.getInstance().stop();
             System.exit(1);
         }
 

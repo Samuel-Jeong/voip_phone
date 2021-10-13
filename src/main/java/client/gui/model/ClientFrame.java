@@ -5,7 +5,6 @@ import client.gui.model.dtmf.DtmfPanel;
 import client.gui.model.wav.WavPanel;
 import config.ConfigManager;
 import media.MediaManager;
-import media.record.wav.WavFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.AppInstance;
@@ -22,7 +21,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.util.Map;
 
 /**
  * @class public class ClientFrame extends JFrame
@@ -955,9 +953,15 @@ public class ClientFrame extends JFrame {
                             logger.debug("Success to upload the wav file. (path=[{}])",
                                     absolutePath
                             );
-                            appendText("Success to upload the wav file. (path=["
-                                    + absolutePath +
-                                    "])\n"
+                            appendText(
+                                    "Success to upload the wav file. (path=["
+                                            + absolutePath
+                                            + "])\n"
+                            );
+                            popUpInfoMsg(
+                                    "Success to upload the wav file. (path=["
+                                            + absolutePath
+                                            + "])"
                             );
 
                             configManager.setLastWavPath(selectedFile.getPath());
@@ -972,6 +976,7 @@ public class ClientFrame extends JFrame {
                         } else {
                             logger.debug("Fail to upload the wav file.");
                             appendText("Fail to upload the wav file.\n");
+                            popUpErrorMsg("Fail to upload the wav file.");
                         }
                     }
                 } catch (Exception e1) {
@@ -1005,6 +1010,7 @@ public class ClientFrame extends JFrame {
                 if(inputStr == null || inputStr.length() == 0) {
                     logger.warn("Remote host name is null. Fail to call.");
                     appendText("Remote host name is null. Fail to call.\n");
+                    popUpWarnMsg("Remote host name is null. Fail to call.");
                     return;
                 }
                 voipClient.setRemoteHostName(inputStr.trim());
@@ -1026,6 +1032,7 @@ public class ClientFrame extends JFrame {
 
                     logger.debug("Call from [{}]", voipClient.getRemoteHostName());
                     appendText("Call from [" + voipClient.getRemoteHostName() + "].\n");
+                    popUpInfoMsg("Call from [" + voipClient.getRemoteHostName() + "].");
                 }
 
                 byeButton.setEnabled(true);
@@ -1453,128 +1460,37 @@ public class ClientFrame extends JFrame {
 
                 logger.warn("Success to apply the option.");
                 appendText("Success to apply the option.\n");
+                popUpInfoMsg("Success to apply the option.");
             }
         }
     }
 
-    /**
-     * @class static class AudioSelectFrame extends JFrame
-     * @brief AudioSelectFrame class
-     * 오디오 장치 선택창
-     */
-    static class AudioSelectFrame extends JFrame {
+    public void popUpInfoMsg(String msg) {
+        JOptionPane.showMessageDialog(
+                new JFrame(),
+                msg,
+                "Info",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
 
-        private static final Logger logger = LoggerFactory.getLogger(AudioSelectFrame.class);
+    public void popUpWarnMsg(String msg) {
+        JOptionPane.showMessageDialog(
+                new JFrame(),
+                msg,
+                "Warn",
+                JOptionPane.WARNING_MESSAGE
+        );
+    }
 
-        public AudioSelectFrame () {
-            super("오디오 라인 선택");
-            getContentPane().setLayout(new FlowLayout(FlowLayout.LEFT));
-            setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-            setLocationRelativeTo(null);
-            setResizable(false);
-
-            //////////////////////////////////////////////////////////////////////////
-            JPanel descriptionPanel = new JPanel(new GridLayout(2, 1));
-
-            JPanel speakerDesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            JLabel speakerLabel = new JLabel("Speaker: ");
-            speakerDesPanel.add(speakerLabel);
-
-            JPanel mikeDesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            JLabel mikeLabel = new JLabel("Mike: ");
-            mikeDesPanel.add(mikeLabel);
-
-            descriptionPanel.add(speakerDesPanel);
-            descriptionPanel.add(mikeDesPanel);
-
-            //////////////////////////////////////////////////////////////////////////
-            JPanel totalPanel = new JPanel(new GridLayout(2, 1));
-
-            Map<String, Line> sourceLineMap = VoipClient.getInstance().getSpeakerLineMap();
-
-            String[] sourceLineStrArray = new String[sourceLineMap.size()];
-            int strIdx = 0;
-            for (Map.Entry<String, Line> entry : sourceLineMap.entrySet()) {
-                if (entry == null) { continue; }
-                sourceLineStrArray[strIdx++] = entry.getKey();
-            }
-
-            JPanel sourcePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            JComboBox sourceCombo = new JComboBox(sourceLineStrArray);
-            sourceCombo.addActionListener(e -> {
-                try {
-                    JComboBox cb = (JComboBox) e.getSource();
-                    int index = cb.getSelectedIndex();
-
-                    String mixerName = sourceLineStrArray[index];
-                    logger.debug("Selected Mixer name: {}", mixerName);
-
-                    Line line = sourceLineMap.get(mixerName);
-                    if (line != null) {
-                        logger.debug("> Selected speaker: {}", line);
-                        VoipClient.getInstance().closeSpeaker();
-                        VoipClient.getInstance().setSpeaker(line);
-                    } else {
-                        logger.warn("Fail to select speaker.");
-                    }
-                } catch (Exception exception) {
-                    logger.warn("ClientFrame.SourcePanel.Exception", exception);
-                }
-            });
-
-            sourcePanel.add(sourceCombo);
-            sourcePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-            totalPanel.add(sourcePanel);
-
-            //////////////////////////////////////////////////////////////////////////
-            Map<String, Line> targetLineMap = VoipClient.getInstance().getMikeLineMap();
-
-            String[] targetLineStrArray = new String[targetLineMap.size()];
-            strIdx = 0;
-            for (Map.Entry<String, Line> entry : targetLineMap.entrySet()) {
-                if (entry == null) { continue; }
-                targetLineStrArray[strIdx++] = entry.getKey();
-            }
-
-            JPanel targetPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-            JComboBox targetCombo = new JComboBox(targetLineStrArray);
-            targetCombo.addActionListener(e -> {
-                try {
-                    JComboBox cb = (JComboBox) e.getSource();
-                    int index = cb.getSelectedIndex();
-
-                    String mixerName = targetLineStrArray[index];
-                    Line line = targetLineMap.get(mixerName);
-                    if (line != null) {
-                        logger.debug("> Selected mike: {}", line.getLineInfo().toString());
-                        VoipClient.getInstance().closeMike();
-                        VoipClient.getInstance().setMike(line);
-                    } else {
-                        logger.warn("Fail to select mike.");
-                    }
-                } catch (Exception exception) {
-                    logger.warn("ClientFrame.TargetPanel.Exception", exception);
-                }
-            });
-
-            targetPanel.add(targetCombo);
-            targetPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-            totalPanel.add(targetPanel);
-
-            //////////////////////////////////////////////////////////////////////////
-            add(descriptionPanel);
-            add(totalPanel);
-            pack();
-        }
-
-        public void start () {
-            setVisible(true);
-        }
-
-        public void stop () {
-            setVisible(false);
-            dispose();
-        }
+    public int popUpErrorMsg(String msg) {
+        return JOptionPane.showConfirmDialog(
+                new JFrame(),
+                msg,
+                "Error",
+                JOptionPane.YES_OPTION,
+                JOptionPane.ERROR_MESSAGE
+        );
     }
 
 }

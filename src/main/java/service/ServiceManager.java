@@ -9,6 +9,9 @@ import org.slf4j.LoggerFactory;
 import signal.SignalManager;
 import signal.module.ResourceManager;
 
+import javax.swing.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * @class public class ServiceManager
  * @brief Voip Phone 의 전체 Service 관리 클래스
@@ -20,26 +23,16 @@ public class ServiceManager {
     private static ServiceManager serviceManager = null;
 
     private static final int DELAY = 1000;
-    public static final String CLIENT_FRAME_NAME = "client";
 
-    private final SignalManager signalManager;
-    private final MediaManager mediaManager;
+    public static final String CLIENT_FRAME_NAME = "CLIENT";
+    public static final String CONFIG_ERROR_FRAME_NAME = "CONFIG_ERROR";
 
-    private final TaskManager taskManager;
-
-    private final FrameManager frameManager;
-
-    private boolean isQuit = false;
+    private final AtomicBoolean isQuit = new AtomicBoolean(false);
 
     ////////////////////////////////////////////////////////////////////////////////
 
     public ServiceManager() {
         Runtime.getRuntime().addShutdownHook(new ShutDownHookHandler("ShutDownHookHandler", Thread.currentThread()));
-
-        signalManager = SignalManager.getInstance();
-        mediaManager = MediaManager.getInstance();
-        taskManager = TaskManager.getInstance();
-        frameManager = FrameManager.getInstance();
     }
 
     public static ServiceManager getInstance ( ) {
@@ -53,39 +46,54 @@ public class ServiceManager {
     ////////////////////////////////////////////////////////////////////////////////
 
     private void start () {
-        ResourceManager.getInstance().initResource();
-
-        signalManager.start();
-        //mediaManager.start();
-
-        taskManager.addTask(HaHandler.class.getSimpleName(), new HaHandler(DELAY));
-
         ConfigManager configManager = AppInstance.getInstance().getConfigManager();
-        if (configManager.getLongCallTime() != 0) {
-            taskManager.addTask(LongCallRemover.class.getSimpleName(), new LongCallRemover(DELAY));
+        if (!configManager.load()) {
+            JOptionPane pane = new JOptionPane(
+                    "Not found the config path.",
+                    JOptionPane.ERROR_MESSAGE
+            );
+
+            JDialog d = pane.createDialog(null, "Error");
+            d.pack();
+            d.setModal(false);
+            d.setVisible(true);
+            while (pane.getValue() == JOptionPane.UNINITIALIZED_VALUE) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ie) {
+                    // ignore
+                }
+            }
+            System.exit(1);
         }
 
-        if (frameManager != null) {
-            frameManager.start(CLIENT_FRAME_NAME);
+        FrameManager.getInstance().start(CLIENT_FRAME_NAME);
+
+        ResourceManager.getInstance().initResource();
+
+        SignalManager.getInstance().start();
+        //mediaManager.start();
+
+        TaskManager.getInstance().addTask(HaHandler.class.getSimpleName(), new HaHandler(DELAY));
+
+        if (configManager.getLongCallTime() != 0) {
+            TaskManager.getInstance().addTask(LongCallRemover.class.getSimpleName(), new LongCallRemover(DELAY));
         }
 
         logger.debug("All services are opened.");
     }
 
     public void stop () {
-        taskManager.stop();
+        TaskManager.getInstance().stop();
 
-        mediaManager.stop();
-        signalManager.stop();
-
-        if (frameManager != null) {
-            frameManager.stop(CLIENT_FRAME_NAME);
-        }
+        MediaManager.getInstance().stop();
+        SignalManager.getInstance().stop();
 
         ResourceManager.getInstance().releaseResource();
 
-        isQuit = true;
+        FrameManager.getInstance().stop(CLIENT_FRAME_NAME);
 
+        isQuit.set(true);
         logger.debug("All services are closed.");
     }
 
@@ -96,7 +104,7 @@ public class ServiceManager {
     public void loop () {
         start();
 
-        while (!isQuit) {
+        while (!isQuit.get()) {
             try {
                 Thread.sleep(DELAY);
             } catch (InterruptedException e) {
@@ -132,7 +140,7 @@ public class ServiceManager {
         public void run ( ) {
             try {
                 shutDown();
-                target.join();
+                //target.join();
                 logger.debug("ShutDownHookHandler's target is finished successfully. (target={})", target.getName());
             } catch (Exception e) {
                 logger.warn("ShutDownHookHandler.run.Exception", e);

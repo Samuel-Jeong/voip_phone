@@ -7,13 +7,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.AppInstance;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @class
- * @brief
+ * @class public class FrameManager
+ * @brief FrameManager class
  */
 public class FrameManager {
 
@@ -39,7 +40,7 @@ public class FrameManager {
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    public void addFrame(String name) throws AWTException {
+    public void addFrame(String name) {
         if (name == null) { return; }
         ClientFrame ClientFrame = new ClientFrame(name);
         frameMap.put(name, ClientFrame);
@@ -80,12 +81,7 @@ public class FrameManager {
     ////////////////////////////////////////////////////////////////////////////////
 
     public void start (String name) {
-        try {
-            addFrame(name);
-        } catch (AWTException e) {
-            logger.warn("FrameManager.start.AWTException", e);
-        }
-
+        addFrame(name);
         openFrame(name);
     }
 
@@ -95,6 +91,33 @@ public class FrameManager {
     }
 
     ////////////////////////////////////////////////////////////////////////////////
+
+    public void popUpInfoMsgToFrame(String name, String msg) {
+        ClientFrame frame = getFrame(name);
+        if (frame == null) {
+            return;
+        }
+
+        frame.popUpInfoMsg(msg);
+    }
+
+    public void popUpWarnMsgToFrame(String name, String msg) {
+        ClientFrame frame = getFrame(name);
+        if (frame == null) {
+            return;
+        }
+
+        frame.popUpWarnMsg(msg);
+    }
+
+    public int popUpErrorMsgToFrame(String name, String msg) {
+        ClientFrame frame = getFrame(name);
+        if (frame == null) {
+            return JOptionPane.CLOSED_OPTION;
+        }
+
+        return frame.popUpErrorMsg(msg);
+    }
 
     public boolean processInviteToFrame(String name, String remoteHostName) {
         if (name == null) { return false; }

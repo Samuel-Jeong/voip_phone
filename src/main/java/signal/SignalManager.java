@@ -6,6 +6,7 @@ import signal.module.NonceGenerator;
 import signal.module.SipUtil;
 
 import javax.sip.message.Response;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @class public class SignalManager implements SipListener
@@ -17,6 +18,7 @@ public class SignalManager {
 
     private static SignalManager signalManager = null;
 
+    private final AtomicBoolean isStarted = new AtomicBoolean(false);
     private final SipUtil sipUtil;
 
     //////////////////////////////////////////////////////////////////////
@@ -41,7 +43,9 @@ public class SignalManager {
 
     public void start () {
         try {
+            init();
             sipUtil.start();
+            isStarted.set(true);
         } catch (Exception e) {
             logger.warn("Fail to start the sip stack.");
         }
@@ -49,7 +53,10 @@ public class SignalManager {
 
     public void stop () {
         try {
-            sipUtil.stop();
+            if (isStarted.get()) {
+                sipUtil.stop();
+                isStarted.set(false);
+            }
         } catch (Exception e) {
             logger.warn("Fail to stop the sip stack.");
         }

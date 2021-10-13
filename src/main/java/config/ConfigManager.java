@@ -1,11 +1,13 @@
 package config;
 
+import client.gui.FrameManager;
 import media.MediaManager;
 import org.ini4j.Ini;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.ServiceManager;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 
@@ -17,6 +19,7 @@ public class ConfigManager {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigManager.class);
 
+    private final String configPath;
     private Ini ini = null;
 
     // Section String
@@ -102,10 +105,17 @@ public class ConfigManager {
      * @param configPath Config 파일 경로 이름
      */
     public ConfigManager(String configPath) {
+        this.configPath = configPath;
+        logger.debug("Config path: {}", configPath);
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+
+    public boolean load() {
         File iniFile = new File(configPath);
         if (!iniFile.isFile() || !iniFile.exists()) {
             logger.warn("Not found the config path. (path={})", configPath);
-            System.exit(1);
+            return false;
         }
 
         try {
@@ -119,10 +129,11 @@ public class ConfigManager {
             logger.info("Load config [{}]", configPath);
         } catch (IOException e) {
             logger.error("ConfigManager.IOException", e);
+            return false;
         }
-    }
 
-    ////////////////////////////////////////////////////////////////////////////////
+        return true;
+    }
 
     /**
      * @fn private void loadCommonConfig()

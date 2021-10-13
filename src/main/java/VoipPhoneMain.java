@@ -18,15 +18,9 @@ public class VoipPhoneMain {
          return;
       }
 
-      String configPath = args[1].trim();
-      logger.debug("Config path: {}", configPath);
-      ConfigManager configManager = new ConfigManager(configPath);
-
-      AppInstance appInstance = AppInstance.getInstance();
-      appInstance.setConfigManager(configManager);
-
-      ServiceManager serviceManager = ServiceManager.getInstance();
-      serviceManager.loop();
+      ConfigManager configManager = new ConfigManager(args[1].trim());
+      AppInstance.getInstance().setConfigManager(configManager);
+      ServiceManager.getInstance().loop();
    }
 
 }
