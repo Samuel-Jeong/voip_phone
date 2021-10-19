@@ -2,7 +2,7 @@
 
 <configuration scan="true" scanPeriod="2 seconds">
 
-    <property name="LOGS_ABSOLUTE_PATH" value="${HOME}/voip_phone/logs" />
+    <property name="LOGS_ABSOLUTE_PATH" value="../logs" />
 
 <!--    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">-->
 <!--        <layout class="ch.qos.logback.classic.PatternLayout">-->
