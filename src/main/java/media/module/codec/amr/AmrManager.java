@@ -53,16 +53,17 @@ public class AmrManager {
             FrameManager.getInstance().appendTextToFrame(ServiceManager.CLIENT_FRAME_NAME, "Loaded the amr library.\n");
             //FrameManager.getInstance().appendTextToFrame(ServiceManager.CLIENT_FRAME_NAME, "Loaded the amr library. (path=" + curUserDir + ")");
         } catch (Exception e) {
-            //logger.error("Fail to load the amr library. (path={})", curUserDir);
-            FrameManager.getInstance().appendTextToFrame(ServiceManager.CLIENT_FRAME_NAME, "Fail to load the amr library.\n" + e.getMessage());
-            //FrameManager.getInstance().popUpErrorMsg("Fail to load the amr library.\n" + e.getMessage());
-            FrameManager.getInstance().popUpWarnMsgToFrame(ServiceManager.CLIENT_FRAME_NAME, "Fail to load the amr library.\n" + e.getMessage());
-
             String[] audioCodecStrArray = MediaManager.getInstance().getSupportedAudioCodecList();
             ConfigManager configManager = AppInstance.getInstance().getConfigManager();
             configManager.setPriorityAudioCodec(audioCodecStrArray[0]);
             configManager.setIniValue(ConfigManager.SECTION_MEDIA, ConfigManager.FIELD_PRIORITY_CODEC, audioCodecStrArray[0]);
             FrameManager.getInstance().selectPriorityCodec(ServiceManager.CLIENT_FRAME_NAME, audioCodecStrArray[0]);
+
+            String resultMsg = "Fail to load the amr library.\nPriority codec is changed to [" + audioCodecStrArray[0] + "].\n" + e.getMessage();
+            //logger.error("Fail to load the amr library. (path={})", curUserDir);
+            FrameManager.getInstance().appendTextToFrame(ServiceManager.CLIENT_FRAME_NAME, resultMsg);
+            //FrameManager.getInstance().popUpErrorMsg(resultMsg);
+            FrameManager.getInstance().popUpWarnMsgToFrame(ServiceManager.CLIENT_FRAME_NAME, resultMsg);
             logger.debug("Priority audio codec option is changed. (before=[{}], after=[{}])", configManager.getPriorityAudioCodec(), audioCodecStrArray[0]);
 
             return;
