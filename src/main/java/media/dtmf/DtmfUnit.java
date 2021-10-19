@@ -1,7 +1,5 @@
 package media.dtmf;
 
-import media.protocol.base.ByteUtil;
-
 /**
  * @class public class DtmfUnit
  * @brief DtmfUnit class

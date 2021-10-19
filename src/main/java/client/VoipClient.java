@@ -6,13 +6,16 @@ import media.MediaManager;
 import media.dtmf.DtmfUnit;
 import media.module.mixing.base.AudioFrame;
 import media.record.RecordManager;
-import media.record.wav.WavFileInfo;
 import media.record.wav.WavFile;
+import media.record.wav.WavFileInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.AppInstance;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.Line;
+import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.TargetDataLine;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -535,11 +538,8 @@ public class VoipClient {
         if (wavFilePath != null && wavFile == null) {
             try {
                 wavFile = new WavFile(new File(wavFilePath));
-                if (!wavFile.open()) {
-                    logger.warn("Fail to open the wav file. ({})", wavFile);
-                } else {
-                    logger.debug("WavFile is opened. ({})", wavFile);
-                }
+                wavFile.open();
+                logger.debug("WavFile is opened. ({})", wavFile);
             } catch (Exception e) {
                 logger.warn("VoipClient.start.Exception", e);
             }

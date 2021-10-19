@@ -1,8 +1,13 @@
 package media.module.codec.amr;
 
 import client.gui.FrameManager;
+import config.ConfigManager;
+import media.MediaManager;
+import org.scijava.nativelib.NativeLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import service.AppInstance;
+import service.ServiceManager;
 
 /**
  * @class public class AmrManager
@@ -17,16 +22,7 @@ public class AmrManager {
     ////////////////////////////////////////////////////////////////////////////////
 
     public AmrManager() {
-        String curUserDir = System.getProperty("user.dir");
-        curUserDir += "/src/main/resources/lib/amr/libamrjni.so";
-
-        try {
-            System.load(curUserDir);
-        } catch (Exception e) {
-            logger.warn("Fail to load the amr library. (path={})", curUserDir);
-            FrameManager.getInstance().popUpErrorMsg("Fail to load the amr library. (path=" + curUserDir + ")");
-            System.exit(1);
-        }
+        // Nothing
     }
 
     public static AmrManager getInstance () {
@@ -35,6 +31,48 @@ public class AmrManager {
 
         }
         return amrManager;
+    }
+
+    public void init() {
+        /*String curUserDir = System.getProperty("user.dir");
+        if (curUserDir.endsWith("bin")) {
+            curUserDir = curUserDir.substring(0, curUserDir.lastIndexOf("bin") - 1);
+        }
+
+        if (SystemManager.getInstance().getOs().contains("win")) {
+            curUserDir += "\\lib\\libamrjni.dll";
+        } else {
+            curUserDir += "/lib/libamrjni.so";
+        }*/
+
+        try {
+            //FrameManager.getInstance().appendTextToFrame(ServiceManager.CLIENT_FRAME_NAME, "Loading... the amr library. (path=" + curUserDir + ")");
+            FrameManager.getInstance().appendTextToFrame(ServiceManager.CLIENT_FRAME_NAME, "Loading... the amr library.\n");
+            NativeLoader.loadLibrary("amrjni");
+            //System.load(curUserDir);
+            FrameManager.getInstance().appendTextToFrame(ServiceManager.CLIENT_FRAME_NAME, "Loaded the amr library.\n");
+            //FrameManager.getInstance().appendTextToFrame(ServiceManager.CLIENT_FRAME_NAME, "Loaded the amr library. (path=" + curUserDir + ")");
+        } catch (Exception e) {
+            //logger.error("Fail to load the amr library. (path={})", curUserDir);
+            FrameManager.getInstance().appendTextToFrame(ServiceManager.CLIENT_FRAME_NAME, "Fail to load the amr library.\n" + e.getMessage());
+            //FrameManager.getInstance().popUpErrorMsg("Fail to load the amr library.\n" + e.getMessage());
+            FrameManager.getInstance().popUpWarnMsgToFrame(ServiceManager.CLIENT_FRAME_NAME, "Fail to load the amr library.\n" + e.getMessage());
+
+            String[] audioCodecStrArray = MediaManager.getInstance().getSupportedAudioCodecList();
+            ConfigManager configManager = AppInstance.getInstance().getConfigManager();
+            configManager.setPriorityAudioCodec(audioCodecStrArray[0]);
+            configManager.setIniValue(ConfigManager.SECTION_MEDIA, ConfigManager.FIELD_PRIORITY_CODEC, audioCodecStrArray[0]);
+            FrameManager.getInstance().selectPriorityCodec(ServiceManager.CLIENT_FRAME_NAME, audioCodecStrArray[0]);
+            logger.debug("Priority audio codec option is changed. (before=[{}], after=[{}])", configManager.getPriorityAudioCodec(), audioCodecStrArray[0]);
+
+            return;
+        }
+
+        FrameManager.getInstance().popUpInfoMsgToFrame(
+                ServiceManager.CLIENT_FRAME_NAME,
+                //"Success to load the amr library. (path=" + curUserDir + ")"
+                "Success to load the amr library."
+        );
     }
 
     ////////////////////////////////////////////////////////////////////////////////

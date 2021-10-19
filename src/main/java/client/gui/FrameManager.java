@@ -147,6 +147,15 @@ public class FrameManager {
         frame.appendText(msg);
     }
 
+    public void selectPriorityCodec(String name, String codecName) {
+        ClientFrame frame = getFrame(name);
+        if (frame == null) {
+            return;
+        }
+
+        frame.selectPriorityCodec(codecName);
+    }
+
     public boolean processInviteToFrame(String name, String remoteHostName) {
         if (name == null) { return false; }
 

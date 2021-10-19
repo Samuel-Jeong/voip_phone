@@ -4,7 +4,6 @@ import client.VoipClient;
 import config.ConfigManager;
 import media.MediaManager;
 import media.module.mixing.base.ConcurrentCyclicFIFO;
-import media.protocol.base.ByteUtil;
 import media.protocol.rtp.util.RtpUtil;
 import media.record.wav.WavFile;
 import org.slf4j.Logger;
@@ -13,10 +12,6 @@ import service.AppInstance;
 import service.base.TaskUnit;
 
 import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Clip;
-import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
 
 /**
  * @class public class PcmGenerator extends TaskUnit

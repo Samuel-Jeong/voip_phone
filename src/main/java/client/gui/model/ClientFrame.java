@@ -5,6 +5,8 @@ import client.gui.model.dtmf.DtmfPanel;
 import client.gui.model.wav.WavPanel;
 import config.ConfigManager;
 import media.MediaManager;
+import media.module.codec.amr.AmrManager;
+import media.module.codec.evs.EvsManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.AppInstance;
@@ -451,6 +453,15 @@ public class ClientFrame extends JFrame {
                     configManager.setPriorityAudioCodec(codecName);
                     configManager.setIniValue(ConfigManager.SECTION_MEDIA, ConfigManager.FIELD_PRIORITY_CODEC, codecName);
                     MediaManager.getInstance().setPriorityCodec(codecName);
+
+                    if (MediaManager.getInstance().getPriorityCodec().equals(MediaManager.EVS)) {
+                        EvsManager.getInstance().init();
+                    }
+
+                    if (MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_NB)
+                            || MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_WB)) {
+                        AmrManager.getInstance().init();
+                    }
                 }
             } catch (Exception exception) {
                 logger.warn("ClientFrame.codecSelectPanel.Exception", exception);
@@ -657,6 +668,12 @@ public class ClientFrame extends JFrame {
         //
 
         return mediaPanel;
+    }
+
+    public void selectPriorityCodec(String codecName) {
+        if (audioCodecSelectCombo != null) {
+            audioCodecSelectCombo.setSelectedItem(codecName);
+        }
     }
 
     public void inputProxyTextField(String content) {

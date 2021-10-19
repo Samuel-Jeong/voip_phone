@@ -4,6 +4,8 @@ import client.gui.FrameManager;
 import client.gui.model.dtmf.DtmfSoundGenerator;
 import config.ConfigManager;
 import media.MediaManager;
+import media.module.codec.amr.AmrManager;
+import media.module.codec.evs.EvsManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import signal.SignalManager;
@@ -25,6 +27,7 @@ public class ServiceManager {
     private static final int DELAY = 1000;
 
     public static final String CLIENT_FRAME_NAME = "CLIENT";
+    public static final String CONFIG_ERROR_FRAME_NAME = "CONFIG_ERROR";
 
     private final AtomicBoolean isQuit = new AtomicBoolean(false);
 
@@ -47,11 +50,35 @@ public class ServiceManager {
     private void start () {
         ConfigManager configManager = AppInstance.getInstance().getConfigManager();
         if (!configManager.load()) {
-            FrameManager.getInstance().popUpErrorMsg("Not found the config path.");
+            JOptionPane pane = new JOptionPane(
+                    "Not found the config path.",
+                    JOptionPane.ERROR_MESSAGE
+            );
+
+            JDialog d = pane.createDialog(null, "Error");
+            d.pack();
+            d.setModal(false);
+            d.setVisible(true);
+            while (pane.getValue() == JOptionPane.UNINITIALIZED_VALUE) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException ie) {
+                    // ignore
+                }
+            }
             System.exit(1);
         }
 
         FrameManager.getInstance().start(CLIENT_FRAME_NAME);
+
+        if (MediaManager.getInstance().getPriorityCodec().equals(MediaManager.EVS)) {
+            EvsManager.getInstance().init();
+        }
+
+        if (MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_NB)
+                || MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_WB)) {
+            AmrManager.getInstance().init();
+        }
 
         ResourceManager.getInstance().initResource();
 

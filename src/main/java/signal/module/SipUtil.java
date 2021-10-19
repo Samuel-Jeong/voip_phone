@@ -744,13 +744,13 @@ public class SipUtil implements SipListener {
                 listenPort = nettyChannel.getListenPort();
             } else {
                 //if (!configManager.isRelay()) {
-                    if (NettyChannelManager.getInstance().addProxyChannel(callId)) {
-                        nettyChannel = NettyChannelManager.getInstance().getProxyChannel(callId);
-                        listenPort = nettyChannel.getListenPort();
-                    } else {
-                        logger.warn("Fail to send invite. (callId={})", callId);
-                        return;
-                    }
+                if (NettyChannelManager.getInstance().addProxyChannel(callId)) {
+                    nettyChannel = NettyChannelManager.getInstance().getProxyChannel(callId);
+                    listenPort = nettyChannel.getListenPort();
+                } else {
+                    logger.warn("Fail to send invite. (callId={})", callId);
+                    return;
+                }
                 /*} else {
                     listenPort = configManager.getNettyServerPort();
                 }*/
@@ -1037,19 +1037,19 @@ public class SipUtil implements SipListener {
             ConfigManager configManager = AppInstance.getInstance().getConfigManager();
             if (configManager.isProxyMode()) {
                 //if (!configManager.isRelay()) {
-                    if (NettyChannelManager.getInstance().addProxyChannel(callId)) {
-                        nettyChannel = NettyChannelManager.getInstance().getProxyChannel(callId);
-                        listenPort = nettyChannel.getListenPort();
-                    } else {
-                        logger.warn("Fail to send invite 200 ok. (callId={})", callId);
-                        sendCancel(
-                                callId,
-                                callInfo.getFromNo(),
-                                callInfo.getFromSipIp(),
-                                callInfo.getFromSipPort()
-                        );
-                        return false;
-                    }
+                if (NettyChannelManager.getInstance().addProxyChannel(callId)) {
+                    nettyChannel = NettyChannelManager.getInstance().getProxyChannel(callId);
+                    listenPort = nettyChannel.getListenPort();
+                } else {
+                    logger.warn("Fail to send invite 200 ok. (callId={})", callId);
+                    sendCancel(
+                            callId,
+                            callInfo.getFromNo(),
+                            callInfo.getFromSipIp(),
+                            callInfo.getFromSipPort()
+                    );
+                    return false;
+                }
                 /*} else {
                     listenPort = configManager.getNettyServerPort();
                 }*/
@@ -1077,7 +1077,7 @@ public class SipUtil implements SipListener {
             callInfo.getInviteServerTransaction().sendResponse(okResponse);
             logger.debug("Send 200 OK for INVITE: {}", okResponse);
             callInfo.setIsInviteAccepted(true);
-            
+
             if (configManager.isUseClient()) {
                 VoipClient.getInstance().start();
             }

@@ -3,11 +3,16 @@ package media.module.codec.evs;
 import client.VoipClient;
 import client.gui.FrameManager;
 import client.module.base.MediaFrame;
+import config.ConfigManager;
+import media.MediaManager;
 import media.module.codec.evs.base.EvsTaskUnit;
 import media.module.mixing.base.ConcurrentCyclicFIFO;
 import media.record.RecordManager;
+import org.scijava.nativelib.NativeLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import service.AppInstance;
+import service.ServiceManager;
 import service.base.TaskUnit;
 
 import java.io.ByteArrayOutputStream;
@@ -36,16 +41,7 @@ public class EvsManager {
     ////////////////////////////////////////////////////////////////////////////////
 
     public EvsManager() {
-        String curUserDir = System.getProperty("user.dir");
-        curUserDir += "/src/main/resources/lib/evs/libevsjni.so";
-
-        try {
-            System.load(curUserDir);
-        } catch (Exception e) {
-            logger.warn("Fail to load the evs library. (path={})", curUserDir);
-            FrameManager.getInstance().popUpErrorMsg("Fail to load the evs library. (path=" + curUserDir + ")");
-            System.exit(1);
-        }
+        // Nothing
     }
 
     public static EvsManager getInstance () {
@@ -54,6 +50,48 @@ public class EvsManager {
 
         }
         return evsManager;
+    }
+
+    public void init() {
+        /*String curUserDir = System.getProperty("user.dir");
+        if (curUserDir.endsWith("bin")) {
+            curUserDir = curUserDir.substring(0, curUserDir.lastIndexOf("bin") - 1);
+        }
+
+        if (SystemManager.getInstance().getOs().contains("win")) {
+            curUserDir += "\\lib\\libevsjni.dll";
+        } else {
+            curUserDir += "/lib/libevsjni.so";
+        }*/
+
+        try {
+            //FrameManager.getInstance().appendTextToFrame(ServiceManager.CLIENT_FRAME_NAME, "Loading... the evs library. (path=" + curUserDir + ")");
+            FrameManager.getInstance().appendTextToFrame(ServiceManager.CLIENT_FRAME_NAME, "Loading... the evs library.\n");
+            NativeLoader.loadLibrary("evsjni");
+            //System.load(curUserDir);
+            FrameManager.getInstance().appendTextToFrame(ServiceManager.CLIENT_FRAME_NAME, "Loaded the evs library.\n");
+            //FrameManager.getInstance().appendTextToFrame(ServiceManager.CLIENT_FRAME_NAME, "Loaded the evs library. (path=" + curUserDir + ")");
+        } catch (Exception e) {
+            //logger.warn("Fail to load the evs library. (path={})", curUserDir);
+            FrameManager.getInstance().appendTextToFrame(ServiceManager.CLIENT_FRAME_NAME, "Fail to load the evs library.\n" + e.getMessage());
+            //FrameManager.getInstance().popUpErrorMsg("Fail to load the evs library.\n" + e.getMessage());
+            FrameManager.getInstance().popUpWarnMsgToFrame(ServiceManager.CLIENT_FRAME_NAME, "Fail to load the evs library.\n" + e.getMessage());
+
+            String[] audioCodecStrArray = MediaManager.getInstance().getSupportedAudioCodecList();
+            ConfigManager configManager = AppInstance.getInstance().getConfigManager();
+            configManager.setPriorityAudioCodec(audioCodecStrArray[0]);
+            configManager.setIniValue(ConfigManager.SECTION_MEDIA, ConfigManager.FIELD_PRIORITY_CODEC, audioCodecStrArray[0]);
+            FrameManager.getInstance().selectPriorityCodec(ServiceManager.CLIENT_FRAME_NAME, audioCodecStrArray[0]);
+            logger.debug("Priority audio codec option is changed. (before=[{}], after=[{}])", configManager.getPriorityAudioCodec(), audioCodecStrArray[0]);
+
+            return;
+        }
+
+        FrameManager.getInstance().popUpInfoMsgToFrame(
+                ServiceManager.CLIENT_FRAME_NAME,
+                //"Success to load the evs library. (path=" + curUserDir + ")"
+                "Success to load the evs library."
+        );
     }
 
     ////////////////////////////////////////////////////////////////////////////////
