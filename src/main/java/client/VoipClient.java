@@ -532,6 +532,23 @@ public class VoipClient {
         isSpeakerOn.set(false);
     }
 
+    public void muteMikeOn() {
+        soundHandler.muteMikeOn();
+    }
+
+    public void muteMikeOff() {
+        soundHandler.muteMikeOff();
+    }
+
+    public void muteSpeakerOn() {
+        soundHandler.muteSpeakerOn();
+    }
+
+    public void muteSpeakerOff() {
+        soundHandler.muteSpeakerOff();
+    }
+
+
     ////////////////////////////////////////////////////////////////////////////////
 
     public void start () {

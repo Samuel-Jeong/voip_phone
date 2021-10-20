@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @class public class SoundHandler
@@ -344,6 +345,30 @@ public class SoundHandler {
         }
 
         logger.debug("Stopped mike.");
+    }
+
+    public void muteMikeOn() {
+        if (udpSender != null) {
+            udpSender.setMute(true);
+        }
+    }
+
+    public void muteMikeOff() {
+        if (udpSender != null) {
+            udpSender.setMute(false);
+        }
+    }
+
+    public void muteSpeakerOn() {
+        if (udpReceiver != null) {
+            udpReceiver.setMute(true);
+        }
+    }
+
+    public void muteSpeakerOff() {
+        if (udpReceiver != null) {
+            udpReceiver.setMute(false);
+        }
     }
 
     ////////////////////////////////////////////////////////////////////////////////

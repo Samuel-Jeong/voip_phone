@@ -26,6 +26,7 @@ import javax.sound.sampled.AudioFormat;
 import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @class public class UdpSender extends TaskUnit
@@ -49,6 +50,8 @@ public class UdpSender extends TaskUnit {
     private final JRtp jRtp = new JRtp();
     /* RTP Message object */
     private final RtpPacket rtpPacket = new RtpPacket();
+
+    private final AtomicBoolean mute = new AtomicBoolean(false);
 
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -125,6 +128,14 @@ public class UdpSender extends TaskUnit {
         }
     }
 
+    public boolean isMute() {
+        return mute.get();
+    }
+
+    public void setMute(boolean mute) {
+        this.mute.set(mute);
+    }
+
     ////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -140,6 +151,8 @@ public class UdpSender extends TaskUnit {
             if (data == null || data.length == 0) {
                 return;
             }
+
+            if (mute.get()) { return; }
 
             // 1) Pre-process the audio data.
             // PCM

@@ -166,9 +166,6 @@ public class FrameManager {
                 return false;
             }
 
-            frame.getCallButton().setEnabled(true);
-            frame.getByeButton().setEnabled(true);
-
             frame.inputRemoteTextField(remoteHostName);
 
             VoipClient voipClient = VoipClient.getInstance();
@@ -191,6 +188,8 @@ public class FrameManager {
             frame.getByeButton().setEnabled(true);
             frame.getCallButton().setEnabled(false);
             frame.getStopButton().setEnabled(false);
+            frame.getMikeMuteCheck().setEnabled(true);
+            frame.getSpeakerMuteCheck().setEnabled(true);
 
             frame.inputRemoteTextField(remoteHostName);
 
@@ -234,6 +233,8 @@ public class FrameManager {
             frame.getCallButton().setEnabled(true);
             frame.getByeButton().setEnabled(false);
             frame.getStopButton().setEnabled(true);
+            frame.getMikeMuteCheck().setEnabled(false);
+            frame.getSpeakerMuteCheck().setEnabled(false);
         }
 
         return true;

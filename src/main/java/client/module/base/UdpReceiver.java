@@ -20,6 +20,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.SourceDataLine;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -36,6 +37,8 @@ public class UdpReceiver extends TaskUnit {
     private ScheduledThreadPoolExecutor recvTaskExecutor;
 
     private final AudioBuffer audioBuffer;
+
+    private final AtomicBoolean mute = new AtomicBoolean(false);
 
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -114,6 +117,14 @@ public class UdpReceiver extends TaskUnit {
         }
     }
 
+    public boolean isMute() {
+        return mute.get();
+    }
+
+    public void setMute(boolean mute) {
+        this.mute.set(mute);
+    }
+
     ////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -138,6 +149,8 @@ public class UdpReceiver extends TaskUnit {
 
             // PCM
             if (!isDtmf && !isByteArrayFullOfZero(data)) {
+                if (mute.get()) { return; }
+
                 if (voipClient.getSourceAudioFormat().getEncoding().toString().equals(
                         AudioFormat.Encoding.PCM_SIGNED.toString())) {
                     // Decode pcm data to other codec data
@@ -249,7 +262,7 @@ public class UdpReceiver extends TaskUnit {
                             new MediaFrame(
                                     isDtmf,
                                     data
-                    ));
+                            ));
                 }
             } catch (Exception e) {
                 logger.warn("UdpReceiver.addData.Exception", e);
@@ -302,9 +315,12 @@ public class UdpReceiver extends TaskUnit {
                         }
                     }
                 } else {
-                    logger.debug("DTMF is detected!");
                     DtmfUnit dtmfUnit = new DtmfUnit(data);
-                    logger.debug("DTMF digit: {}", dtmfUnit);
+                    if (dtmfUnit.getVolume() <= 0) {
+                        return;
+                    }
+
+                    logger.debug("Recv DTMF digit: {}", dtmfUnit);
                 }
             }
 

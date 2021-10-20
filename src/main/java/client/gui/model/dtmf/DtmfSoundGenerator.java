@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import service.base.TaskUnit;
 import system.SystemManager;
 
+import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import java.io.File;
@@ -159,13 +160,18 @@ public class DtmfSoundGenerator {
                 }
 
                 curTone = AudioSystem.getClip();
-                curTone.open(
-                        AudioSystem.getAudioInputStream(
-                                new File(
-                                        curUserDir + curToneName + ".au"
-                                )
+                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(
+                        new File(
+                                curUserDir + curToneName + ".au"
                         )
                 );
+
+                byte[] data = new byte[(int) audioInputStream.getFrameLength()];
+                if (audioInputStream.read(data) > 0) {
+                    logger.debug("DTMF[{}] byte data: {}", curToneName, data);
+                }
+
+                curTone.open(audioInputStream);
 
                 //curTone.loop(1);
                 curTone.start();

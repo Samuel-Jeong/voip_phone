@@ -72,6 +72,8 @@ public class ClientFrame extends JFrame {
     private JCheckBox decFileCheck;
     private JCheckBox dtmfCheck;
     private JCheckBox sendWavCheck;
+    private final JCheckBox mikeMuteCheck;
+    private final JCheckBox speakerMuteCheck;
 
     //////////////////////////////////////////////////////////////////////
     // ComboBox
@@ -150,8 +152,18 @@ public class ClientFrame extends JFrame {
         stopButton.addActionListener(new StopListener());
         stopButton.setEnabled(false);
 
+        mikeMuteCheck = new JCheckBox("Mike Mute", false);
+        mikeMuteCheck.addActionListener(new MuteListener());
+        mikeMuteCheck.setEnabled(false);
+
+        speakerMuteCheck = new JCheckBox("Speaker Mute", false);
+        speakerMuteCheck.addActionListener(new MuteListener());
+        speakerMuteCheck.setEnabled(false);
+
         mainPanel.add(startButton);
         mainPanel.add(stopButton);
+        mainPanel.add(mikeMuteCheck);
+        mainPanel.add(speakerMuteCheck);
 
         proxyTextField.setText("");
         mainPanel.add(proxyTextField);
@@ -774,6 +786,14 @@ public class ClientFrame extends JFrame {
         return stopButton;
     }
 
+    public JCheckBox getMikeMuteCheck() {
+        return mikeMuteCheck;
+    }
+
+    public JCheckBox getSpeakerMuteCheck() {
+        return speakerMuteCheck;
+    }
+
     ////////////////////////////////////////////////////////////////////////////////
 
     private void startAudioFrame () {
@@ -1055,6 +1075,8 @@ public class ClientFrame extends JFrame {
                 byeButton.setEnabled(true);
                 callButton.setEnabled(false);
                 stopButton.setEnabled(false);
+                mikeMuteCheck.setEnabled(true);
+                speakerMuteCheck.setEnabled(true);
             }
         }
     }
@@ -1119,6 +1141,8 @@ public class ClientFrame extends JFrame {
                 callButton.setEnabled(true);
                 byeButton.setEnabled(false);
                 stopButton.setEnabled(true);
+                mikeMuteCheck.setEnabled(false);
+                speakerMuteCheck.setEnabled(false);
             }
         }
     }
@@ -1256,6 +1280,41 @@ public class ClientFrame extends JFrame {
                 fileUploadButton.setEnabled(configManager.isSendWav());
 
                 appendText("> Phone is off.\n");
+            }
+        }
+    }
+
+    class MuteListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Mike Mute > UdpSender
+            if(e.getSource() == mikeMuteCheck) {
+                if (mikeMuteCheck.isSelected()) {
+                    logger.debug("Mike mute on");
+                    appendText("Mike mute on\n");
+
+                    VoipClient.getInstance().muteMikeOn();
+                } else {
+                    logger.debug("Mike mute off");
+                    appendText("Mike mute off\n");
+
+                    VoipClient.getInstance().muteMikeOff();
+                }
+            }
+            // Speaker Mute > UdpReceiver
+            else if (e.getSource() == speakerMuteCheck) {
+                if (speakerMuteCheck.isSelected()) {
+                    logger.debug("Speaker mute on");
+                    appendText("Speaker mute on\n");
+
+                    VoipClient.getInstance().muteSpeakerOn();
+                } else {
+                    logger.debug("Speaker mute off");
+                    appendText("Speaker mute off\n");
+
+                    VoipClient.getInstance().muteSpeakerOff();
+                }
             }
         }
     }
