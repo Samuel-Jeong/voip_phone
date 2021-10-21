@@ -759,7 +759,7 @@ public class SipUtil implements SipListener {
             ContentTypeHeader contentTypeHeader = headerFactory.createContentTypeHeader("application", "sdp");
             Sdp localSdp = SignalManager.getInstance().getLocalSdp();
             localSdp.setMediaPort(Sdp.AUDIO, listenPort);
-            byte[] contents = localSdp.getData(true).getBytes();
+            byte[] contents = localSdp.getData(false).getBytes();
             request.setContent(contents, contentTypeHeader);
 
             // Create new client transaction & send the invite request
@@ -1059,14 +1059,9 @@ public class SipUtil implements SipListener {
             okResponse.addHeader(contactHeader);
 
             ContentTypeHeader contentTypeHeader = headerFactory.createContentTypeHeader("application", "sdp");
-            String sdpData = "v=0\r\n" +
-                    "o=- 0 0 IN IP4 " + configManager.getNettyServerIp() + "\r\n" +
-                    "s=-\r\n" +
-                    "c=IN IP4 " + configManager.getNettyServerIp() + "\r\n" +
-                    "t=0 0\r\n" +
-                    "m=audio " + listenPort + " RTP/AVP " + MediaManager.getInstance().getPriorityCodecId() + "\r\n" +
-                    "a=rtpmap:" + MediaManager.getInstance().getPriorityCodecId() + " " + MediaManager.getInstance().getPriorityCodec() + "/" + MediaManager.getInstance().getPriorityCodecSamplingRate() + "\r\n";
-            byte[] contents = sdpData.getBytes();
+            Sdp localSdp = SignalManager.getInstance().getLocalSdp();
+            localSdp.setMediaPort(Sdp.AUDIO, listenPort);
+            byte[] contents = localSdp.getData(false).getBytes();
             okResponse.setContent(contents, contentTypeHeader);
 
             callInfo.getInviteServerTransaction().sendResponse(okResponse);
