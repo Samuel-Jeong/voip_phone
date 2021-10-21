@@ -1,7 +1,10 @@
 package signal;
 
+import config.ConfigManager;
+import media.sdp.base.Sdp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import service.AppInstance;
 import signal.module.NonceGenerator;
 import signal.module.SipUtil;
 
@@ -20,6 +23,7 @@ public class SignalManager {
 
     private final AtomicBoolean isStarted = new AtomicBoolean(false);
     private final SipUtil sipUtil;
+    private Sdp localSdp;
 
     //////////////////////////////////////////////////////////////////////
 
@@ -39,6 +43,9 @@ public class SignalManager {
 
     public void init () {
         sipUtil.init();
+
+        ConfigManager configManager = AppInstance.getInstance().getConfigManager();
+        localSdp = configManager.loadSdpConfig("LOCAL");
     }
 
     public void start () {
@@ -106,6 +113,10 @@ public class SignalManager {
 
     public int getToPort() {
         return sipUtil.getToPort();
+    }
+
+    public Sdp getLocalSdp() {
+        return localSdp;
     }
 
 }

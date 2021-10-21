@@ -7,13 +7,13 @@ import media.MediaManager;
 import media.module.mixing.AudioMixManager;
 import media.netty.NettyChannelManager;
 import media.netty.module.NettyChannel;
-import media.sdp.SdpAttribute;
 import media.sdp.SdpParser;
-import media.sdp.base.SdpInfo;
-import media.sdp.base.SdpUnit;
+import media.sdp.base.Sdp;
+import media.sdp.base.attribute.RtpAttribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.*;
+import signal.SignalManager;
 import signal.base.CallInfo;
 import signal.base.RegiInfo;
 
@@ -757,14 +757,9 @@ public class SipUtil implements SipListener {
             }
 
             ContentTypeHeader contentTypeHeader = headerFactory.createContentTypeHeader("application", "sdp");
-            String sdpData = "v=0\r\n" +
-                    "o=- 0 0 IN IP4 " + configManager.getNettyServerIp() + "\r\n" +
-                    "s=-\r\n" +
-                    "c=IN IP4 " + configManager.getNettyServerIp() + "\r\n" +
-                    "t=0 0\r\n" +
-                    "m=audio " + listenPort + " RTP/AVP " + MediaManager.getInstance().getPriorityCodecId() + "\r\n" +
-                    "a=rtpmap:" + MediaManager.getInstance().getPriorityCodecId() + " " + MediaManager.getInstance().getPriorityCodec() + "/" + MediaManager.getInstance().getPriorityCodecSamplingRate() + "\r\n";
-            byte[] contents = sdpData.getBytes();
+            Sdp localSdp = SignalManager.getInstance().getLocalSdp();
+            localSdp.setMediaPort(Sdp.AUDIO, listenPort);
+            byte[] contents = localSdp.getData(true).getBytes();
             request.setContent(contents, contentTypeHeader);
 
             // Create new client transaction & send the invite request
@@ -924,9 +919,9 @@ public class SipUtil implements SipListener {
             // Get sdp
             byte[] rawSdpData = request.getRawContent();
             if (rawSdpData != null) {
-                SdpParser sdpParser = new SdpParser(callId);
-                SdpUnit sdpUnit = sdpParser.parse(new String(rawSdpData));
-                CallManager.getInstance().addSdpUnitIntoCallInfo(callId, sdpUnit);
+                SdpParser sdpParser = new SdpParser();
+                Sdp sdp = sdpParser.parseSdp(callId, new String(rawSdpData));
+                CallManager.getInstance().addSdpIntoCallInfo(callId, sdp);
             }
 
             if (isUseClient) {
@@ -1585,19 +1580,19 @@ public class SipUtil implements SipListener {
                 byte[] rawSdpData = response.getRawContent();
                 if (rawSdpData != null) {
                     try {
-                        SdpParser sdpParser = new SdpParser(callId);
-                        SdpUnit sdpUnit = sdpParser.parse(new String(rawSdpData));
+                        SdpParser sdpParser = new SdpParser();
+                        Sdp remoteSdp = sdpParser.parseSdp(callId, new String(rawSdpData));
 
                         // 우선 순위 코덱 일치 확인
-                        SdpInfo remoteSdpInfo = sdpUnit.getSdpInfo(SdpParser.AUDIO_DESCRIPTION);
-                        if (remoteSdpInfo != null) {
-                            SdpAttribute remoteSdpAttribute = remoteSdpInfo.getAttributeByName(SdpAttribute.NAME_RTPMAP);
-                            if (remoteSdpAttribute != null) {
-                                String remoteCodec = remoteSdpAttribute.getCodec();
+                        if (remoteSdp != null) {
+                            if (remoteSdp.intersect(Sdp.AUDIO, SignalManager.getInstance().getLocalSdp())) {
+                                List<RtpAttribute> otherSdpCodecList = remoteSdp.getMediaDescriptionFactory().getIntersectedCodecList(Sdp.AUDIO);
+                                String remoteCodec = otherSdpCodecList.get(0).getRtpMapAttributeFactory().getCodecName();
                                 String localCodec = MediaManager.getInstance().getPriorityCodec();
                                 logger.debug("RemoteCodec: {}, LocalCodec: {}", remoteCodec, localCodec);
+
                                 if (remoteCodec.equals(localCodec)) {
-                                    CallManager.getInstance().addSdpUnitIntoCallInfo(callId, sdpUnit);
+                                    CallManager.getInstance().addSdpIntoCallInfo(callId, remoteSdp);
                                 } else {
                                     sendAck(responseEvent);
                                     sendBye(callInfo.getCallId(), callInfo.getToNo(), callInfo.getToSipIp(), callInfo.getToSipPort());

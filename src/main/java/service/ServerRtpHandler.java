@@ -13,7 +13,7 @@ import media.protocol.rtp.attribute.format.base.RtpAudioFormat;
 import media.protocol.rtp.base.RtpFormat;
 import media.protocol.rtp.base.RtpFrame;
 import media.protocol.rtp.jitter.JitterBuffer;
-import media.sdp.base.SdpUnit;
+import media.sdp.base.Sdp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.base.TaskUnit;
@@ -156,8 +156,8 @@ public class ServerRtpHandler extends TaskUnit {
             CallInfo remoteCallInfo,
             int samplingRate, int sampleSize, int channelSize, short gain, byte[] rtpData) {
         // 1) Get Remote sdp unit
-        SdpUnit remoteSdpUnit = remoteCallInfo.getSdpUnit();
-        if (remoteSdpUnit == null) {
+        Sdp remoteSdp = remoteCallInfo.getSdp();
+        if (remoteSdp == null) {
             logger.warn("({}) Fail to find the remote sdp unit. (ip={}, port={})", key, ip, port);
             return;
         }
@@ -193,18 +193,8 @@ public class ServerRtpHandler extends TaskUnit {
         //
 
         // 4) Send JRtp data
-        if (nettyChannel.sendMessage(
-                remoteSdpUnit.getId(),
-                byteBuf,
-                remoteSdpUnit.getRemoteIp(),
-                remoteSdpUnit.getRemotePort())) {
-            logger.trace("({}) Relay RTP. (curCallId={}, remoteCallId={}, src={}:{}, dst={}:{})",
-                    key,
-                    callId,
-                    remoteSdpUnit.getCallId(),
-                    ip, port,
-                    remoteSdpUnit.getRemoteIp(), remoteSdpUnit.getRemotePort()
-            );
+        if (nettyChannel.sendMessage(remoteSdp.getId(), byteBuf, remoteSdp.getSessionOriginAddress(), remoteSdp.getMediaPort(Sdp.AUDIO))) {
+            logger.trace("({}) Relay RTP. (curCallId={}, remoteCallId={}, src={}:{}, dst={}:{})", key, callId, remoteSdp.getId(), ip, port, remoteSdp.getSessionOriginAddress(), remoteSdp.getMediaPort(Sdp.AUDIO));
         }
         //
     }

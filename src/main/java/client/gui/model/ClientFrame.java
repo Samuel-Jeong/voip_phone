@@ -42,8 +42,8 @@ public class ClientFrame extends JFrame {
     private final JTextField hostNameTextField = new JTextField(23);
     private final JTextField sipIpTextField = new JTextField(23);
     private final JTextField sipPortTextField = new JTextField(23);
-    private final JTextField proxySipIpTextField = new JTextField(23);
-    private final JTextField proxySipPortTextField = new JTextField(23);
+    private final JTextField toSipIpTextField = new JTextField(23);
+    private final JTextField toSipPortTextField = new JTextField(23);
     private final JTextField mediaIpTextField = new JTextField(23);
     private final JTextField mediaPortTextField = new JTextField(23);
     private final JTextField recordPathTextField = new JTextField(23);
@@ -364,13 +364,13 @@ public class ClientFrame extends JFrame {
         sipPortTextField.setEditable(true);
         sipPortTextField.setText(String.valueOf(configManager.getFromPort()));
 
-        proxySipIpTextField.setEnabled(true);
-        proxySipIpTextField.setEditable(true);
-        proxySipIpTextField.setText(configManager.getToIp());
+        toSipIpTextField.setEnabled(true);
+        toSipIpTextField.setEditable(true);
+        toSipIpTextField.setText(configManager.getToIp());
 
-        proxySipPortTextField.setEnabled(true);
-        proxySipPortTextField.setEditable(true);
-        proxySipPortTextField.setText(String.valueOf(configManager.getToPort()));
+        toSipPortTextField.setEnabled(true);
+        toSipPortTextField.setEditable(true);
+        toSipPortTextField.setText(String.valueOf(configManager.getToPort()));
 
         mediaIpTextField.setEnabled(true);
         mediaIpTextField.setEditable(true);
@@ -387,8 +387,8 @@ public class ClientFrame extends JFrame {
         optionTextGridPanel.add(hostNameTextField);
         optionTextGridPanel.add(sipIpTextField);
         optionTextGridPanel.add(sipPortTextField);
-        optionTextGridPanel.add(proxySipIpTextField);
-        optionTextGridPanel.add(proxySipPortTextField);
+        optionTextGridPanel.add(toSipIpTextField);
+        optionTextGridPanel.add(toSipPortTextField);
         optionTextGridPanel.add(mediaIpTextField);
         optionTextGridPanel.add(mediaPortTextField);
         optionTextGridPanel.add(recordPathTextField);
@@ -732,12 +732,12 @@ public class ClientFrame extends JFrame {
         return sipPortTextField.getText();
     }
 
-    public String readProxySipIpTextArea() {
-        return proxySipIpTextField.getText();
+    public String readToSipIpTextArea() {
+        return toSipIpTextField.getText();
     }
 
-    public String readProxySipPortTextArea() {
-        return proxySipPortTextField.getText();
+    public String readToSipPortTextArea() {
+        return toSipPortTextField.getText();
     }
 
     public String readMediaIpTextArea() {
@@ -1196,8 +1196,8 @@ public class ClientFrame extends JFrame {
                 hostNameTextField.setEnabled(false);
                 sipIpTextField.setEnabled(false);
                 sipPortTextField.setEnabled(false);
-                proxySipIpTextField.setEnabled(false);
-                proxySipPortTextField.setEnabled(false);
+                toSipIpTextField.setEnabled(false);
+                toSipPortTextField.setEnabled(false);
                 mediaIpTextField.setEnabled(false);
                 mediaPortTextField.setEnabled(false);
                 recordPathTextField.setEnabled(false);
@@ -1259,8 +1259,8 @@ public class ClientFrame extends JFrame {
                 hostNameTextField.setEnabled(true);
                 sipIpTextField.setEnabled(true);
                 sipPortTextField.setEnabled(true);
-                proxySipIpTextField.setEnabled(true);
-                proxySipPortTextField.setEnabled(true);
+                toSipIpTextField.setEnabled(true);
+                toSipPortTextField.setEnabled(true);
                 mediaIpTextField.setEnabled(true);
                 mediaPortTextField.setEnabled(true);
                 recordPathTextField.setEnabled(true);
@@ -1447,7 +1447,7 @@ public class ClientFrame extends JFrame {
                 }
 
                 ///////////////////////////////////////////////////////////////////////////
-                inputStr = String.valueOf(readProxySipIpTextArea());
+                inputStr = String.valueOf(readToSipIpTextArea());
                 if(inputStr == null || inputStr.length() == 0) {
                     logger.warn("TO-IP option is null. Fail to set the option.");
                     appendText("TO-IP option is null. Fail to set the option.\n");
@@ -1464,7 +1464,7 @@ public class ClientFrame extends JFrame {
                 }
 
                 ///////////////////////////////////////////////////////////////////////////
-                inputStr = String.valueOf(readProxySipPortTextArea());
+                inputStr = String.valueOf(readToSipPortTextArea());
                 if(inputStr == null || inputStr.length() == 0) {
                     logger.warn("TO-Port option is null. Fail to set the option.");
                     appendText("TO-Port option is null. Fail to set the option.\n");
@@ -1472,7 +1472,7 @@ public class ClientFrame extends JFrame {
                 }
 
                 inputStr = inputStr.trim();
-                logger.debug("|Proxy-SIPTO-Port: {}", inputStr);
+                logger.debug("|TO-Port: {}", inputStr);
                 if (configManager.getToPort() != Integer.parseInt(inputStr)) {
                     logger.debug("TO-Port option is changed. (before=[{}], after=[{}])", configManager.getToPort(), inputStr);
                     appendText("TO-Port option is changed. ([" + configManager.getToPort() + "] > [" + inputStr + "])\n");

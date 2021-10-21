@@ -1,6 +1,6 @@
 package signal.module;
 
-import media.sdp.base.SdpUnit;
+import media.sdp.base.Sdp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.LogFormatter;
@@ -161,9 +161,9 @@ public class CallManager {
             for (Map.Entry<String, CallInfo> entry : callMap.entrySet()) {
                 CallInfo callInfo = entry.getValue();
                 if (callInfo != null) {
-                    SdpUnit sdpUnit = callInfo.getSdpUnit();
-                    if (sdpUnit == null) { continue; }
-                    if (sdpUnit.getRemoteIp().equals(ip) && sdpUnit.getRemotePort() == port) {
+                    Sdp sdp = callInfo.getSdp();
+                    if (sdp == null) { continue; }
+                    if (sdp.getSessionOriginAddress().equals(ip) && sdp.getMediaPort(Sdp.AUDIO) == port) {
                         return callInfo;
                     }
                 }
@@ -222,18 +222,18 @@ public class CallManager {
         return null;
     }
 
-    public void addSdpUnitIntoCallInfo(String callId, SdpUnit sdpUnit) {
-        if (callId == null || sdpUnit == null) { return; }
+    public void addSdpIntoCallInfo(String callId, Sdp sdp) {
+        if (callId == null || sdp == null) { return; }
 
         try {
             callMapLock.lock();
 
             CallInfo callInfo = getCallInfo(callId);
             if (callInfo != null) {
-                callInfo.setSdpUnit(sdpUnit);
+                callInfo.setSdp(sdp);
             }
         } catch (Exception e) {
-            logger.warn("{} Fail to set the sdp unit into the call info. (sdpUnit={})", LogFormatter.getCallLogHeader(null, callId, null, null), sdpUnit, e);
+            logger.warn("{} Fail to set the sdp into the call info. (sdpUnit={})", LogFormatter.getCallLogHeader(null, callId, null, null), sdp, e);
         } finally {
             callMapLock.unlock();
         }

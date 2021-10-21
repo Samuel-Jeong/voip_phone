@@ -14,7 +14,7 @@ import media.netty.module.NettyChannel;
 import media.protocol.jrtp.JRtp;
 import media.protocol.rtp.RtpPacket;
 import media.record.RecordManager;
-import media.sdp.base.SdpUnit;
+import media.sdp.base.Sdp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.AppInstance;
@@ -264,8 +264,8 @@ public class UdpSender extends TaskUnit {
                     continue;
                 }
 
-                SdpUnit remoteSdpUnit = callInfo.getSdpUnit();
-                if (remoteSdpUnit == null) {
+                Sdp remoteSdp = callInfo.getSdp();
+                if (remoteSdp == null) {
                     return;
                 }
 
@@ -321,18 +321,18 @@ public class UdpSender extends TaskUnit {
                 );
 
                 if (nettyChannel.sendMessage(
-                        remoteSdpUnit.getId(),
+                        remoteSdp.getId(),
                         buf,
-                        remoteSdpUnit.getRemoteIp(),
-                        remoteSdpUnit.getRemotePort())) {
+                        remoteSdp.getSessionOriginAddress(),
+                        remoteSdp.getMediaPort(Sdp.AUDIO))) {
                     logger.trace("Send RTP. (callId={}, src={}, dst={}:{})",
-                            remoteSdpUnit.getCallId(), nettyChannel.getListenPort(),
-                            remoteSdpUnit.getRemoteIp(), remoteSdpUnit.getRemotePort()
+                            remoteSdp.getId(), nettyChannel.getListenPort(),
+                            remoteSdp.getSessionOriginAddress(), remoteSdp.getMediaPort(Sdp.AUDIO)
                     );
                 } else {
                     logger.warn("Fail to send RTP. (callId={}, src={}, dst={}:{})",
-                            remoteSdpUnit.getCallId(), nettyChannel.getListenPort(),
-                            remoteSdpUnit.getRemoteIp(), remoteSdpUnit.getRemotePort()
+                            remoteSdp.getId(), nettyChannel.getListenPort(),
+                            remoteSdp.getSessionOriginAddress(), remoteSdp.getMediaPort(Sdp.AUDIO)
                     );
                 }
 

@@ -1,6 +1,6 @@
 package signal.base;
 
-import media.sdp.base.SdpUnit;
+import media.sdp.base.Sdp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.LogFormatter;
@@ -40,7 +40,7 @@ public class CallInfo {
     private final String toSipIp;
     private final int toSipPort;
 
-    private SdpUnit sdpUnit;
+    private Sdp sdp;
 
     private CallIdHeader callIdHeader = null;
     private ViaHeader firstViaHeader = null;
@@ -202,12 +202,12 @@ public class CallInfo {
         return toSipPort;
     }
 
-    public SdpUnit getSdpUnit() {
-        return sdpUnit;
+    public Sdp getSdp() {
+        return sdp;
     }
 
-    public void setSdpUnit(SdpUnit sdpUnit) {
-        this.sdpUnit = sdpUnit;
+    public void setSdp(Sdp sdp) {
+        this.sdp = sdp;
     }
 
     public CallIdHeader getCallIdHeader() {
@@ -314,7 +314,7 @@ public class CallInfo {
                 ", fromSipPort=" + fromSipPort +
                 ", toSipIp='" + toSipIp + '\'' +
                 ", toSipPort=" + toSipPort +
-                ", sdpUnit=" + sdpUnit +
+                ", sdp=" + sdp +
                 ", callIdHeader=" + callIdHeader +
                 '}';
     }

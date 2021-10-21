@@ -1,13 +1,15 @@
 package config;
 
-import client.gui.FrameManager;
+import org.apache.commons.net.ntp.TimeStamp;
 import media.MediaManager;
+import media.sdp.SdpParser;
+import media.sdp.base.Sdp;
 import org.ini4j.Ini;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.ServiceManager;
 
-import javax.swing.*;
+import javax.sound.sampled.AudioFormat;
 import java.io.File;
 import java.io.IOException;
 
@@ -27,6 +29,7 @@ public class ConfigManager {
     public static final String SECTION_SIGNAL = "SIGNAL"; // SIGNAL Section 이름
     public static final String SECTION_MEDIA = "MEDIA"; // MEDIA Section 이름
     public static final String SECTION_RECORD = "RECORD"; // RECORD Section 이름
+    private static final String SECTION_SDP = "SDP"; // SDP Section 이름
 
     // Field String
     public static final String FIELD_UDP_RCV_BUFFER_SIZE = "UDP_RCV_BUFFER_SIZE";
@@ -97,6 +100,22 @@ public class ConfigManager {
     private boolean encFile = false; // Encoded File 녹취 여부
     private boolean decFile = false; // Decoded File 녹취 여부
 
+    // SDP
+    private final SdpParser sdpParser = new SdpParser();
+    private String version;
+    private String origin;
+    private String session;
+    private String time;
+    private String connection;
+    private String media;
+    String[] alawAttributeList;
+    String[] ulawAttributeList;
+    String[] amrAttributeList;
+    String[] amrWbAttributeList;
+    String[] evsAttributeList;
+    String[] dtmfAttributeList;
+    String[] attributeList;
+
     ////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -125,6 +144,7 @@ public class ConfigManager {
             loadSignalConfig();
             loadMediaConfig();
             loadRecordConfig();
+            loadSdpConfig();
 
             logger.info("Load config [{}]", configPath);
         } catch (IOException e) {
@@ -251,6 +271,215 @@ public class ConfigManager {
         this.decFile = Boolean.parseBoolean(getIniValue(SECTION_RECORD, FIELD_DEC_FILE));
 
         logger.debug("Load [{}] config...(OK)", SECTION_RECORD);
+    }
+
+    private void loadSdpConfig() {
+        version = getIniValue(SECTION_SDP, "VERSION");
+        if (version == null) {
+            logger.error("[SECTION_SDP] VERSION IS NOT DEFINED IN THE LOCAL SDP.");
+            System.exit(1);
+        }
+        version = "v=" + version + "\r\n";
+
+        origin = getIniValue(SECTION_SDP, "ORIGIN");
+        if (origin == null) {
+            logger.error("[SECTION_SDP] ORIGIN IS NOT DEFINED IN THE LOCAL SDP.");
+            System.exit(1);
+        }
+
+        session = getIniValue(SECTION_SDP, "SESSION");
+        if (session == null) {
+            logger.error("[SECTION_SDP] SESSION IS NOT DEFINED IN THE LOCAL SDP.");
+            System.exit(1);
+        }
+        session = "s=" + session + "\r\n";
+
+        time = getIniValue(SECTION_SDP, "TIME");
+        if (time == null) {
+            logger.error("[SECTION_SDP] TIME IS NOT DEFINED IN THE LOCAL SDP.");
+            System.exit(1);
+        }
+        time = "t=" + time + "\r\n";
+
+        connection = getIniValue(SECTION_SDP, "CONNECTION");
+        if (connection == null) {
+            logger.error("[SECTION_SDP] CONNECTION IS NOT DEFINED IN THE LOCAL SDP.");
+            System.exit(1);
+        };
+
+        media = getIniValue(SECTION_SDP, "MEDIA");
+        if (media == null) {
+            logger.error("[SECTION_SDP] MEDIA IS NOT DEFINED IN THE LOCAL SDP.");
+            System.exit(1);
+        }
+
+        int attrCount = Integer.parseInt(getIniValue(SECTION_SDP, "ATTR_COUNT"));
+        if (attrCount <= 0) {
+            logger.error("[SECTION_SDP] ATTR_COUNT IS NOT DEFINED IN THE LOCAL SDP.");
+            System.exit(1);
+        }
+
+        alawAttributeList = new String[1];
+        String attributeAlaw = getIniValue(SECTION_SDP, String.format("ATTR_ALAW_%d", 0));
+        if (attributeAlaw == null) {
+            logger.error("[SECTION_SDP] ATTR_ALAW_{} IS NOT DEFINED IN THE LOCAL SDP.", 0);
+            System.exit(1);
+        }
+        alawAttributeList[0] = attributeAlaw;
+
+        ulawAttributeList = new String[1];
+        String attributeUlaw = getIniValue(SECTION_SDP, String.format("ATTR_ULAW_%d", 0));
+        if (attributeUlaw == null) {
+            logger.error("[SECTION_SDP] ATTR_ULAW_{} IS NOT DEFINED IN THE LOCAL SDP.", 0);
+            System.exit(1);
+        }
+        ulawAttributeList[0] = attributeUlaw;
+
+        amrAttributeList = new String[2];
+        for (int i = 0; i < 2; i++) {
+            String attribute = getIniValue(SECTION_SDP, String.format("ATTR_AMR_%d", i));
+            if (attribute == null) {
+                logger.error("[SECTION_SDP] ATTR_AMR_{} IS NOT DEFINED IN THE LOCAL SDP.", i);
+                System.exit(1);
+            }
+            amrAttributeList[i] = attribute;
+        }
+
+        amrWbAttributeList = new String[2];
+        for (int i = 0; i < 2; i++) {
+            String attribute = getIniValue(SECTION_SDP, String.format("ATTR_AMRWB_%d", i));
+            if (attribute == null) {
+                logger.error("[SECTION_SDP] ATTR_AMRWB_{} IS NOT DEFINED IN THE LOCAL SDP.", i);
+                System.exit(1);
+            }
+            amrWbAttributeList[i] = attribute;
+        }
+
+        evsAttributeList = new String[2];
+        for (int i = 0; i < 2; i++) {
+            String attribute = getIniValue(SECTION_SDP, String.format("ATTR_EVS_%d", i));
+            if (attribute == null) {
+                logger.error("[SECTION_SDP] ATTR_EVS_{} IS NOT DEFINED IN THE LOCAL SDP.", i);
+                System.exit(1);
+            }
+            evsAttributeList[i] = attribute;
+        }
+
+        dtmfAttributeList = new String[2];
+        for (int i = 0; i < 2; i++) {
+            String attribute = getIniValue(SECTION_SDP, String.format("ATTR_DTMF_%d", i));
+            if (attribute == null) {
+                logger.error("[SECTION_SDP] ATTR_DTMF_{} IS NOT DEFINED IN THE LOCAL SDP.", i);
+                System.exit(1);
+            }
+            dtmfAttributeList[i] = attribute;
+        }
+
+        attributeList = new String[attrCount];
+        for (int i = 0; i < attrCount; i++) {
+            String attribute = getIniValue(SECTION_SDP, String.format("ATTR_%d", i));
+            if (attribute == null) {
+                logger.error("[SECTION_SDP] ATTR_{} IS NOT DEFINED IN THE LOCAL SDP.", i);
+                System.exit(1);
+            }
+            attributeList[i] = attribute;
+        }
+    }
+
+    public Sdp loadSdpConfig(String callId) {
+        logger.debug("nettyServerIp: {}, nettyServerPort: {}", nettyServerIp, nettyServerPort);
+
+
+        StringBuilder sdpStr = new StringBuilder();
+
+        // 1) Session
+        // 1-1) Version
+        sdpStr.append(version);
+
+        // 1-2) Origin
+        /*
+            - Using NTP Timestamp
+            [RFC 4566]
+              <sess-id> is a numeric string such that the tuple of <username>,
+              <sess-id>, <nettype>, <addrtype>, and <unicast-address> forms a
+              globally unique identifier for the session.  The method of
+              <sess-id> allocation is up to the creating tool, but it has been
+              suggested that a Network Time Protocol (NTP) format timestamp be
+              used to ensure uniqueness.
+         */
+        String originSessionId = String.valueOf(TimeStamp.getCurrentTime().getTime());
+        String curOrigin = String.format(this.origin, originSessionId, nettyServerIp);
+        curOrigin = "o=" + curOrigin + "\r\n";
+        sdpStr.append(curOrigin);
+
+        // 1-3) Session
+        sdpStr.append(session);
+
+        // 3) Media
+        // 3-1) Connection
+        String connection = String.format(this.connection, nettyServerIp);
+        connection = "c=" + connection + "\r\n";
+        sdpStr.append(connection);
+
+        // 2) Time
+        // 2-1) Time
+        sdpStr.append(time);
+
+        // 3) Media
+        // 3-2) Media
+        sdpStr.append("m=");
+        String media = String.format(this.media, nettyServerPort);
+        if (dtmf) { media += " 101"; }
+        sdpStr.append(media);
+        sdpStr.append("\r\n");
+
+        // 3-3) Attribute
+        String[] curCodecAttributeList;
+        if (priorityAudioCodec.equals(AudioFormat.Encoding.ALAW.toString())) {
+            curCodecAttributeList = alawAttributeList;
+        } else if (priorityAudioCodec.equals(AudioFormat.Encoding.ULAW.toString())) {
+            curCodecAttributeList = ulawAttributeList;
+        } else if (priorityAudioCodec.equals(MediaManager.AMR_NB)) {
+            curCodecAttributeList = amrAttributeList;
+        } else if (priorityAudioCodec.equals(MediaManager.AMR_WB)) {
+            curCodecAttributeList = amrWbAttributeList;
+        } else if (priorityAudioCodec.equals(MediaManager.EVS)) {
+            curCodecAttributeList = evsAttributeList;
+        } else {
+            return null;
+        }
+
+        for (String attribute : curCodecAttributeList) {
+            sdpStr.append("a=");
+            sdpStr.append(attribute);
+            sdpStr.append("\r\n");
+        }
+
+        if (dtmf) {
+            for (String attribute : dtmfAttributeList) {
+                sdpStr.append("a=");
+                sdpStr.append(attribute);
+                sdpStr.append("\r\n");
+            }
+        }
+
+        for (String attribute : attributeList) {
+            sdpStr.append("a=");
+            sdpStr.append(attribute);
+            sdpStr.append("\r\n");
+        }
+
+        Sdp amfSdp = null;
+
+        try {
+            amfSdp = sdpParser.parseSdp(callId, sdpStr.toString());
+            logger.debug("({}) Local SDP=\n{}", callId, amfSdp.getData(false));
+        } catch (Exception e) {
+            logger.error("({}) Fail to parse the local sdp. ({})", callId, sdpStr, e);
+            System.exit(1);
+        }
+
+        return amfSdp;
     }
 
     ////////////////////////////////////////////////////////////////////////////////
