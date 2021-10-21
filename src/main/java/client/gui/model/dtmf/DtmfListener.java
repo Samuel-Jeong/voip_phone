@@ -3,7 +3,6 @@ package client.gui.model.dtmf;
 import client.VoipClient;
 import client.module.SoundHandler;
 import client.module.base.MediaFrame;
-import client.module.base.UdpReceiver;
 import client.module.base.UdpSender;
 import config.ConfigManager;
 import media.dtmf.DtmfInbandTone;

@@ -15,7 +15,10 @@ import signal.SignalManager;
 import signal.base.CallInfo;
 import signal.module.CallManager;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.TargetDataLine;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;

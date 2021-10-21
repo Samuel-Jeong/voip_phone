@@ -1,9 +1,9 @@
 package config;
 
-import org.apache.commons.net.ntp.TimeStamp;
 import media.MediaManager;
 import media.sdp.SdpParser;
 import media.sdp.base.Sdp;
+import org.apache.commons.net.ntp.TimeStamp;
 import org.ini4j.Ini;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -305,7 +305,7 @@ public class ConfigManager {
         if (connection == null) {
             logger.error("[SECTION_SDP] CONNECTION IS NOT DEFINED IN THE LOCAL SDP.");
             System.exit(1);
-        };
+        }
 
         media = getIniValue(SECTION_SDP, "MEDIA");
         if (media == null) {
@@ -387,99 +387,103 @@ public class ConfigManager {
     }
 
     public Sdp loadSdpConfig(String callId) {
-        logger.debug("nettyServerIp: {}, nettyServerPort: {}", nettyServerIp, nettyServerPort);
+        try {
+            StringBuilder sdpStr = new StringBuilder();
 
+            // 1) Session
+            // 1-1) Version
+            sdpStr.append(version);
 
-        StringBuilder sdpStr = new StringBuilder();
+            // 1-2) Origin
+            /*
+                - Using NTP Timestamp
+                [RFC 4566]
+                  <sess-id> is a numeric string such that the tuple of <username>,
+                  <sess-id>, <nettype>, <addrtype>, and <unicast-address> forms a
+                  globally unique identifier for the session.  The method of
+                  <sess-id> allocation is up to the creating tool, but it has been
+                  suggested that a Network Time Protocol (NTP) format timestamp be
+                  used to ensure uniqueness.
+             */
+            String originSessionId = String.valueOf(TimeStamp.getCurrentTime().getTime());
+            String curOrigin = String.format(this.origin, originSessionId, nettyServerIp);
+            curOrigin = "o=" + curOrigin + "\r\n";
+            sdpStr.append(curOrigin);
 
-        // 1) Session
-        // 1-1) Version
-        sdpStr.append(version);
+            // 1-3) Session
+            sdpStr.append(session);
 
-        // 1-2) Origin
-        /*
-            - Using NTP Timestamp
-            [RFC 4566]
-              <sess-id> is a numeric string such that the tuple of <username>,
-              <sess-id>, <nettype>, <addrtype>, and <unicast-address> forms a
-              globally unique identifier for the session.  The method of
-              <sess-id> allocation is up to the creating tool, but it has been
-              suggested that a Network Time Protocol (NTP) format timestamp be
-              used to ensure uniqueness.
-         */
-        String originSessionId = String.valueOf(TimeStamp.getCurrentTime().getTime());
-        String curOrigin = String.format(this.origin, originSessionId, nettyServerIp);
-        curOrigin = "o=" + curOrigin + "\r\n";
-        sdpStr.append(curOrigin);
+            // 3) Media
+            // 3-1) Connection
+            String connection = String.format(this.connection, nettyServerIp);
+            connection = "c=" + connection + "\r\n";
+            sdpStr.append(connection);
 
-        // 1-3) Session
-        sdpStr.append(session);
+            // 2) Time
+            // 2-1) Time
+            sdpStr.append(time);
 
-        // 3) Media
-        // 3-1) Connection
-        String connection = String.format(this.connection, nettyServerIp);
-        connection = "c=" + connection + "\r\n";
-        sdpStr.append(connection);
-
-        // 2) Time
-        // 2-1) Time
-        sdpStr.append(time);
-
-        // 3) Media
-        // 3-2) Media
-        sdpStr.append("m=");
-        String media = String.format(this.media, nettyServerPort);
-        if (dtmf) { media += " 101"; }
-        sdpStr.append(media);
-        sdpStr.append("\r\n");
-
-        // 3-3) Attribute
-        String[] curCodecAttributeList;
-        if (priorityAudioCodec.equals(AudioFormat.Encoding.ALAW.toString())) {
-            curCodecAttributeList = alawAttributeList;
-        } else if (priorityAudioCodec.equals(AudioFormat.Encoding.ULAW.toString())) {
-            curCodecAttributeList = ulawAttributeList;
-        } else if (priorityAudioCodec.equals(MediaManager.AMR_NB)) {
-            curCodecAttributeList = amrAttributeList;
-        } else if (priorityAudioCodec.equals(MediaManager.AMR_WB)) {
-            curCodecAttributeList = amrWbAttributeList;
-        } else if (priorityAudioCodec.equals(MediaManager.EVS)) {
-            curCodecAttributeList = evsAttributeList;
-        } else {
-            return null;
-        }
-
-        for (String attribute : curCodecAttributeList) {
-            sdpStr.append("a=");
-            sdpStr.append(attribute);
+            // 3) Media
+            // 3-2) Media
+            sdpStr.append("m=");
+            String media = String.format(this.media, nettyServerPort);
+            if (dtmf) {
+                media += " 101";
+            }
+            sdpStr.append(media);
             sdpStr.append("\r\n");
-        }
 
-        if (dtmf) {
-            for (String attribute : dtmfAttributeList) {
+            // 3-3) Attribute
+            String[] curCodecAttributeList;
+            if (priorityAudioCodec.equals(AudioFormat.Encoding.ALAW.toString())) {
+                curCodecAttributeList = alawAttributeList;
+            } else if (priorityAudioCodec.equals(AudioFormat.Encoding.ULAW.toString())) {
+                curCodecAttributeList = ulawAttributeList;
+            } else if (priorityAudioCodec.equals(MediaManager.AMR_NB)) {
+                curCodecAttributeList = amrAttributeList;
+            } else if (priorityAudioCodec.equals(MediaManager.AMR_WB)) {
+                curCodecAttributeList = amrWbAttributeList;
+            } else if (priorityAudioCodec.equals(MediaManager.EVS)) {
+                curCodecAttributeList = evsAttributeList;
+            } else {
+                return null;
+            }
+
+            for (String attribute : curCodecAttributeList) {
                 sdpStr.append("a=");
                 sdpStr.append(attribute);
                 sdpStr.append("\r\n");
             }
-        }
 
-        for (String attribute : attributeList) {
-            sdpStr.append("a=");
-            sdpStr.append(attribute);
-            sdpStr.append("\r\n");
-        }
+            if (dtmf) {
+                for (String attribute : dtmfAttributeList) {
+                    sdpStr.append("a=");
+                    sdpStr.append(attribute);
+                    sdpStr.append("\r\n");
+                }
+            }
 
-        Sdp amfSdp = null;
+            for (String attribute : attributeList) {
+                sdpStr.append("a=");
+                sdpStr.append(attribute);
+                sdpStr.append("\r\n");
+            }
 
-        try {
-            amfSdp = sdpParser.parseSdp(callId, sdpStr.toString());
-            logger.debug("({}) Local SDP=\n{}", callId, amfSdp.getData(false));
+            Sdp amfSdp = null;
+
+            try {
+                amfSdp = sdpParser.parseSdp(callId, sdpStr.toString());
+                logger.debug("({}) Local SDP=\n{}", callId, amfSdp.getData(false));
+            } catch (Exception e) {
+                logger.error("({}) Fail to parse the local sdp. ({})", callId, sdpStr, e);
+                System.exit(1);
+            }
+
+            return amfSdp;
         } catch (Exception e) {
-            logger.error("({}) Fail to parse the local sdp. ({})", callId, sdpStr, e);
-            System.exit(1);
+            logger.warn("Fail to load the local sdp.", e);
+            return null;
         }
-
-        return amfSdp;
     }
 
     ////////////////////////////////////////////////////////////////////////////////

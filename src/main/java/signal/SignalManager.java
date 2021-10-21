@@ -5,6 +5,7 @@ import media.sdp.base.Sdp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.AppInstance;
+import service.ServiceManager;
 import signal.module.NonceGenerator;
 import signal.module.SipUtil;
 
@@ -46,6 +47,9 @@ public class SignalManager {
 
         ConfigManager configManager = AppInstance.getInstance().getConfigManager();
         localSdp = configManager.loadSdpConfig("LOCAL");
+        if (localSdp == null) {
+            ServiceManager.getInstance().stop();
+        }
     }
 
     public void start () {
