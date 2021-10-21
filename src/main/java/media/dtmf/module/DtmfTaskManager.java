@@ -1,5 +1,6 @@
 package media.dtmf.module;
 
+import client.gui.model.dtmf.DtmfSoundGenerator;
 import media.dtmf.base.DtmfTask;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -46,8 +47,7 @@ public class DtmfTaskManager {
                 dtmfTask.getDigit(),
                 dtmfTask.getVolume(),
                 dtmfTask.getEventDuration(),
-                true,
-                dtmfTask.getData()
+                true
         );
     }
 

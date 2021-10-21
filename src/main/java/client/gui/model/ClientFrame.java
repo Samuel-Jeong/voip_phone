@@ -2,6 +2,7 @@ package client.gui.model;
 
 import client.VoipClient;
 import client.gui.model.dtmf.DtmfPanel;
+import client.gui.model.dtmf.DtmfSoundGenerator;
 import client.gui.model.wav.WavPanel;
 import config.ConfigManager;
 import media.MediaManager;

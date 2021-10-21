@@ -46,9 +46,10 @@ public class DtmfTask extends TaskUnit {
                 digit,
                 volume,
                 eventDuration,
-                false,
-                data
+                false
         );
+
+        eventDuration += 80;
     }
 
     ////////////////////////////////////////////////////////////////////////////////

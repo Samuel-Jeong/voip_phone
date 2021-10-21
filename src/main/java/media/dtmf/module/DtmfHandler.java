@@ -1,6 +1,7 @@
 package media.dtmf.module;
 
 import client.VoipClient;
+import client.gui.model.dtmf.DtmfSoundGenerator;
 import client.module.SoundHandler;
 import client.module.base.MediaFrame;
 import client.module.base.UdpSender;
@@ -11,8 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.AppInstance;
 
-import javax.sound.sampled.SourceDataLine;
-
 /**
  * @class public class DtmfHandler
  * @brief DtmfHandler class
@@ -21,16 +20,10 @@ public class DtmfHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(DtmfHandler.class);
 
-    public static void handle (int digit, int volume, int eventDuration, boolean isFinished, byte[] data) {
+    public static void handle (int digit, int volume, int eventDuration, boolean isFinished) {
         ConfigManager configManager = AppInstance.getInstance().getConfigManager();
         if (!configManager.isUseClient()) {
             return;
-        }
-
-        // 1) 내 스피커로 DTMF 오디오 데이터 송출
-        SourceDataLine sourceDataLine = VoipClient.getInstance().getSourceLine();
-        if (sourceDataLine != null) {
-            sourceDataLine.write(data, 0, data.length);
         }
 
         if (VoipClient.getInstance().isStarted()) {
@@ -39,24 +32,17 @@ public class DtmfHandler {
                 return;
             }
 
-            DtmfUnit dtmfUnit = new DtmfUnit(
-                    digit,
-                    isFinished,
-                    false,
-                    volume,
-                    eventDuration
-            );
-            logger.debug("DTMF UNIT: {}", dtmfUnit);
-
-            // 2) 상대방한테 DTMF 오디오 데이터 송출
+            // 상대방한테 DTMF 오디오 데이터 송출
             UdpSender udpSender = soundHandler.getUdpSender();
             if (udpSender != null) {
+                DtmfUnit dtmfUnit = new DtmfUnit(digit, isFinished, false, volume, eventDuration);
                 udpSender.getSendBuffer().offer(
                         new MediaFrame(
                                 true,
                                 dtmfUnit.getData()
                         )
                 );
+                logger.debug("Send DTMF UNIT: {}", dtmfUnit);
             }
         }
     }

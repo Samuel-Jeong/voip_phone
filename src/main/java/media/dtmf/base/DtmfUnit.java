@@ -90,10 +90,14 @@ public class DtmfUnit {
             this.data = data;
 
             this.digit = data[0];
-
             byte temp = data[1];
+
+            // 0xc0 : 1100 0000
+            // 0x80 : 1000 0000
+            // 0x40 : 0100 0000
             isEndOfEvent = (temp & 0x80) != 0;
-            volume = temp & 0x7f;
+            isReserved = (temp & 0x40) != 0;
+            volume = temp & 0x3f;
 
             eventDuration = (data[2] & 0xff) << 8 | (data[3] & 0xff);
         }
@@ -108,8 +112,26 @@ public class DtmfUnit {
         newData[0] = (byte) digit;
         this.digit = digit;
 
-        //byte[] volumeData = ByteUtil.shortToBytes(volume, false);
-        newData[1] = isEndOfEvent? (byte) (volume | 0x80) : (byte) (volume | 0x7f);
+        // 0xc0 : 1100 0000
+        // 0x80 : 1000 0000
+        // 0x40 : 0100 0000
+        if (isEndOfEvent) {
+            if (isReserved) {
+                newData[1] = (byte) (volume | 0xc0);
+            } else {
+                newData[1] = (byte) (volume | 0x80);
+            }
+        } else {
+            if (isReserved) {
+                newData[1] = (byte) (volume | 0x40);
+            } else {
+                // ex) volume=12 > 0x0c (0000 1100)
+                newData[1] = (byte) (volume);
+            }
+        }
+
+        this.isEndOfEvent = isEndOfEvent;
+        this.isReserved = isReserved;
         this.volume = volume;
 
         newData[2] = (byte) (eventDuration >> 8);

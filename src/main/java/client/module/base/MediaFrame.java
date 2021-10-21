@@ -6,7 +6,7 @@ package client.module.base;
  */
 public class MediaFrame {
 
-    private boolean isDtmf = false;
+    private boolean isDtmf;
     private byte[] data;
 
     public MediaFrame(boolean isDtmf, byte[] data) {
