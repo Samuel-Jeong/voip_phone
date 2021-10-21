@@ -10,6 +10,7 @@ import media.netty.module.NettyChannel;
 import media.sdp.SdpParser;
 import media.sdp.base.Sdp;
 import media.sdp.base.attribute.RtpAttribute;
+import media.sdp.base.media.MediaFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.*;
@@ -1013,17 +1014,17 @@ public class SipUtil implements SipListener {
         try {
             CallInfo callInfo = CallManager.getInstance().getCallInfo(callId);
             if (callInfo == null) {
-                logger.warn("Fail to send the invite 200 OK. Not found the callInfo. (callId={})", callId);
+                logger.warn("({}) Fail to send the invite 200 OK. Not found the callInfo.", callId);
                 return false;
             }
 
             if (callInfo.getInviteRequest() == null || callInfo.getInviteServerTransaction() == null) {
-                logger.warn("Fail to send 200 OK for INVITE. Not found the invite server transaction. ({})", callId);
+                logger.warn("({}) Fail to send 200 OK for INVITE. Not found the invite server transaction.", callId);
                 return false;
             }
 
             if (callInfo.getIsCallCanceled()) {
-                logger.warn("Call is canceled. Fail to send the invite 200 ok. ({})", callId);
+                logger.warn("({}) Call is canceled. Fail to send the invite 200 ok.", callId);
                 return false;
             }
 
@@ -1036,7 +1037,7 @@ public class SipUtil implements SipListener {
                     nettyChannel = NettyChannelManager.getInstance().getProxyChannel(callId);
                     listenPort = nettyChannel.getListenPort();
                 } else {
-                    logger.warn("Fail to send invite 200 ok. (callId={})", callId);
+                    logger.warn("({}) Fail to send invite 200 ok.", callId);
                     sendCancel(
                             callId,
                             callInfo.getFromNo(),
@@ -1058,21 +1059,49 @@ public class SipUtil implements SipListener {
             Response okResponse = messageFactory.createResponse(Response.OK, callInfo.getInviteRequest());
             okResponse.addHeader(contactHeader);
 
-            ContentTypeHeader contentTypeHeader = headerFactory.createContentTypeHeader("application", "sdp");
-            Sdp localSdp = SignalManager.getInstance().getLocalSdp();
-            localSdp.setMediaPort(Sdp.AUDIO, listenPort);
-            byte[] contents = localSdp.getData(false).getBytes();
-            okResponse.setContent(contents, contentTypeHeader);
+            byte[] rawSdpData = callInfo.getInviteRequest().getRawContent();
+            if (rawSdpData != null) {
+                SdpParser sdpParser = new SdpParser();
+                Sdp remoteSdp = sdpParser.parseSdp(callId, new String(rawSdpData));
+                Sdp localSdp = SignalManager.getInstance().getLocalSdp();
+                localSdp.setMediaPort(Sdp.AUDIO, listenPort);
 
-            callInfo.getInviteServerTransaction().sendResponse(okResponse);
-            logger.debug("Send 200 OK for INVITE: {}", okResponse);
-            callInfo.setIsInviteAccepted(true);
+                if (remoteSdp != null) {
+                    if (remoteSdp.intersect(Sdp.AUDIO, SignalManager.getInstance().getLocalSdp())) {
+                        List<RtpAttribute> otherSdpCodecList = remoteSdp.getMediaDescriptionFactory().getIntersectedCodecList(Sdp.AUDIO);
+                        String remoteCodec = otherSdpCodecList.get(0).getRtpMapAttributeFactory().getCodecName();
+                        String localCodec = MediaManager.getInstance().getPriorityCodec();
+                        logger.debug("({}) RemoteCodec: {}, LocalCodec: {}", callId, remoteCodec, localCodec);
+
+                        if (!localCodec.equals(remoteCodec)) {
+                            logger.debug("({}) Send CANCEL to remote call.", callId);
+                            if (FrameManager.getInstance().processByeToFrame(ServiceManager.CLIENT_FRAME_NAME)) {
+                                logger.debug("Success to process the cancel request to [{}] frame. (callId={})", ServiceManager.CLIENT_FRAME_NAME, callId);
+                            }
+                            sendCancel(callId, callInfo.getToNo(), callInfo.getToSipIp(), callInfo.getToSipPort());
+                            return false;
+                        }
+                    }
+                }
+
+                byte[] contents = localSdp.getData(false).getBytes();
+                ContentTypeHeader contentTypeHeader = headerFactory.createContentTypeHeader("application", "sdp");
+                okResponse.setContent(contents, contentTypeHeader);
+
+                callInfo.getInviteServerTransaction().sendResponse(okResponse);
+                logger.debug("({}) Send 200 OK for INVITE: {}", callId, okResponse);
+                callInfo.setIsInviteAccepted(true);
+            } else {
+                // NO SDP
+                logger.debug("({}) NO SDP is detected. Fail to send 200 ok for the invite request.", callId);
+                return false;
+            }
 
             if (configManager.isUseClient()) {
                 VoipClient.getInstance().start();
             }
         } catch (Exception e) {
-            logger.warn("Fail to send 200 OK for the invite request.", e);
+            logger.warn("({}) Fail to send 200 OK for the invite request.", callId, e);
         }
 
         return true;
@@ -1565,7 +1594,7 @@ public class SipUtil implements SipListener {
             // INVITE 200 OK 처리
             if (methodName.equals(Request.INVITE)) {
                 if (callInfo.getIsCallCanceled()) {
-                    logger.warn("Call is canceled. Fail to process the invite 200 ok. (callId={})", callId);
+                    logger.warn("({}) Call is canceled. Fail to process the invite 200 ok.", callId);
                     return;
                 }
 
@@ -1584,17 +1613,17 @@ public class SipUtil implements SipListener {
                                 List<RtpAttribute> otherSdpCodecList = remoteSdp.getMediaDescriptionFactory().getIntersectedCodecList(Sdp.AUDIO);
                                 String remoteCodec = otherSdpCodecList.get(0).getRtpMapAttributeFactory().getCodecName();
                                 String localCodec = MediaManager.getInstance().getPriorityCodec();
-                                logger.debug("RemoteCodec: {}, LocalCodec: {}", remoteCodec, localCodec);
+                                logger.debug("({}) RemoteCodec: {}, LocalCodec: {}", callId, remoteCodec, localCodec);
 
-                                if (remoteCodec.equals(localCodec)) {
+                                if (localCodec.equals(remoteCodec)) {
                                     CallManager.getInstance().addSdpIntoCallInfo(callId, remoteSdp);
                                 } else {
                                     sendAck(responseEvent);
-                                    sendBye(callInfo.getCallId(), callInfo.getToNo(), callInfo.getToSipIp(), callInfo.getToSipPort());
-                                    logger.debug("Send BYE to remote call. ({})", callId);
+                                    sendBye(callId, callInfo.getToNo(), callInfo.getToSipIp(), callInfo.getToSipPort());
+                                    logger.debug("({}) Send BYE to remote call.", callId);
 
                                     if (FrameManager.getInstance().processByeToFrame(ServiceManager.CLIENT_FRAME_NAME)) {
-                                        logger.debug("Success to process the bye request to [{}] frame. (callId={})", ServiceManager.CLIENT_FRAME_NAME, callId);
+                                        logger.debug("({}) Success to process the bye request to [{}] frame.", callId, ServiceManager.CLIENT_FRAME_NAME);
                                     }
                                     return;
                                 }
@@ -1609,10 +1638,10 @@ public class SipUtil implements SipListener {
                                     if (sendInviteOk(remoteCallInfo.getCallId())) {
                                         callInfo.setRemoteCallInfo(remoteCallInfo);
                                         remoteCallInfo.setRemoteCallInfo(callInfo);
-                                        logger.warn("Success to set the remote peer and send the invite 200 ok response. (callId={}, remoteCallId={})", callId, remoteCallInfo.getCallId());
+                                        logger.warn("({}) Success to set the remote peer and send the invite 200 ok response. (remoteCallId={})", callId, remoteCallInfo.getCallId());
                                     }
                                 } else {
-                                    logger.warn("Fail to set the remote peer and send the invite 200 ok response. (callId={})", callId);
+                                    logger.warn("({}) Fail to set the remote peer and send the invite 200 ok response.", callId);
                                 }
                             }
                         } else {
@@ -1622,7 +1651,7 @@ public class SipUtil implements SipListener {
                         // INVITE 200 OK 인 경우 ACK 전송
                         sendAck(responseEvent);
                     } catch (Exception e) {
-                        logger.warn("Fail to process the invite 200 OK. (callId={})", callId, e);
+                        logger.warn("({}) Fail to process the invite 200 OK.", callId, e);
                     }
                 }
             } else if (methodName.equals(Request.REGISTER)) {
@@ -1632,14 +1661,14 @@ public class SipUtil implements SipListener {
                     String fromNo = inviteFromHeader.getAddress().getDisplayName();
 
                     if (FrameManager.getInstance().processRegisterToFrame(ServiceManager.CLIENT_FRAME_NAME, fromNo)) {
-                        logger.debug("Success to process the register to [{}] frame. (callId={})", ServiceManager.CLIENT_FRAME_NAME, callId);
+                        logger.debug("({}) Success to process the register to [{}] frame.", ServiceManager.CLIENT_FRAME_NAME, callId);
                     }
 
-                    logger.debug("Success to register. (callId={}, mdn={})", callId, fromNo);
+                    logger.debug("({}) Success to register. (mdn={})", callId, fromNo);
                 }
             }
         } catch (Exception e) {
-            logger.warn("Fail to process the 200 OK response for the {} request", methodName, e);
+            logger.warn("({}) Fail to process the 200 OK response for the {} request", callId, methodName, e);
         }
     }
 
