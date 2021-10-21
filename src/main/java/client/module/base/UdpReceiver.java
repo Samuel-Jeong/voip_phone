@@ -2,7 +2,7 @@ package client.module.base;
 
 import client.VoipClient;
 import media.MediaManager;
-import media.dtmf.DtmfUnit;
+import media.dtmf.base.DtmfUnit;
 import media.module.codec.amr.AmrManager;
 import media.module.codec.evs.EvsManager;
 import media.module.codec.pcm.ALawTranscoder;

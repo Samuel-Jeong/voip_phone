@@ -1,4 +1,4 @@
-package media.dtmf;
+package media.dtmf.base;
 
 /*
   Manages the generation of the inband DMTF signal. A signal is identified by a
