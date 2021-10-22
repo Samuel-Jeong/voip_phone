@@ -432,13 +432,13 @@ public class AudioMixer {
                 }
 
                 // ALAW
-                if (MediaManager.getInstance().getPriorityCodec().equals(AudioFormat.Encoding.ALAW.toString())) {
+                if (MediaManager.getInstance().getPriorityCodec().equals(MediaManager.ALAW)) {
                     data = ALawTranscoder.decode(
                             data
                     );
                 }
                 // ULAW
-                else if (MediaManager.getInstance().getPriorityCodec().equals(AudioFormat.Encoding.ULAW.toString())) {
+                else if (MediaManager.getInstance().getPriorityCodec().equals(MediaManager.ULAW)) {
                     data = ULawTranscoder.decode(
                             data
                     );

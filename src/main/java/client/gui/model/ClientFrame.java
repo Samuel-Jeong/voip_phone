@@ -442,9 +442,9 @@ public class ClientFrame extends JFrame {
         audioCodecSelectCombo = new JComboBox(audioCodecStrArray);
 
         ConfigManager configManager = AppInstance.getInstance().getConfigManager();
-        if (configManager.getPriorityAudioCodec().equals(AudioFormat.Encoding.ALAW.toString())) {
+        if (configManager.getPriorityAudioCodec().equals(MediaManager.ALAW)) {
             audioCodecSelectCombo.setSelectedItem(AudioFormat.Encoding.ALAW);
-        } else if (configManager.getPriorityAudioCodec().equals(AudioFormat.Encoding.ULAW.toString())) {
+        } else if (configManager.getPriorityAudioCodec().equals(MediaManager.ULAW)) {
             audioCodecSelectCombo.setSelectedItem(AudioFormat.Encoding.ULAW);
         } else if (configManager.getPriorityAudioCodec().equals(MediaManager.EVS)) {
             audioCodecSelectCombo.setSelectedItem(MediaManager.EVS);

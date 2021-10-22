@@ -155,7 +155,7 @@ public class UdpReceiver extends TaskUnit {
                         AudioFormat.Encoding.PCM_SIGNED.toString())) {
                     // Decode pcm data to other codec data
                     // ALAW
-                    if (MediaManager.getInstance().getPriorityCodec().equals(AudioFormat.Encoding.ALAW.toString())) {
+                    if (MediaManager.getInstance().getPriorityCodec().equals(MediaManager.ALAW)) {
                         RecordManager aLawRecordManager = voipClient.getSourceALawRecordManager();
                         if (aLawRecordManager != null) {
                             aLawRecordManager.addData(data);
@@ -167,7 +167,7 @@ public class UdpReceiver extends TaskUnit {
                         );
                     }
                     // ULAW
-                    else if (MediaManager.getInstance().getPriorityCodec().equals(AudioFormat.Encoding.ULAW.toString())) {
+                    else if (MediaManager.getInstance().getPriorityCodec().equals(MediaManager.ULAW)) {
                         RecordManager uLawRecordManager = voipClient.getSourceULawRecordManager();
                         if (uLawRecordManager != null) {
                             uLawRecordManager.addData(data);

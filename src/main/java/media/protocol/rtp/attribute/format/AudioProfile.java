@@ -10,8 +10,8 @@ import javax.sound.sampled.AudioFormat;
  */
 public class AudioProfile {
 
-    private static final String PCMA = AudioFormat.Encoding.ALAW.toString();
-    private static final String PCMU = AudioFormat.Encoding.ULAW.toString();
+    private static final String PCMA = MediaManager.ALAW;
+    private static final String PCMU = MediaManager.ULAW;
 
     public static String getCodecNameFromID(int id) {
         switch (id) {

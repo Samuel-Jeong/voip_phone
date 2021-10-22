@@ -178,7 +178,7 @@ public class VoipClient {
         }
 
         if (configManager.isDecFile()) {
-            if (MediaManager.getInstance().getPriorityCodec().equals(AudioFormat.Encoding.ALAW.toString())) {
+            if (MediaManager.getInstance().getPriorityCodec().equals(MediaManager.ALAW)) {
                 if (sourceALawRecordManager == null) {
                     sourceALawRecordManager = new RecordManager(configManager.getRecordPath(), 20);
                     sourceALawRecordManager.start();
@@ -193,7 +193,7 @@ public class VoipClient {
                     );
                     logger.debug("VoipClient: sourceALawRecordManager is initiated. (path={})", sourceALawRecordManager.getFullFilePath());
                 }
-            } else if (MediaManager.getInstance().getPriorityCodec().equals(AudioFormat.Encoding.ULAW.toString())) {
+            } else if (MediaManager.getInstance().getPriorityCodec().equals(MediaManager.ULAW)) {
                 if (sourceULawRecordManager == null) {
                     sourceULawRecordManager = new RecordManager(configManager.getRecordPath(), 20);
                     sourceULawRecordManager.start();
@@ -358,7 +358,7 @@ public class VoipClient {
         }
 
         if (configManager.isEncFile()) {
-            if (MediaManager.getInstance().getPriorityCodec().equals(AudioFormat.Encoding.ALAW.toString())) {
+            if (MediaManager.getInstance().getPriorityCodec().equals(MediaManager.ALAW)) {
                 if (targetALawRecordManager == null) {
                     targetALawRecordManager = new RecordManager(configManager.getRecordPath(), 20);
                     targetALawRecordManager.start();
@@ -373,7 +373,7 @@ public class VoipClient {
                     );
                     logger.debug("VoipClient: targetALawRecordManager is initiated. (path={})", targetALawRecordManager.getFullFilePath());
                 }
-            } else if (MediaManager.getInstance().getPriorityCodec().equals(AudioFormat.Encoding.ULAW.toString())) {
+            } else if (MediaManager.getInstance().getPriorityCodec().equals(MediaManager.ULAW)) {
                 if (targetULawRecordManager == null) {
                     targetULawRecordManager = new RecordManager(configManager.getRecordPath(), 20);
                     targetULawRecordManager.start();

@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.ServiceManager;
 
-import javax.sound.sampled.AudioFormat;
 import java.io.File;
 import java.io.IOException;
 
@@ -113,7 +112,8 @@ public class ConfigManager {
     String[] amrAttributeList;
     String[] amrWbAttributeList;
     String[] evsAttributeList;
-    String[] dtmfAttributeList;
+    String[] dtmf8000AttributeList;
+    String[] dtmf16000AttributeList;
     String[] attributeList;
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -365,14 +365,24 @@ public class ConfigManager {
             evsAttributeList[i] = attribute;
         }
 
-        dtmfAttributeList = new String[2];
+        dtmf8000AttributeList = new String[2];
         for (int i = 0; i < 2; i++) {
-            String attribute = getIniValue(SECTION_SDP, String.format("ATTR_DTMF_%d", i));
+            String attribute = getIniValue(SECTION_SDP, String.format("ATTR_DTMF8000_%d", i));
             if (attribute == null) {
-                logger.error("[SECTION_SDP] ATTR_DTMF_{} IS NOT DEFINED IN THE LOCAL SDP.", i);
+                logger.error("[SECTION_SDP] ATTR_DTMF8000_{} IS NOT DEFINED IN THE LOCAL SDP.", i);
                 System.exit(1);
             }
-            dtmfAttributeList[i] = attribute;
+            dtmf8000AttributeList[i] = attribute;
+        }
+
+        dtmf16000AttributeList = new String[2];
+        for (int i = 0; i < 2; i++) {
+            String attribute = getIniValue(SECTION_SDP, String.format("ATTR_DTMF16000_%d", i));
+            if (attribute == null) {
+                logger.error("[SECTION_SDP] ATTR_DTMF16000_{} IS NOT DEFINED IN THE LOCAL SDP.", i);
+                System.exit(1);
+            }
+            dtmf16000AttributeList[i] = attribute;
         }
 
         attributeList = new String[attrCount];
@@ -435,9 +445,9 @@ public class ConfigManager {
 
             // 3-3) Attribute
             String[] curCodecAttributeList;
-            if (priorityAudioCodec.equals(AudioFormat.Encoding.ALAW.toString())) {
+            if (priorityAudioCodec.equals(MediaManager.ALAW)) {
                 curCodecAttributeList = alawAttributeList;
-            } else if (priorityAudioCodec.equals(AudioFormat.Encoding.ULAW.toString())) {
+            } else if (priorityAudioCodec.equals(MediaManager.ULAW)) {
                 curCodecAttributeList = ulawAttributeList;
             } else if (priorityAudioCodec.equals(MediaManager.AMR_NB)) {
                 curCodecAttributeList = amrAttributeList;
@@ -456,10 +466,18 @@ public class ConfigManager {
             }
 
             if (dtmf) {
-                for (String attribute : dtmfAttributeList) {
-                    sdpStr.append("a=");
-                    sdpStr.append(attribute);
-                    sdpStr.append("\r\n");
+                if (priorityAudioCodec.equals(MediaManager.AMR_WB)) {
+                    for (String attribute : dtmf16000AttributeList) {
+                        sdpStr.append("a=");
+                        sdpStr.append(attribute);
+                        sdpStr.append("\r\n");
+                    }
+                } else {
+                    for (String attribute : dtmf8000AttributeList) {
+                        sdpStr.append("a=");
+                        sdpStr.append(attribute);
+                        sdpStr.append("\r\n");
+                    }
                 }
             }
 

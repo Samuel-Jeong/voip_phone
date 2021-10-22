@@ -156,21 +156,21 @@ public class RtpUtil {
 
         // ALAW 로 인코딩 > 조건에 불일치하면 데이터 그대로 반환
         if (voipClient.getTargetAudioFormat().getEncoding().equals(AudioFormat.Encoding.PCM_SIGNED)) {
-            if (AudioFormat.Encoding.ALAW.toString().equals(MediaManager.getInstance().getPriorityCodec())) {
+            if (MediaManager.ALAW.equals(MediaManager.getInstance().getPriorityCodec())) {
                 if (targetEncodingList.contains(AudioFormat.Encoding.ALAW)) {
                     return convertPcmSignedToALaw(data);
                 }
-            } else if (AudioFormat.Encoding.ULAW.toString().equals(MediaManager.getInstance().getPriorityCodec())) {
+            } else if (MediaManager.ULAW.equals(MediaManager.getInstance().getPriorityCodec())) {
                 if (targetEncodingList.contains(AudioFormat.Encoding.ULAW)) {
                     return convertPcmSignedToULaw(data);
                 }
             }
         } else if (voipClient.getTargetAudioFormat().getEncoding().equals(AudioFormat.Encoding.PCM_UNSIGNED)) {
-            if (AudioFormat.Encoding.ALAW.toString().equals(MediaManager.getInstance().getPriorityCodec())) {
+            if (MediaManager.ALAW.equals(MediaManager.getInstance().getPriorityCodec())) {
                 if (targetEncodingList.contains(AudioFormat.Encoding.ALAW)) {
                     return convertPcmUnsignedToALaw(data);
                 }
-            } else if (AudioFormat.Encoding.ULAW.toString().equals(MediaManager.getInstance().getPriorityCodec())) {
+            } else if (MediaManager.ULAW.equals(MediaManager.getInstance().getPriorityCodec())) {
                 if (targetEncodingList.contains(AudioFormat.Encoding.ULAW)) {
                     return convertPcmUnsignedToULaw(data);
                 }
@@ -190,7 +190,7 @@ public class RtpUtil {
 
         AudioFormat sourceFormat;
 
-        if (AudioFormat.Encoding.ALAW.toString().equals(MediaManager.getInstance().getPriorityCodec())) {
+        if (MediaManager.ALAW.equals(MediaManager.getInstance().getPriorityCodec())) {
             sourceFormat = new AudioFormat(
                     AudioFormat.Encoding.ALAW,
                     Float.parseFloat(voipClient.getSourceSamplingRate()),
@@ -200,7 +200,7 @@ public class RtpUtil {
                     voipClient.getSourceFrameRate(),
                     voipClient.isSourceBigEndian()
             );
-        } else if (AudioFormat.Encoding.ULAW.toString().equals(MediaManager.getInstance().getPriorityCodec())) {
+        } else if (MediaManager.ULAW.equals(MediaManager.getInstance().getPriorityCodec())) {
             sourceFormat = new AudioFormat(
                     AudioFormat.Encoding.ULAW,
                     Float.parseFloat(voipClient.getSourceSamplingRate()),
@@ -228,17 +228,17 @@ public class RtpUtil {
         // Source Format 에서 PCM_SIGNED 또는 PCM_UNSIGNED 로 디코딩 > 조건에 불일치하면 데이터 그대로 반환
         if (voipClient.getSourceAudioFormat().getEncoding().equals(AudioFormat.Encoding.PCM_SIGNED)) {
             if (targetEncodingList.contains(AudioFormat.Encoding.PCM_SIGNED)) {
-                if (AudioFormat.Encoding.ALAW.toString().equals(MediaManager.getInstance().getPriorityCodec())) {
+                if (MediaManager.ALAW.equals(MediaManager.getInstance().getPriorityCodec())) {
                     return convertALawToPcmSigned(data);
-                } else if (AudioFormat.Encoding.ULAW.toString().equals(MediaManager.getInstance().getPriorityCodec())) {
+                } else if (MediaManager.ULAW.equals(MediaManager.getInstance().getPriorityCodec())) {
                     return convertULawToPcmSigned(data);
                 }
             }
         } else if (voipClient.getSourceAudioFormat().getEncoding().equals(AudioFormat.Encoding.PCM_UNSIGNED)) {
             if (targetEncodingList.contains(AudioFormat.Encoding.PCM_UNSIGNED)) {
-                if (AudioFormat.Encoding.ALAW.toString().equals(MediaManager.getInstance().getPriorityCodec())) {
+                if (MediaManager.ALAW.equals(MediaManager.getInstance().getPriorityCodec())) {
                     return convertALawToPcmUnsigned(data);
-                } else if (AudioFormat.Encoding.ULAW.toString().equals(MediaManager.getInstance().getPriorityCodec())) {
+                } else if (MediaManager.ULAW.equals(MediaManager.getInstance().getPriorityCodec())) {
                     return convertULawToPcmUnsigned(data);
                 }
             }

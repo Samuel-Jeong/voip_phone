@@ -15,6 +15,8 @@ public class MediaManager {
     private static final Logger logger = LoggerFactory.getLogger(MediaManager.class);
 
     // AUDIO
+    public static final String ALAW = AudioFormat.Encoding.ALAW.toString();
+    public static final String ULAW = AudioFormat.Encoding.ULAW.toString();
     public static final String EVS = "EVS";
     public static final String AMR_NB = "AMR";
     public static final String AMR_WB = "AMR-WB";
@@ -30,8 +32,8 @@ public class MediaManager {
     private final NettyChannelManager nettyChannelManager;
 
     private final String[] supportedAudioCodecList = {
-            AudioFormat.Encoding.ALAW.toString(),
-            AudioFormat.Encoding.ULAW.toString(),
+            ALAW,
+            ULAW,
             EVS,
             AMR_NB,
             AMR_WB,
@@ -102,10 +104,10 @@ public class MediaManager {
     public void setPriorityCodec(String priorityCodec) {
         if (priorityCodec != null) {
             for (String codec : supportedAudioCodecList) {
-                if (priorityCodec.equals(codec) && codec.equals(AudioFormat.Encoding.ALAW.toString())) {
+                if (priorityCodec.equals(codec) && codec.equals(MediaManager.ALAW)) {
                     priorityCodecId = 8;
                     priorityCodecSamplingRate = "8000";
-                } else if (priorityCodec.equals(codec) && codec.equals(AudioFormat.Encoding.ULAW.toString())) {
+                } else if (priorityCodec.equals(codec) && codec.equals(MediaManager.ULAW)) {
                     priorityCodecId = 0;
                     priorityCodecSamplingRate = "8000";
                 } else if (priorityCodec.equals(codec) && codec.equals(MediaManager.EVS)) {
