@@ -436,9 +436,9 @@ public class ConfigManager {
             // 3) Media
             // 3-2) Media
             sdpStr.append("m=");
-            String media = String.format(this.media, nettyServerPort);
+            String media = String.format(this.media, nettyServerPort, MediaManager.getInstance().getPriorityCodecId());
             if (dtmf) {
-                media += " 101";
+                media += " " + MediaManager.getInstance().getPriorityDtmfCodecId();
             }
             sdpStr.append(media);
             sdpStr.append("\r\n");
@@ -461,7 +461,7 @@ public class ConfigManager {
 
             for (String attribute : curCodecAttributeList) {
                 sdpStr.append("a=");
-                sdpStr.append(attribute);
+                sdpStr.append(String.format(attribute, MediaManager.getInstance().getPriorityCodecId()));
                 sdpStr.append("\r\n");
             }
 
@@ -469,13 +469,13 @@ public class ConfigManager {
                 if (priorityAudioCodec.equals(MediaManager.AMR_WB)) {
                     for (String attribute : dtmf16000AttributeList) {
                         sdpStr.append("a=");
-                        sdpStr.append(attribute);
+                        sdpStr.append(String.format(attribute, MediaManager.getInstance().getPriorityDtmfCodecId()));
                         sdpStr.append("\r\n");
                     }
                 } else {
                     for (String attribute : dtmf8000AttributeList) {
                         sdpStr.append("a=");
-                        sdpStr.append(attribute);
+                        sdpStr.append(String.format(attribute, MediaManager.getInstance().getPriorityDtmfCodecId()));
                         sdpStr.append("\r\n");
                     }
                 }
