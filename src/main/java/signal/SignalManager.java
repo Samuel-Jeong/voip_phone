@@ -44,7 +44,10 @@ public class SignalManager {
 
     public void init () {
         sipUtil.init();
+        loadLocalSdp();
+    }
 
+    public void loadLocalSdp() {
         ConfigManager configManager = AppInstance.getInstance().getConfigManager();
         localSdp = configManager.loadSdpConfig("LOCAL");
         if (localSdp == null) {

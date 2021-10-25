@@ -478,6 +478,8 @@ public class ClientFrame extends JFrame {
                             || MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_WB)) {
                         AmrManager.getInstance().init();
                     }
+
+                    SignalManager.getInstance().loadLocalSdp();
                 }
             } catch (Exception exception) {
                 logger.warn("ClientFrame.codecSelectPanel.Exception", exception);
@@ -903,6 +905,8 @@ public class ClientFrame extends JFrame {
                 for (JButton dtmfButton : dtmfButtons) {
                     dtmfButton.setEnabled(dtmfCheck.isSelected());
                 }
+
+                SignalManager.getInstance().loadLocalSdp();
             }
         }
     }
