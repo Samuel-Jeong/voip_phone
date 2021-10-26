@@ -136,7 +136,7 @@ public class MediaManager {
 
         logger.debug("MediaManager: priorityCodec({}/{}/{}) is changed to [{}/{}/{}].",
                 this.priorityCodec, prevPriorityCodecId, prevPriorityCodecSamplingRate,
-                priorityCodec, priorityCodecSamplingRate, priorityCodecId
+                priorityCodec, priorityCodecId, priorityCodecSamplingRate
         );
         this.priorityCodec = priorityCodec;
     }

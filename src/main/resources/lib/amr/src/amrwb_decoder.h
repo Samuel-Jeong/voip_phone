@@ -5,7 +5,8 @@
 
 void start_dec_amrwb();
 void stop_dec_amrwb();
-void decode_amrwb( FILE* f_input, FILE* f_stream );
+//void decode_amrwb( FILE* f_input, FILE* f_stream );
+void decode_amrwb( char* f_input, char* f_stream );
 
 #endif
 

@@ -7,7 +7,7 @@
 static const int AMR_WB_HEADER_LENGTH = 9;
 static const int AMR_WB_ENC_DATA_LENGTH = 61;
 static const int AMR_WB_DEC_DATA_LENGTH = 320;
-static const char AMR_WB_MAGIC_NUMBER[AMR_WB_HEADER_LENGTH] = {'#', '!', 'A', 'M', 'R', '-', 'W', 'B', '\n'};
+static const char AMR_WB_MAGIC_NUMBER[9] = {'#', '!', 'A', 'M', 'R', '-', 'W', 'B', '\n'};
 static short block_size[16]={ 12, 13, 15, 17, 19, 20, 26, 31, 5, 0, 0, 0, 0, 0, 0, 0 };
 //long dec_wb_frame = 0;
 
@@ -34,7 +34,8 @@ void stop_dec_amrwb() {
     }
 }
 
-void decode_amrwb( FILE* f_input, FILE* f_stream ) {
+//void decode_amrwb( FILE* f_input, FILE* f_stream ) {
+void decode_amrwb( char* f_input, char* f_stream ) {
     if (wb_destate == NULL) {
         return;
     }
@@ -50,8 +51,16 @@ void decode_amrwb( FILE* f_input, FILE* f_stream ) {
 
     //
     short n_samples;
-    unsigned char header[AMR_WB_HEADER_LENGTH];
-    n_samples = (short)fread(header, sizeof(char), AMR_WB_HEADER_LENGTH, f_input);
+    //unsigned char header[9];
+    char header[9];
+
+    memcpy(header, f_input, AMR_WB_HEADER_LENGTH * sizeof(char));
+    if ( strncmp( header, AMR_WB_MAGIC_NUMBER, AMR_WB_HEADER_LENGTH ) != 0 ) {
+        return;
+    }
+    f_input += AMR_WB_HEADER_LENGTH;
+
+    /*n_samples = (short)fread(header, sizeof(char), AMR_WB_HEADER_LENGTH, f_input);
     if (n_samples <= 0) {
         return;
     } else {
@@ -60,25 +69,33 @@ void decode_amrwb( FILE* f_input, FILE* f_stream ) {
                 return;
             }
         }
-    }
+    }*/
 
     int read_size = 0;
     Word16 dec_mode;
-    unsigned char data[AMR_WB_ENC_DATA_LENGTH];
-    while( (n_samples = (short)fread(data, sizeof(char), AMR_WB_ENC_DATA_LENGTH, f_input)) > 0 ) {
+    //unsigned char data[61];
+    char data[61];
+    //while( (n_samples = (short)fread(data, sizeof(char), AMR_WB_ENC_DATA_LENGTH, f_input)) > 0 ) {
+
+        memcpy(data, f_input, AMR_WB_ENC_DATA_LENGTH * sizeof(char) );
+
         dec_mode = (data[0] >> 3) & 0x000F;
         if (dec_mode < 0 || dec_mode > 15) {
             fprintf(stderr, "[DEC] Error: dec_mode is unknown(%d)\n\n", dec_mode);
-            break;
+            //break;
+            return;
         }
         read_size = block_size[dec_mode];
 
-        short speech[AMR_WB_DEC_DATA_LENGTH];
+        //short speech[320];
+        char speech[640];
         D_IF_decode(wb_destate, data, speech, 0);
-        fwrite(speech, sizeof(short int), AMR_WB_DEC_DATA_LENGTH, f_stream);
+        memcpy(f_stream, speech, 640);
+
+        //fwrite(speech, sizeof(short int), AMR_WB_DEC_DATA_LENGTH, f_stream);
 
         //dec_wb_frame++;
         //printf("[DEC] test times: %ld, data[0]:%hhu, dec_mode:%d, bytes: %d\n", dec_wb_frame, data[0], dec_mode, read_size);
-    }
+    //}
     //
 }

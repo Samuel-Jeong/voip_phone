@@ -45,36 +45,39 @@ JNIEXPORT jbyteArray JNICALL Java_media_module_codec_amr_AmrManager_enc_1amrnb (
 
     //fprintf(stderr, "[ENC] srcDataLen: %zu\n\n", srcDataLen);
 
-    jbyte *srcData = jbyteArray2cstr( jenv, javaBytes );
+    jbyte *srcData = jbyteArray2cstr( jenv, javaBytes ); // 320
     if (srcData == NULL) {
         return NULL;
     }
 
-    FILE* f_input;
+    /*FILE* f_input;
     if ( (f_input = fmemopen(srcData, srcDataLen, "rb")) == NULL ) {
     //if ( (f_input = fmemopen(javaBytes, srcDataLen, "rb")) == NULL ) {
         fprintf(stderr, "[ENC] Error: input could not be opened (%d)\n\n", errno);
         exit(1);
-    }
+    }*/
 
-    char *dstData;
-	size_t dstDataLen;
-    FILE* f_stream;
+	size_t dstDataLen = 38;
+	char dstData[38];
+    //char *dstData = (char*)malloc(sizeof(char) * dstDataLen); // 6 + 32
+    /*FILE* f_stream;
     if ( (f_stream = open_memstream( &dstData, &dstDataLen )) == NULL ) {
         fprintf(stderr, "[ENC] Error: output could not be opened (%d)\n\n", errno);
         exit(1);
-    }
+    }*/
 
-    encode_amrnb( req_mode, f_input, &f_stream );
+    //encode_amrnb( req_mode, f_input, &f_stream );
+    encode_amrnb( req_mode, srcData, dstData );
 
-    fclose(f_input);
-    fclose(f_stream);
+    //fclose(f_input);
+    //fclose(f_stream);
     (*jenv)->ReleaseByteArrayElements(jenv, javaBytes, srcData, 0);
 
     jbyteArray result;
     if (dstData != NULL) {
         //fprintf(stderr, "encode suc %zu (data=%s)\n", dstDataLen, dstData);
         result = cstr2jbyteArray( jenv, dstData, dstDataLen );
+        //free(dstData);
         //return dstData;
     } else {
         //printf("encode fail\n");
@@ -117,36 +120,39 @@ JNIEXPORT jbyteArray JNICALL Java_media_module_codec_amr_AmrManager_dec_1amrnb (
 
     //fprintf(stderr, "[DEC] srcDataLen: %zu\n\n", srcDataLen);
 
-    jbyte *srcData = jbyteArray2cstr( jenv, javaBytes );
+    jbyte *srcData = jbyteArray2cstr( jenv, javaBytes ); // 32 + 6
     if (srcData == NULL) {
         return NULL;
     }
 
-    FILE* f_input;
+    /*FILE* f_input;
     if ( (f_input = fmemopen(srcData, srcDataLen, "rb")) == NULL ) {
     //if ( (f_input = fmemopen(javaBytes, srcDataLen, "rb")) == NULL ) {
         fprintf(stderr, "[DEC] Error: input could not be opened (%d)\n\n", errno);
         exit(1);
-    }
+    }*/
 
-    char *dstData;
-    size_t dstDataLen;
-    FILE* f_stream;
+    size_t dstDataLen = 320;
+    char dstData[320];
+    //char *dstData = (char*)malloc(sizeof(char) * dstDataLen); // 320
+    /*FILE* f_stream;
     if ( (f_stream = open_memstream( &dstData, &dstDataLen )) == NULL ) {
         fprintf(stderr, "[DEC] Error: output could not be opened (%d)\n\n", errno);
         exit(1);
-    }
+    }*/
 
-    decode_amrnb( f_input, f_stream );
+    //decode_amrnb( f_input, f_stream );
+    decode_amrnb( srcData, dstData );
 
-    fclose(f_input);
-    fclose(f_stream);
+    //fclose(f_input);
+    //fclose(f_stream);
     (*jenv)->ReleaseByteArrayElements(jenv, javaBytes, srcData, 0);
 
     jbyteArray result;
     if (dstData != NULL) {
         //printf("decode suc %zu\n", dstDataLen);
         result = cstr2jbyteArray( jenv, dstData, resultDataLen );
+        //free(dstData);
     } else {
         //printf("decode fail\n");
         return NULL;
@@ -182,35 +188,38 @@ JNIEXPORT jbyteArray JNICALL Java_media_module_codec_amr_AmrManager_enc_1amrwb (
 	    return NULL;
 	}
 
-    jbyte *srcData = jbyteArray2cstr( jenv, javaBytes );
+    jbyte *srcData = jbyteArray2cstr( jenv, javaBytes ); // 640
     if (srcData == NULL) {
         return NULL;
     }
 
-    FILE* f_input;
+    /*FILE* f_input;
     if ( (f_input = fmemopen(srcData, srcDataLen, "rb")) == NULL ) {
         fprintf(stderr, "[ENC] Error: input could not be opened (%d)\n\n", errno);
         exit(1);
-    }
+    }*/
 
-    FILE* f_stream;
-    size_t dstDataLen;
-    char* dstData;
+    size_t dstDataLen = 67;
+ 	char dstData[67];
+    //char *dstData = (char*)malloc(sizeof(char) * dstDataLen); // 6 + 61
+    /*FILE* f_stream;
     if ( (f_stream = open_memstream( &dstData, &dstDataLen )) == NULL ) {
         fprintf(stderr, "[ENC] Error: output could not be opened (%d)\n\n", errno);
         exit(1);
-    }
+    }*/
 
-    encode_amrwb( req_mode, f_input, f_stream );
+    //encode_amrwb( req_mode, f_input, f_stream );
+    encode_amrwb( req_mode, srcData, dstData );
 
-    fclose(f_input);
-    fclose(f_stream);
+    //fclose(f_input);
+    //fclose(f_stream);
     (*jenv)->ReleaseByteArrayElements(jenv, javaBytes, srcData, 0);
 
     jbyteArray result;
     if (dstData != NULL) {
         //printf("encode suc %zu\n", dstDataLen);
         result = cstr2jbyteArray( jenv, dstData, dstDataLen );
+        //free(dstData);
     } else {
         //printf("encode fail\n");
         return NULL;
@@ -247,35 +256,38 @@ JNIEXPORT jbyteArray JNICALL Java_media_module_codec_amr_AmrManager_dec_1amrwb (
 	    return NULL;
 	}
 
-    jbyte *srcData = jbyteArray2cstr( jenv, javaBytes );
+    jbyte *srcData = jbyteArray2cstr( jenv, javaBytes ); // 6 + 61
     if (srcData == NULL) {
         return NULL;
     }
 
-    FILE* f_input;
+    /*FILE* f_input;
     if ( (f_input = fmemopen(srcData, srcDataLen, "rb")) == NULL ) {
         fprintf(stderr, "[DEC] Error: input could not be opened (%d)\n\n", errno);
         exit(1);
-    }
+    }*/
 
-    FILE* f_stream;
-    size_t dstDataLen;
-    char* dstData;
+    size_t dstDataLen = 640;
+    char dstData[640];
+    //char* dstData = (char*)malloc(sizeof(char) * dstDataLen); // 640
+    /*FILE* f_stream;
     if ( (f_stream = open_memstream( &dstData, &dstDataLen )) == NULL ) {
         fprintf(stderr, "[DEC] Error: output could not be opened (%d)\n\n", errno);
         exit(1);
-    }
+    }*/
 
-    decode_amrwb( f_input, f_stream );
+    //decode_amrwb( f_input, f_stream );
+    decode_amrwb( srcData, dstData );
 
-    fclose(f_input);
-    fclose(f_stream);
+    //fclose(f_input);
+    //fclose(f_stream);
     (*jenv)->ReleaseByteArrayElements(jenv, javaBytes, srcData, 0);
 
     jbyteArray result;
     if (dstData != NULL) {
         //printf("decode suc %zu\n", dstDataLen);
         result = cstr2jbyteArray( jenv, dstData, dstDataLen );
+        //free(dstData);
     } else {
         //printf("decode fail\n");
         return NULL;

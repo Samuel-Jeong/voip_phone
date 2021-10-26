@@ -5,7 +5,8 @@
 
 void start_dec_amrnb();
 void stop_dec_amrnb();
-void decode_amrnb( FILE* f_input, FILE* f_stream );
+//void decode_amrnb( FILE* f_input, FILE* f_stream );
+void decode_amrnb( char* f_input, char* f_stream );
 
 #endif
 
