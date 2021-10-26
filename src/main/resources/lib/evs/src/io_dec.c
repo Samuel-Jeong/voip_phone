@@ -28,8 +28,10 @@ static char *to_upper( char *str );
 void io_ini_dec(
     const int argc,              /* i  : command line arguments number             */
     char *argv[],           /* i  : command line arguments                    */
-    FILE *f_stream,        /* o  : input bitstream file                      */
-    FILE *f_synth,         /* o  : output synthesis file                     */
+    //FILE *f_stream,        /* o  : input bitstream file                      */
+    char *f_stream,        /* o  : input bitstream file                      */
+    //FILE *f_synth,         /* o  : output synthesis file                     */
+    char *f_synth,         /* o  : output synthesis file                     */
     short *quietMode,          /* o  : limited printouts                         */
     short *noDelayCmp,         /* o  : turn off delay compensation               */
     Decoder_State *st,               /* o  : Decoder static variables structure        */
@@ -193,7 +195,7 @@ void io_ini_dec(
         /* If MIME/storage format selected, scan for the magic number at the beginning of the bitstream file */
         if( st->bitstreamformat == MIME )
         {
-            char buf[13];
+            /*char buf[13];
             evs_magic   = 1 ;
             amrwb_magic = 1;
 
@@ -202,7 +204,6 @@ void io_ini_dec(
                 fprintf(stderr,"Error: input bitstream file %s cannot be read\n\n", argv[i]);
                 usage_dec();
             }
-            /* verify AMRWB magic number */
             if ( strncmp(buf, AMRWB_MAGIC_NUMBER, strlen(AMRWB_MAGIC_NUMBER)))
             {
                 amrwb_magic = 0;
@@ -222,7 +223,6 @@ void io_ini_dec(
 
             if( evs_magic == 0 &&  amrwb_magic == 0 )
             {
-                /* no valid MIME magic number  */
                 fprintf(stderr, "Error: input bitstream file %s specifies unsupported MIME magic number (%13s) \n\n",argv[i],buf );
                 usage_dec();
             }
@@ -236,17 +236,20 @@ void io_ini_dec(
             {
                 fprintf( stderr, "Found MIME Magic number %s\n",AMRWB_MAGIC_NUMBER );
                 st->amrwb_rfc4867_flag = 1;
-                st->Opt_AMR_WB = 1;    /*  needed in case first initial RFC4867 frames/ToCs are lost */
-            }
+                st->Opt_AMR_WB = 1;
+            }*/
         }
 
         else if( st->Opt_VOIP == 0 )
         {
             /* G.192 format ....  preread the G.192 sync header */
             unsigned short  utmp;
-            if ( fread( &utmp, sizeof(unsigned short), 1, f_stream ) != 1 )
+
+            memcpy(&utmp, f_stream, 1 * sizeof(unsigned short));
+            f_stream += 1 * sizeof(unsigned short);
+
+            /*if ( fread( &utmp, sizeof(unsigned short), 1, f_stream ) != 1 )
             {
-                /* error during pre-reading */
                 if( ferror( f_stream ) )
                 {
                     fprintf(stderr, "Error: input G.192 bitstream file %s , can not be read  \n\n",argv[i] );
@@ -256,15 +259,13 @@ void io_ini_dec(
                     fprintf(stderr, "Error: input G.192 bitstream file %s , has zero size, can not be read  \n\n",argv[i] );
                 }
                 usage_dec();
-            }
+            }*/
             if( utmp != SYNC_GOOD_FRAME && utmp != SYNC_BAD_FRAME )
             {
-                /* check for a valid first G.192 synch  word in Sync Header  */
                 fprintf(stderr, "Error: input bitstream file %s does not have a valid G.192 synch word value \n\n",argv[i]);
                 usage_dec();
             }
-            /* now rewind the G.192 bitstream file */
-            fseek( f_stream , 0L, SEEK_SET );
+            //fseek( f_stream , 0L, SEEK_SET );
         }
         /*  JBM format */
 
@@ -313,19 +314,19 @@ void io_ini_dec(
         {
             read_indices( st, f_stream, 1 );
         }
-        else
+        /*else
         {
-            st->total_brate=0;  /* make sure total_brate is deterministic  even if there are no MIME ToCs */
-            read_indices_mime( st, f_stream, 1 );   /* rew_flag == 1 ,  checks only very first  frame    */
+            st->total_brate=0;  *//* make sure total_brate is deterministic  even if there are no MIME ToCs *//*
+            read_indices_mime( st, f_stream, 1 );   *//* rew_flag == 1 ,  checks only very first  frame    *//*
             if( st->amrwb_rfc4867_flag != 0 )
             {
-                fseek(f_stream,strlen(AMRWB_MAGIC_NUMBER), SEEK_SET);    /* restart after 9 bytes */
+                fseek(f_stream,strlen(AMRWB_MAGIC_NUMBER), SEEK_SET);    *//* restart after 9 bytes *//*
             }
             else
             {
-                fseek(f_stream,strlen(EVS_MAGIC_NUMBER)+4, SEEK_SET); /* restart after  16 bytes */
+                fseek(f_stream,strlen(EVS_MAGIC_NUMBER)+4, SEEK_SET); *//* restart after  16 bytes *//*
             }
-        }
+        }*/
 
 
         /*fprintf( stdout, "Output sampling rate:   %d Hz\n", st->output_Fs );

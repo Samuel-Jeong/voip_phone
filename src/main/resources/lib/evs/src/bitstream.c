@@ -3,6 +3,7 @@
   ====================================================================================*/
 
 #include <assert.h>
+#include <string.h>
 #include "options.h"
 #include "cnst.h"
 #include "prot.h"
@@ -431,7 +432,8 @@ void reset_indices_dec(
 
 void write_indices(
     Encoder_State *st,  /* i/o: encoder state structure                                     */
-    FILE *file,         /* i  : output bitstream file                                       */
+    char *file,         /* i  : output bitstream file                                       */
+    //FILE *file,         /* i  : output bitstream file                                       */
     UWord8 *pFrame,     /* i: byte array with bit packet and byte aligned coded speech data */
     Word16 pFrame_size  /* i: size of the binary encoded access unit [bits]                 */
 )
@@ -488,17 +490,21 @@ void write_indices(
                 }
             }
         }
-
     }
     else
     {
         /* Create and write ToC (Table of Contents) header */
         /*  qbit always  set to  1 on encoder side  for AMRWBIO , no qbit in use for EVS,  but set to 0(bad)  */
         header = (UWord8)(st->Opt_AMR_WB << 5 | st->Opt_AMR_WB << 4 | rate2EVSmode(st->nb_bits_tot * 50));
-        fwrite( &header, sizeof(UWord8), 1, file );
+        fprintf(stderr, "nb_bits_tot: %d, rate2EVSmode(st->nb_bits_tot * 50): %d\n", st->nb_bits_tot, rate2EVSmode(st->nb_bits_tot * 50));
+        //fwrite( &header, sizeof(UWord8), 1, file );
+        memcpy(file, &header, 1 * sizeof(UWord8));
+        file += 1 * sizeof(UWord8);
 
         /* Write speech bits */
-        fwrite( pFrame, sizeof(UWord8), (pFrame_size + 7) >> 3, file );
+        //fwrite( pFrame, sizeof(UWord8), (pFrame_size + 7) >> 3, file );
+        memcpy(file, pFrame, (pFrame_size + 7) >> 3 * sizeof(UWord8));
+        file += (pFrame_size + 7) >> 3 * sizeof(UWord8);
     }
 
     /* Clearing of indices */
@@ -510,7 +516,9 @@ void write_indices(
     if( st->bitstreamformat == G192 )
     {
         /* write the serial stream into file */
-        fwrite( stream, sizeof(unsigned short), (stream[1] + 2), file );
+        //fwrite( stream, sizeof(unsigned short), (stream[1] + 2), file );
+        memcpy(file, stream, (stream[1] + 2) * sizeof(unsigned short));
+        file += (stream[1] + 2) * sizeof(unsigned short);
     }
 
     /* reset index pointers */
@@ -1055,7 +1063,8 @@ static void mdct_switching_dec(
 
 short read_indices(                   /* o  : 1 = reading OK, 0 = problem            */
     Decoder_State *st,                /* i/o: decoder state structure                */
-    FILE *file,              /* i  : bitstream file                         */
+    //FILE *file,              /* i  : bitstream file                         */
+    char *file,              /* i  : bitstream file                         */
     const short rew_flag            /* i  : rewind flag (rewind file after reading)*/
 )
 {
@@ -1079,75 +1088,59 @@ short read_indices(                   /* o  : 1 = reading OK, 0 = problem       
     /* in case rew_flag is set, read until first good frame is encountered */
     do
     {
-        /* read the Sync header */
-        if ( fread( &utmp, sizeof(unsigned short), 1, file ) != 1 )
+        memcpy(&utmp, file, 1 * sizeof(unsigned short));
+        file += 1 * sizeof(unsigned short);
+        /*if ( fread( &utmp, sizeof(unsigned short), 1, file ) != 1 )
         {
             if( ferror( file ) )
             {
-                /* error during reading */
                 fprintf(stderr, "\nError reading the bitstream !");
                 exit(-1);
             }
             else
             {
-                /* end of file reached */
                 return 0;
             }
-        }
+        }*/
 
-        /* set the BFI indicator according the value of Sync Header */
-        if ( utmp == SYNC_BAD_FRAME )
-        {
-            st->bfi = 1;
-        }
-        else
-        {
-            st->bfi = 0;
-        }
+        if ( utmp == SYNC_BAD_FRAME ) { st->bfi = 1; }
+        else { st->bfi = 0; }
 
-        /* read the Frame Length field from the bitstream */
-        if ( fread( &num_bits, sizeof(unsigned short), 1, file ) != 1 )
+        memcpy(&num_bits, file, 1 * sizeof(unsigned short));
+        file += 1 * sizeof(unsigned short);
+        /*if ( fread( &num_bits, sizeof(unsigned short), 1, file ) != 1 )
         {
             if( ferror( file ) )
             {
-                /* error during reading */
                 fprintf(stderr, "\nError reading the bitstream !");
                 exit(-1);
             }
-            else
-            {
-                /* end of file reached */
-                return 0;
-            }
-        }
+            else { return 0; }
+        }*/
 
-        /* convert the frame length to total bitrate */
+        num_bits = 160;
         total_brate = (long)(num_bits * 50);
 
-        /* read ITU-T G.192 serial stream of indices from file to the local buffer */
-        /* Validate that the G.192 length is within the defined  bit rate range
-        to not allow writing past the end of the "stream" buffer  */
         if( num_bits > MAX_BITS_PER_FRAME )
         {
             fprintf(stderr, "\nError, too large G.192 frame (size(%d))! Exiting ! \n", num_bits);
             exit(-1);
         }
 
-        /*  verify that a  valid  num bits value  is present in the G.192 file */
-        /*  only AMRWB or EVS bit rates  or 0(NO DATA)  are  allowed  in G.192 file frame reading  */
-        if( rate2EVSmode(total_brate) < 0 ) /* negative value means that a valid rate was not found */
+        if( rate2EVSmode(total_brate) < 0 )
         {
             fprintf(stderr, "\nError, illegal bit rate (%ld) in  the  G.192 frame ! Exiting ! \n", total_brate);
             exit(-1);
         }
         pt_stream = stream;
-        num_bits_read = (unsigned short) fread( pt_stream, sizeof(unsigned short), num_bits, file );
-        if( num_bits_read != num_bits )
+
+        memcpy(pt_stream, file, num_bits * sizeof(unsigned short));
+        //num_bits_read = (unsigned short) fread( pt_stream, sizeof(unsigned short), num_bits, file );
+        /*if( num_bits_read != num_bits )
         {
             fprintf(stderr, "\nError, invalid number of bits read ! Exiting ! (num_bits_read=%d, num_bits=%d) \n", num_bits_read, num_bits);
             exit(-1);
-        }
-
+        }*/
     }
     while ( rew_flag && (st->bfi || total_brate < 2800) );
 
@@ -1292,7 +1285,7 @@ short read_indices(                   /* o  : 1 = reading OK, 0 = problem       
     /* (used in io_enc() to print out info about technologies and to initialize the codec) */
     if ( rew_flag )
     {
-        rewind( file );
+        //rewind( file );
         st->total_brate = total_brate;
         return 1;
     }
@@ -1361,17 +1354,17 @@ Word16 read_indices_mime(                /* o  : 1 = reading OK, 0 = problem    
     /* read the FT header */
     if ( fread( &header, sizeof(UWord8), 1, file ) != 1 )
     {
-        if( ferror( file ) )
+        /*if( ferror( file ) )
         {
-            /* error during reading */
+            *//* error during reading *//*
             fprintf(stderr, "\nError reading the bitstream !");
             exit(-1);
         }
         else
         {
-            /* end of file reached */
+            *//* end of file reached *//*
             return 0;
-        }
+        }*/
     }
 
 

@@ -30,14 +30,15 @@ JNIEXPORT jbyteArray JNICALL Java_media_module_codec_evs_EvsManager_enc_1evs (JN
 	    return NULL;
 	}
 
-    jsize argc = (*jenv)->GetArrayLength(jenv, jargv);
+    jsize argc = 5;
+    //jsize argc = (*jenv)->GetArrayLength(jenv, jargv);
     char **argv = (char**) calloc (sizeof(char*), argc+1);
     if(!argv) {
         return NULL;
     }
 
     int i = 0;
-    jobject textArray[argc];
+    jobject textArray[5];
     for(; i < argc; i++) {
         jobject jtext = (*jenv)->GetObjectArrayElement(jenv, jargv, i);
         textArray[i] = jtext;
@@ -46,29 +47,31 @@ JNIEXPORT jbyteArray JNICALL Java_media_module_codec_evs_EvsManager_enc_1evs (JN
         argv[i] = utf8text;
     }
 
-    jbyte *srcData = jbyteArray2cstr( jenv, javaBytes );
+    jbyte *srcData = jbyteArray2cstr( jenv, javaBytes ); // 320 * 10
     if (srcData == NULL) {
         return NULL;
     }
 
-    FILE* f_input;
+    /*FILE* f_input;
     if ( (f_input = fmemopen(srcData, srcDataLen, "rb")) == NULL ) {
         fprintf(stderr, "[ENC] Error: input could not be opened (%d)\n\n", errno);
         exit(1);
-    }
+    }*/
 
-    char *dstData;
-	size_t dstDataLen;
-    FILE* f_stream;
+	size_t dstDataLen = 324 * 10;
+	char dstData[324 * 10];
+    //char *dstData; // 324
+    /*FILE* f_stream;
     if ( (f_stream = open_memstream( &dstData, &dstDataLen )) == NULL ) {
         fprintf(stderr, "[ENC] Error: output could not be opened (%d)\n\n", errno);
         exit(1);
-    }
+    }*/
 
-    encode( argc, argv, f_input, f_stream );
+    //encode( argc, argv, f_input, f_stream );
+    encode( argc, argv, srcData, dstData, 10 );
 
-    fclose( f_input );
-    fclose( f_stream );
+    //fclose( f_input );
+    //fclose( f_stream );
     (*jenv)->ReleaseByteArrayElements(jenv, javaBytes, srcData, 0);
 
     for (i = 0; i < argc; i++) {
@@ -76,13 +79,13 @@ JNIEXPORT jbyteArray JNICALL Java_media_module_codec_evs_EvsManager_enc_1evs (JN
     }
 
     jbyteArray result;
-    if (dstData != NULL) {
+    //if (dstData != NULL) {
         //printf("encode suc %zu\n", dstDataLen);
         result = cstr2jbyteArray( jenv, dstData, dstDataLen );
-    } else {
+    //} else {
         //printf("encode fail\n");
-        return NULL;
-    }
+        //return NULL;
+    //}
 
     return result;
 }
@@ -104,7 +107,7 @@ JNIEXPORT jbyteArray JNICALL Java_media_module_codec_evs_EvsManager_dec_1evs (JN
     }
 
     int i = 0;
-    jobject textArray[argc];
+    jobject textArray[4];
     for(; i < argc; i++) {
         jobject jtext = (*jenv)->GetObjectArrayElement(jenv, jargv, i);
         textArray[i] = jtext;
@@ -113,29 +116,31 @@ JNIEXPORT jbyteArray JNICALL Java_media_module_codec_evs_EvsManager_dec_1evs (JN
         argv[i] = utf8text;
     }
 
-    jbyte *srcData = jbyteArray2cstr( jenv, javaBytes );
+    jbyte *srcData = jbyteArray2cstr( jenv, javaBytes ); // 324
     if (srcData == NULL) {
         return NULL;
     }
 
-    FILE* f_input;
+    /*FILE* f_input;
     if ( (f_input = fmemopen(srcData, srcDataLen, "rb")) == NULL ) {
         fprintf(stderr, "[DEC] Error: input could not be opened (%d)\n\n", errno);
         exit(1);
-    }
+    }*/
 
-    char *dstData;
-    size_t dstDataLen;
-    FILE* f_stream;
+    size_t dstDataLen = 320 * 10;
+    char dstData[320 * 10];
+    //char *dstData; // 320
+    /*FILE* f_stream;
     if ( (f_stream = open_memstream( &dstData, &dstDataLen )) == NULL ) {
         fprintf(stderr, "[DEC] Error: output could not be opened (%d)\n\n", errno);
         exit(1);
-    }
+    }*/
 
-    decode( argc, argv, f_input, f_stream );
+    //decode( argc, argv, f_input, f_stream );
+    decode( argc, argv, srcData, dstData, 10 );
 
-    fclose(f_input);
-    fclose(f_stream);
+    //fclose(f_input);
+    //fclose(f_stream);
     (*jenv)->ReleaseByteArrayElements(jenv, javaBytes, srcData, 0);
 
     for (i = 0; i < argc; i++) {
@@ -143,13 +148,13 @@ JNIEXPORT jbyteArray JNICALL Java_media_module_codec_evs_EvsManager_dec_1evs (JN
     }
 
     jbyteArray result;
-    if (dstData != NULL) {
+    //if (dstData != NULL) {
         //printf("decode suc %zu\n", dstDataLen);
         result = cstr2jbyteArray( jenv, dstData, dstDataLen );
-    } else {
+    //} else {
         //printf("decode fail\n");
-        return NULL;
-    }
+        //return NULL;
+    //}
 
     return result;
 }

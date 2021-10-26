@@ -173,7 +173,8 @@ G192_ReadVoipFrame_short(G192_HANDLE const hG192,
 
         return G192_READ_ERROR;
     }
-    *rtpSequenceNumber = ntohs(*rtpSequenceNumber);
+    //*rtpSequenceNumber = ntohs(*rtpSequenceNumber);
+    //*rtpSequenceNumber = ntohs(*rtpSequenceNumber);
 
     /* RTP timestamp */
     if(fread(rtpTimeStamp, sizeof(*rtpTimeStamp), 1, hG192->file) != 1)
@@ -186,7 +187,7 @@ G192_ReadVoipFrame_short(G192_HANDLE const hG192,
 
         return G192_READ_ERROR;
     }
-    *rtpTimeStamp = ntohl(*rtpTimeStamp);
+    //*rtpTimeStamp = ntohl(*rtpTimeStamp);
 
     /* RTP ssrc */
     if(fread(&ssrc, sizeof(ssrc), 1, hG192->file) != 1)

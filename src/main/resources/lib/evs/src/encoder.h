@@ -14,6 +14,7 @@
 #include "rom_com.h"
 #include "g192.h"
 
-void encode( int argc, char** argv, FILE *f_input, FILE *f_stream );
+//void encode( int argc, char** argv, FILE *f_input, FILE *f_stream );
+void encode( int argc, char** argv, char *f_input, char *f_stream, int data_count );
 
 #endif

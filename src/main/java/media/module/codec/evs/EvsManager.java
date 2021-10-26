@@ -412,6 +412,7 @@ public class EvsManager {
             }
 
             try {
+
                 byte[] curData = udpReceiverTaskUnit.getInputBuffer().poll();
                 if (curData == null || curData.length == 0) {
                     //logger.warn("UdpReceiverTask > curData is null.");

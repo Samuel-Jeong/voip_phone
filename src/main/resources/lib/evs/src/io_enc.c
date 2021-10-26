@@ -28,8 +28,10 @@ static char *to_upper( char *str );
 void io_ini_enc(
     const int   argc,                /* i  : command line arguments number             */
     char  *argv[],             /* i  : command line arguments                    */
-    FILE  *f_input,           /* o  : input signal file                         */
-    FILE  *f_stream,          /* o  : output bitstream file                     */
+    //FILE  *f_input,           /* o  : input signal file                         */
+    char  *f_input,           /* o  : input signal file                         */
+    //FILE  *f_stream,          /* o  : output bitstream file                     */
+    char  *f_stream,          /* o  : output bitstream file                     */
     FILE  **f_rate,            /* o  : bitrate switching profile (0 if N/A)      */
     FILE  **f_bwidth,          /* o  : bandwidth switching profile (0 if N/A)    */
     FILE  **f_rf,              /* o  : channel aware configuration file          */
@@ -462,15 +464,15 @@ void io_ini_enc(
         //fprintf(stdout, "Output bitstream file:  %s\n", argv[i]);
         i++;
         /* If MIME/storage format selected, write the magic number at the beginning of the bitstream file */
-        if( st->bitstreamformat == MIME )
+        /*if( st->bitstreamformat == MIME )
         {
             char buf[4];
             fwrite(EVS_MAGIC_NUMBER, sizeof(char), strlen(EVS_MAGIC_NUMBER), f_stream);
             buf[0] = buf[1] = buf[2] = 0;
-            buf[3] = 1;   /* one channel */
+            buf[3] = 1;   *//* one channel *//*
             fwrite(&buf, sizeof(char), 4, f_stream);
             fprintf(stdout, "Output bitstream file format: MIME");
-        }
+        }*/
     }
     else
     {

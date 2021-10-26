@@ -23,13 +23,14 @@
  * Main decoder function
  *------------------------------------------------------------------------------------------*/
 
-void decode( int argc, char** argv, FILE *f_stream, FILE *f_synth )
+//void decode( int argc, char** argv, FILE *f_stream, FILE *f_synth )
+void decode( int argc, char** argv, char *f_stream, char *f_synth, int data_count )
 {
     short output_frame, dec_delay, zero_pad;
     short quietMode = 0;
     short noDelayCmp = 0;
     float output[L_FRAME48k];           /* 'float' buffer for output synthesis */
-    short data[L_FRAME48k];             /* 'short' buffer for output synthesis */
+    short data[320];             /* 'short' buffer for output synthesis */
 #ifdef SUPPORT_JBM_TRACEFILE
     char *jbmTraceFileName = NULL;      /* VOIP tracefile name */
 #endif
@@ -97,7 +98,16 @@ void decode( int argc, char** argv, FILE *f_stream, FILE *f_synth )
         }
         zero_pad = dec_delay;
 
-        while( st.bitstreamformat==G192 ? read_indices( &st, f_stream, 0 ) : read_indices_mime( &st, f_stream, 0) ) {
+        //while( st.bitstreamformat==G192 ? read_indices( &st, f_stream, 0 ) : read_indices_mime( &st, f_stream, 0) ) {
+        int cur_data_count = 0;
+        for(; cur_data_count < data_count; cur_data_count++) {
+            read_indices( &st, f_stream, 0 );
+            f_stream += 4;
+
+            memset(data, 0, 320);
+            memcpy(data, f_stream, 320);
+            f_stream += 320;
+
             /* run the main decoding routine */
             if ( st.codec_mode == MODE1 ) {
                 if ( st.Opt_AMR_WB ) {
@@ -119,26 +129,29 @@ void decode( int argc, char** argv, FILE *f_stream, FILE *f_synth )
                 st.ini_frame++;
             }
 
-            if ( dec_delay == 0 ) {
-                fwrite( data, sizeof(short), output_frame, f_synth );
-            } else {
+            //if ( dec_delay == 0 ) {
+                //fwrite( data, sizeof(short), output_frame, f_synth );
+                memcpy(f_synth, data, 320);
+                f_synth += 320;
+            //}
+            /* else {
                 if ( dec_delay <= output_frame ) {
                     fwrite( &data[dec_delay], sizeof(short), output_frame - dec_delay, f_synth );
                     dec_delay = 0;
                 } else {
                     dec_delay -= output_frame;
                 }
-            }
+            }*/
 
             //decFrame++;
             //fprintf( stdout, "output_frame=%d, decFrame=[%ld] | dst_data_len=[%zu]\n", output_frame, decFrame, dst_data_len );
         }
 
         //fflush( stderr );
-        if (zero_pad > 0) {
+        /*if (zero_pad > 0) {
             set_s( data, 0, zero_pad );
             fwrite( data, sizeof(short), zero_pad, f_synth );
-        }
+        }*/
 
         destroy_decoder( &st );
 

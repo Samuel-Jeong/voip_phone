@@ -25,7 +25,11 @@
  * Main encoder function
  *------------------------------------------------------------------------------------------*/
 
-void encode( int argc, char** argv, FILE *f_input, FILE *f_stream )
+// f_input len : 320
+// f_stream len : 324
+
+//void encode( int argc, char** argv, FILE *f_input, FILE *f_stream )
+void encode( int argc, char** argv, char* f_input, char* f_stream, int data_count )
 {
     /*FILE *f_rate = NULL;                                  *//* MODE1 - bitrate switching profile file *//*
     FILE *f_bwidth = NULL;                                *//* MODE1 - bandwidth switching profile file *//*
@@ -34,7 +38,7 @@ void encode( int argc, char** argv, FILE *f_input, FILE *f_stream )
     short tmps, input_frame, enc_delay, n_samples;
     short quietMode = 0;
     short noDelayCmp = 0;
-    short data[L_FRAME48k];                               /* 'short' buffer for input signal */
+    short data[320];                               /* 'short' buffer for input signal */
     Indice ind_list[MAX_NUM_INDICES];                     /* list of indices */
     UWord8 pFrame[(MAX_BITS_PER_FRAME + 7) >> 3];
     Word16 pFrame_size = 0;
@@ -62,16 +66,22 @@ void encode( int argc, char** argv, FILE *f_input, FILE *f_stream )
     input_frame = (short)(st.input_Fs / 50);
 
     enc_delay = NS2SA( st.input_Fs, get_delay(ENC, st.input_Fs) + 0.5f);
-    if ( noDelayCmp == 0 )
+    /*if ( noDelayCmp == 0 )
     {
         if( (tmps = (short)fread(data, sizeof(short), enc_delay, f_input)) != enc_delay )
         {
             fprintf(stderr, "Can not read the data from input file (enc_delay=%d)\n", enc_delay);
             exit(-1);
         }
-    }
+    }*/
 
-    while( (n_samples = (short)fread(data, sizeof(short), input_frame, f_input)) > 0 ) {
+    //while( (n_samples = (short)fread(data, sizeof(short), input_frame, f_input)) > 0 ) {
+    int cur_data_count = 0;
+    for (; cur_data_count < data_count; cur_data_count++) {
+        memset(data, 0, 320);
+        memcpy(data, f_input, 320);
+        f_input += 320;
+
         /*if(f_rf != NULL) {
             read_next_rfparam( &st.rf_fec_offset, &st.rf_fec_indicator, f_rf);
             rf_fec_offset_loc = st.rf_fec_offset;
@@ -111,15 +121,16 @@ void encode( int argc, char** argv, FILE *f_input, FILE *f_stream )
         }
 
         if ( st.Opt_AMR_WB ) {
-            amr_wb_enc( &st, data, n_samples );
+            amr_wb_enc( &st, data, 320 );
         } else {
-            evs_enc( &st, data, n_samples );
+            evs_enc( &st, data, 320 );
         }
 
         if( st.bitstreamformat == MIME ) {
             indices_to_serial( &st, pFrame, &pFrame_size );
         }
-        write_indices( &st, f_stream, pFrame, pFrame_size);
+        write_indices( &st, f_stream, pFrame, 320);
+        f_stream += 324;
 
         //fflush( stderr );
         //encFrame++;

@@ -379,14 +379,16 @@ void reset_indices_dec(
 
 void write_indices(
     Encoder_State *st,                        /* i/o: encoder state structure */
-    FILE *file,                       /* i  : output bitstream file                     */
+    //FILE *file,                       /* i  : output bitstream file                     */
+    char *file,                       /* i  : output bitstream file                     */
     UWord8 *pFrame,                    /* i  : byte array with bit packet and byte aligned coded speech data */
     Word16 pFrame_size                 /* i  : size of the binary encoded access unit [bits] */
 );
 
 short read_indices(                         /* o  : 1 = OK, 0 = something wrong            */
     Decoder_State *st,                        /* i/o: decoder state structure */
-    FILE *file,                      /* i  : bitstream file                         */
+    //FILE *file,                      /* i  : bitstream file                         */
+    char *file,                      /* i  : bitstream file                         */
     const short rew_flag                    /* i  : rewind flag (rewind file after reading) */
 );
 
@@ -2027,8 +2029,10 @@ void bit_allocation_second_fx(
 void io_ini_enc(
     const int   argc,                       /* i  : command line arguments number             */
     char  *argv[],                    /* i  : command line arguments                    */
-    FILE  *f_input,                  /* o  : input signal file                         */
-    FILE  *f_stream,                 /* o  : output bitstream file                     */
+    //FILE  *f_input,                  /* o  : input signal file                         */
+    char  *f_input,                  /* o  : input signal file                         */
+    //FILE  *f_stream,                 /* o  : output bitstream file                     */
+    char  *f_stream,                 /* o  : output bitstream file                     */
     FILE  **f_rate,                   /* o  : bitrate switching profile (0 if N/A)      */
     FILE  **f_bwidth,                 /* o  : bandwidth switching profile (0 if N/A)    */
     FILE  **f_rf,                     /* o  : channel aware configuration file          */
@@ -5019,8 +5023,10 @@ void decod_amr_wb(
 void io_ini_dec(
     const int argc,                       /* i  : command line arguments number             */
     char *argv[],                    /* i  : command line arguments                    */
-    FILE *f_stream,                 /* o  : input bitstream file                      */
-    FILE *f_synth,                  /* o  : output synthesis file                     */
+    //FILE *f_stream,                 /* o  : input bitstream file                      */
+    char *f_stream,                 /* o  : input bitstream file                      */
+    //FILE *f_synth,                  /* o  : output synthesis file                     */
+    char *f_synth,                  /* o  : output synthesis file                     */
     short *quietMode,                 /* o  : limited printouts                         */
     short *noDelayCmp,                /* o  : turn off delay compensation               */
     Decoder_State *st,                        /* o  : Decoder static variables structure        */

@@ -56,8 +56,20 @@ public class VoipClient {
     private RecordManager sourceAmrNbRecordManager = null; // 8000
     private RecordManager sourceAmrWbRecordManager = null; // 16000
 
-    private String[] evsEncArgv = null;
-    private String[] evsDecArgv = null;
+    private final String[] evsEncArgv = new String[]{
+            "EVS_enc.exe",
+            "8000",
+            "8",
+            "none",
+            "none"
+    };
+
+    private final String[] evsDecArgv = new String[]{
+            "EVS_dec.exe",
+            "8",
+            "none",
+            "none"
+    };
 
     private String wavFilePath = null;
     private WavFile wavFile = null;
@@ -223,17 +235,6 @@ public class VoipClient {
                     );
                     logger.debug("VoipClient: sourceEvsRecordManager is initiated. (path={})", sourceEvsRecordManager.getFullFilePath());
                 }
-
-                evsDecArgv = new String[]{
-                        "EVS_dec.exe",
-                        //"-q",
-                        //"-VOIP",
-                        //"-NO_DELAY_CMP",
-                        "8",
-                        //String.valueOf(voipClient.getTargetAudioFormat().getSampleRate() / 1000),
-                        "none",
-                        "none"
-                };
             } else if (MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_NB)) {
                 if (sourceAmrNbRecordManager == null) {
                     sourceAmrNbRecordManager = new RecordManager(configManager.getRecordPath(), 20);
@@ -403,20 +404,6 @@ public class VoipClient {
                     );
                     logger.debug("VoipClient: targetEvsRecordManager is initiated. (path={})", targetEvsRecordManager.getFullFilePath());
                 }
-
-                evsEncArgv = new String[]{
-                        "EVS_enc.exe",
-                        //"-q",
-                        //"-max_band",
-                        //"WB",
-                        //"-NO_DELAY_CMP",
-                        "8000",
-                        "8",
-                        //String.valueOf(voipClient.getTargetAudioFormat().getSampleRate()),
-                        //String.valueOf(voipClient.getTargetAudioFormat().getSampleRate() / 1000),
-                        "none",
-                        "none"
-                };
             } else if (MediaManager.getInstance().getPriorityCodec().equals(MediaManager.AMR_NB)) {
                 if (targetAmrNbRecordManager == null) {
                     targetAmrNbRecordManager = new RecordManager(configManager.getRecordPath(), 20);
