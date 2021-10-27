@@ -246,7 +246,6 @@ void io_ini_dec(
             unsigned short  utmp;
 
             memcpy(&utmp, f_stream, 1 * sizeof(unsigned short));
-            f_stream += 1 * sizeof(unsigned short);
 
             /*if ( fread( &utmp, sizeof(unsigned short), 1, f_stream ) != 1 )
             {
@@ -310,10 +309,10 @@ void io_ini_dec(
          * Read information from bitstream
          *-----------------------------------------------------------------*/
         st->ini_frame = 0; /* initialize, since this is needed within read_indices, to correctly set st->last_codec_mode */
-        if( st->bitstreamformat == G192 )
+        /*if( st->bitstreamformat == G192 )
         {
             read_indices( st, f_stream, 1 );
-        }
+        }*/
         /*else
         {
             st->total_brate=0;  *//* make sure total_brate is deterministic  even if there are no MIME ToCs *//*

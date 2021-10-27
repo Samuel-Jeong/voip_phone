@@ -130,6 +130,14 @@ void encode( int argc, char** argv, char* f_input, char* f_stream, int data_coun
             indices_to_serial( &st, pFrame, &pFrame_size );
         }
         write_indices( &st, f_stream, pFrame, 320);
+
+        /*int cur_data_index = 0;
+        fprintf(stderr, "[ENC] ");
+        for (; cur_data_index < 324; cur_data_index++) {
+            fprintf(stderr, "%02x ", f_stream[cur_data_index + (cur_data_count * 324)]);
+        }
+        fprintf(stderr, "\n");*/
+
         f_stream += 324;
 
         //fflush( stderr );

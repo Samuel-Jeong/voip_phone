@@ -101,6 +101,12 @@ void decode( int argc, char** argv, char *f_stream, char *f_synth, int data_coun
         //while( st.bitstreamformat==G192 ? read_indices( &st, f_stream, 0 ) : read_indices_mime( &st, f_stream, 0) ) {
         int cur_data_count = 0;
         for(; cur_data_count < data_count; cur_data_count++) {
+          /*int cur_data_index = 0;
+          fprintf(stderr, "[DEC] ");
+          for (; cur_data_index < 324; cur_data_index++) {
+                fprintf(stderr, "%02x ", f_stream[cur_data_index + (cur_data_count * 324)]);
+          }
+          fprintf(stderr, "\n");*/
             read_indices( &st, f_stream, 0 );
             f_stream += 4;
 

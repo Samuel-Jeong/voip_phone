@@ -496,7 +496,7 @@ void write_indices(
         /* Create and write ToC (Table of Contents) header */
         /*  qbit always  set to  1 on encoder side  for AMRWBIO , no qbit in use for EVS,  but set to 0(bad)  */
         header = (UWord8)(st->Opt_AMR_WB << 5 | st->Opt_AMR_WB << 4 | rate2EVSmode(st->nb_bits_tot * 50));
-        fprintf(stderr, "nb_bits_tot: %d, rate2EVSmode(st->nb_bits_tot * 50): %d\n", st->nb_bits_tot, rate2EVSmode(st->nb_bits_tot * 50));
+        //fprintf(stderr, "nb_bits_tot: %d, rate2EVSmode(st->nb_bits_tot * 50): %d\n", st->nb_bits_tot, rate2EVSmode(st->nb_bits_tot * 50));
         //fwrite( &header, sizeof(UWord8), 1, file );
         memcpy(file, &header, 1 * sizeof(UWord8));
         file += 1 * sizeof(UWord8);
@@ -518,7 +518,6 @@ void write_indices(
         /* write the serial stream into file */
         //fwrite( stream, sizeof(unsigned short), (stream[1] + 2), file );
         memcpy(file, stream, (stream[1] + 2) * sizeof(unsigned short));
-        file += (stream[1] + 2) * sizeof(unsigned short);
     }
 
     /* reset index pointers */
@@ -1088,8 +1087,11 @@ short read_indices(                   /* o  : 1 = reading OK, 0 = problem       
     /* in case rew_flag is set, read until first good frame is encountered */
     do
     {
+        //fprintf(stderr, "\n\t%02x|%02x|%02x|%02x", file[0], file[1], file[2], file[3]);
         memcpy(&utmp, file, 1 * sizeof(unsigned short));
         file += 1 * sizeof(unsigned short);
+        //fprintf(stderr, "\n\tutmp: %02x", utmp);
+
         /*if ( fread( &utmp, sizeof(unsigned short), 1, file ) != 1 )
         {
             if( ferror( file ) )
@@ -1108,6 +1110,7 @@ short read_indices(                   /* o  : 1 = reading OK, 0 = problem       
 
         memcpy(&num_bits, file, 1 * sizeof(unsigned short));
         file += 1 * sizeof(unsigned short);
+        //fprintf(stderr, "\n\tnum_bits: %02x\n", num_bits);
         /*if ( fread( &num_bits, sizeof(unsigned short), 1, file ) != 1 )
         {
             if( ferror( file ) )
@@ -1132,8 +1135,8 @@ short read_indices(                   /* o  : 1 = reading OK, 0 = problem       
             fprintf(stderr, "\nError, illegal bit rate (%ld) in  the  G.192 frame ! Exiting ! \n", total_brate);
             exit(-1);
         }
-        pt_stream = stream;
 
+        pt_stream = stream;
         memcpy(pt_stream, file, num_bits * sizeof(unsigned short));
         //num_bits_read = (unsigned short) fread( pt_stream, sizeof(unsigned short), num_bits, file );
         /*if( num_bits_read != num_bits )
@@ -1474,8 +1477,6 @@ Word16 read_indices_mime(                /* o  : 1 = reading OK, 0 = problem    
         }
     }
 
-
-
     /* read serial stream of indices from file to the local buffer */
     num_bytes_read = (Word16) fread( pFrame, sizeof(UWord8), (num_bits + 7)>>3, file );
     if( num_bytes_read != (num_bits + 7)>>3 )
@@ -1483,9 +1484,6 @@ Word16 read_indices_mime(                /* o  : 1 = reading OK, 0 = problem    
         fprintf(stderr, "\nError, invalid number of bytes read ! Exiting ! \n");
         exit(-1);
     }
-
-
-
 
     /* in case rew_flag is set, rewind the file and return */
     if ( rew_flag )

@@ -100,7 +100,8 @@ JNIEXPORT jbyteArray JNICALL Java_media_module_codec_evs_EvsManager_dec_1evs (JN
 	    return NULL;
 	}
 
-    jsize argc = (*jenv)->GetArrayLength(jenv, jargv);
+    jsize argc = 4;
+    //jsize argc = (*jenv)->GetArrayLength(jenv, jargv);
     char **argv = (char**) calloc (sizeof(char*), argc+1);
     if(!argv) {
         return NULL;
