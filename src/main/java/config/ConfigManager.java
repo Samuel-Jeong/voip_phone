@@ -21,6 +21,7 @@ public class ConfigManager {
     private static final Logger logger = LoggerFactory.getLogger(ConfigManager.class);
 
     private final String configPath;
+    private String contactPath;
     private Ini ini = null;
 
     // Section String
@@ -769,5 +770,13 @@ public class ConfigManager {
 
     public void setLastWavPath(String lastWavPath) {
         this.lastWavPath = lastWavPath;
+    }
+
+    public String getContactPath() {
+        return contactPath;
+    }
+
+    public void setContactPath(String contactPath) {
+        this.contactPath = contactPath;
     }
 }

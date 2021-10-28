@@ -10,7 +10,6 @@ import media.netty.module.NettyChannel;
 import media.sdp.SdpParser;
 import media.sdp.base.Sdp;
 import media.sdp.base.attribute.RtpAttribute;
-import media.sdp.base.media.MediaFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.*;
@@ -587,7 +586,7 @@ public class SipUtil implements SipListener {
 
                 logger.debug("Send 200 OK for REGISTER (FromNo={}): {}", fromNo, response);
 
-                if (FrameManager.getInstance().processRegisterToFrame(ServiceManager.CLIENT_FRAME_NAME, fromNo)) {
+                if (FrameManager.getInstance().processRegisterToFrame(fromNo)) {
                     logger.debug("Success to process the register to [{}] frame. (fromNo={})", ServiceManager.CLIENT_FRAME_NAME, fromNo);
                 }
 
@@ -768,7 +767,7 @@ public class SipUtil implements SipListener {
             clientTransaction.sendRequest();
             logger.debug("INVITE Request sent. (request={})", request);
 
-            FrameManager.getInstance().getFrame(ServiceManager.CLIENT_FRAME_NAME).appendText("Invite to [" + callInfo.getToNo() + "].\n");
+            FrameManager.getInstance().getClientFrame().appendText("Invite to [" + callInfo.getToNo() + "].\n");
 
             // Set dialog option
             Dialog dialog = clientTransaction.getDialog();
@@ -927,12 +926,12 @@ public class SipUtil implements SipListener {
 
             if (isUseClient) {
                 callInfo.setIsCallRecv(true);
-                if (FrameManager.getInstance().processInviteToFrame(ServiceManager.CLIENT_FRAME_NAME, fromNo)) {
+                if (FrameManager.getInstance().processInviteToFrame(fromNo)) {
                     logger.debug("Success to process the invite request to [{}] frame. (callId={}, remoteHostName={})", ServiceManager.CLIENT_FRAME_NAME, callId, fromNo);
                 }
             }
 
-            FrameManager.getInstance().getFrame(ServiceManager.CLIENT_FRAME_NAME).appendText("Invite from [" + callInfo.getFromNo() + "].\n");
+            FrameManager.getInstance().getClientFrame().appendText("Invite from [" + callInfo.getFromNo() + "].\n");
 
             // 1) Send 100 Trying
             Response tryingResponse = messageFactory.createResponse(Response.TRYING, request);
@@ -995,7 +994,7 @@ public class SipUtil implements SipListener {
             // 클라이언트 입장에서 자동 호 수락 옵션이 켜져있으면, 상대방 UA (프록시) 로 200 OK 를 바로 전송한다.
             if (isUseClient && configManager.isCallAutoAccept()) {
                 if (sendInviteOk(callId)) {
-                    if (FrameManager.getInstance().processAutoInviteToFrame(ServiceManager.CLIENT_FRAME_NAME, fromNo)) {
+                    if (FrameManager.getInstance().processAutoInviteToFrame(fromNo)) {
                         logger.debug("Success to process the auto-invite to [{}] frame. (callId={})", ServiceManager.CLIENT_FRAME_NAME, callId);
                     }
                 }
@@ -1281,7 +1280,7 @@ public class SipUtil implements SipListener {
                     }
                 }
 
-                FrameManager.getInstance().getFrame(ServiceManager.CLIENT_FRAME_NAME).appendText("Cancel from [" + fromNo + "].\n");
+                FrameManager.getInstance().getClientFrame().appendText("Cancel from [" + fromNo + "].\n");
 
                 callInfo.setIsInviteAccepted(false);
                 callInfo.setIsCallStarted(false);
@@ -1476,7 +1475,7 @@ public class SipUtil implements SipListener {
                     VoipClient.getInstance().stop();
                 }
 
-                FrameManager.getInstance().getFrame(ServiceManager.CLIENT_FRAME_NAME).appendText("Bye from [" + fromNo + "].\n");
+                FrameManager.getInstance().getClientFrame().appendText("Bye from [" + fromNo + "].\n");
 
                 callInfo.setIsInviteAccepted(false);
                 callInfo.setIsCallStarted(false);
@@ -1550,7 +1549,7 @@ public class SipUtil implements SipListener {
 
             ContentDispositionHeader contentDispositionHeader = (ContentDispositionHeader) request.getHeader(ContentDispositionHeader.NAME);
             if (contentDispositionHeader != null) {
-                FrameManager.getInstance().getFrame(ServiceManager.CLIENT_FRAME_NAME).appendText("[" + contentDispositionHeader.getName() + "]\n");
+                FrameManager.getInstance().getClientFrame().appendText("[" + contentDispositionHeader.getName() + "]\n");
             }
         } catch (Exception e) {
             logger.warn("Fail to send the 200 OK response for the MESSAGE request.", e);
@@ -1660,7 +1659,7 @@ public class SipUtil implements SipListener {
                     FromHeader inviteFromHeader = (FromHeader) response.getHeader(FromHeader.NAME);
                     String fromNo = inviteFromHeader.getAddress().getDisplayName();
 
-                    if (FrameManager.getInstance().processRegisterToFrame(ServiceManager.CLIENT_FRAME_NAME, fromNo)) {
+                    if (FrameManager.getInstance().processRegisterToFrame(fromNo)) {
                         logger.debug("({}) Success to process the register to [{}] frame.", ServiceManager.CLIENT_FRAME_NAME, callId);
                     }
 

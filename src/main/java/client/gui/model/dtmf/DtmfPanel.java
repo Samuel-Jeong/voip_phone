@@ -28,9 +28,12 @@ public class DtmfPanel {
     public static JPanel createKeypadPanel() {
         JPanel keypadPanel = new JPanel();
         keypadPanel.setOpaque(false);
+        GridBagConstraints keypadGB = new GridBagConstraints();
+        keypadGB.ipadx = 50;
+        keypadGB.ipady = 10;
+        keypadPanel.setLayout(new GridBagLayout());
 
         try {
-            keypadPanel.setLayout(new GridLayout(4, 3));
             for (int i = 0; i < dtmfButtons.length; i++) {
                 if (i == 9) {
                     dtmfButtons[i] = new JButton("*");
@@ -64,7 +67,15 @@ public class DtmfPanel {
 
                 //buttons[i].setPreferredSize(new Dimension(20, 20));
                 dtmfButtons[i].setEnabled(false);
-                keypadPanel.add(dtmfButtons[i]);
+            }
+
+            int curButtonIndex = 0;
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 3; j++) {
+                    keypadGB.gridx = j;
+                    keypadGB.gridy = i;
+                    keypadPanel.add(dtmfButtons[curButtonIndex++], keypadGB);
+                }
             }
         } catch (Exception e) {
             logger.warn("DtmfPanel.createKeypadPanel.Exception", e);

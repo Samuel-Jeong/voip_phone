@@ -13,15 +13,25 @@ public class WavPanel {
 
     public static JPanel createWavPanel(JButton fileUploadButton, JTextField fieldWavFile) {
         JPanel wavPanel = new JPanel();
-        wavPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
         wavPanel.setOpaque(false);
+        GridBagConstraints wavGB = new GridBagConstraints();
+        wavGB.anchor = GridBagConstraints.WEST;
+        wavPanel.setLayout(new GridBagLayout());
 
         JLabel labelWavFile = new JLabel("Uploaded wav file : ");
-        wavPanel.add(labelWavFile);
+        wavGB.gridx = 0;
+        wavGB.gridy = 0;
+        wavGB.ipadx = 10;
+        wavGB.ipady = 10;
+        wavPanel.add(labelWavFile, wavGB);
 
-        wavPanel.add(fieldWavFile);
+        wavGB.gridx = 0;
+        wavGB.gridy = 1;
+        wavPanel.add(fieldWavFile, wavGB);
 
-        wavPanel.add(fileUploadButton);
+        wavGB.gridx = 0;
+        wavGB.gridy = 2;
+        wavPanel.add(fileUploadButton, wavGB);
 
         return wavPanel;
     }

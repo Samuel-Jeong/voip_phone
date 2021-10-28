@@ -1,8 +1,8 @@
 package client.gui.model;
 
 import client.VoipClient;
+import client.gui.FrameManager;
 import client.gui.model.dtmf.DtmfPanel;
-import client.gui.model.dtmf.DtmfSoundGenerator;
 import client.gui.model.wav.WavPanel;
 import config.ConfigManager;
 import media.MediaManager;
@@ -21,6 +21,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
@@ -29,10 +30,10 @@ import java.awt.event.ActionListener;
 import java.io.File;
 
 /**
- * @class public class ClientFrame extends JFrame
+ * @class public class ClientFrame extends JPanel
  * @brief ClientFrame Class
  */
-public class ClientFrame extends JFrame {
+public class ClientFrame extends JPanel {
 
     private static final Logger logger = LoggerFactory.getLogger(ClientFrame.class);
 
@@ -40,18 +41,18 @@ public class ClientFrame extends JFrame {
 
     //////////////////////////////////////////////////////////////////////
     // Text
-    private static final JTextArea logTextArea = new JTextArea(18, 35);
+    private static final JTextArea logTextArea = new JTextArea(15, 20);
     private final JTextField proxyTextField;
     private final JTextField remoteTextField;
-    private final JTextField hostNameTextField = new JTextField(23);
-    private final JTextField sipIpTextField = new JTextField(23);
-    private final JTextField sipPortTextField = new JTextField(23);
-    private final JTextField toSipIpTextField = new JTextField(23);
-    private final JTextField toSipPortTextField = new JTextField(23);
-    private final JTextField mediaIpTextField = new JTextField(23);
-    private final JTextField mediaPortTextField = new JTextField(23);
-    private final JTextField recordPathTextField = new JTextField(23);
-    private final JTextField fieldWavFile = new JTextField(34);
+    private final JTextField hostNameTextField = new JTextField(20);
+    private final JTextField sipIpTextField = new JTextField(20);
+    private final JTextField sipPortTextField = new JTextField(20);
+    private final JTextField toSipIpTextField = new JTextField(20);
+    private final JTextField toSipPortTextField = new JTextField(20);
+    private final JTextField mediaIpTextField = new JTextField(20);
+    private final JTextField mediaPortTextField = new JTextField(20);
+    private final JTextField recordPathTextField = new JTextField(20);
+    private final JTextField fieldWavFile = new JTextField(20);
 
     //////////////////////////////////////////////////////////////////////
     // Button
@@ -64,6 +65,7 @@ public class ClientFrame extends JFrame {
     private final JButton exitButton;
     private JButton optionApplyButton;
     private final JButton fileUploadButton;
+    private final JButton contactToggleButton;
 
     //////////////////////////////////////////////////////////////////////
     // CheckBox
@@ -92,45 +94,19 @@ public class ClientFrame extends JFrame {
 
     //private AudioSelectFrame audioSelectFrame;
 
-    public ClientFrame(String name) {
-        super(name);
-
-        try {
-            //UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
-        } catch (Exception e) {
-            logger.warn("Fail to apply theme.");
-        }
-
-        //setUndecorated(true);
-        setBounds(500, 400, 435, 500);
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setResizable(false);
-
-        /////////////////////////////////////////////
-
-        Toolkit toolkit = Toolkit.getDefaultToolkit();
-        Image image = toolkit.getImage("src/main/resources/icon.png");
-        this.setIconImage(image);
-
+    public ClientFrame() {
         ConfigManager configManager = AppInstance.getInstance().getConfigManager();
-        this.setTitle(configManager.getHostName());
-
-        /*TrayIcon trayIcon = new TrayIcon(image, "Client - " + userConfig.getHostName());
-        trayIcon.setImageAutoSize(true);
-        SystemTray systemTray = SystemTray.getSystemTray();
-        systemTray.add(trayIcon);*/
 
         /////////////////////////////////////////////
         // Top Panel
         JPanel mainPanel = new JPanel();
-        FlowLayout flowLayout = new FlowLayout();
-        flowLayout.setAlignment(FlowLayout.LEFT);
-        mainPanel.setLayout(flowLayout);
+        /*FlowLayout flowLayout = new FlowLayout();
+        flowLayout.setAlignment(FlowLayout.TRAILING);*/
+        GridBagConstraints mainGB = new GridBagConstraints();
+        mainPanel.setLayout(new GridBagLayout());
 
-        proxyTextField = new JTextField(38);
-        remoteTextField = new JTextField(38);
+        proxyTextField = new JTextField(20);
+        remoteTextField = new JTextField(20);
 
         callButton = new JButton("Call");
         callButton.addActionListener(new CallListener());
@@ -164,37 +140,57 @@ public class ClientFrame extends JFrame {
         speakerMuteCheck.addActionListener(new MuteListener());
         speakerMuteCheck.setEnabled(false);
 
-        mainPanel.add(startButton);
-        mainPanel.add(stopButton);
-        mainPanel.add(mikeMuteCheck);
-        mainPanel.add(speakerMuteCheck);
+        JPanel mainControlPanel = new JPanel();
+        mainControlPanel.add(startButton);
+        mainControlPanel.add(stopButton);
+        mainControlPanel.add(mikeMuteCheck);
+        mainControlPanel.add(speakerMuteCheck);
+        mainGB.gridx = 0;
+        mainGB.gridy = 0;
+        mainGB.ipadx = 100;
+        mainGB.ipady = 10;
+        mainPanel.add(mainControlPanel, mainGB);
 
+        mainGB.gridx = 0;
+        mainGB.gridy = 1;
         proxyTextField.setText("");
-        mainPanel.add(proxyTextField);
-        mainPanel.add(regiButton);
+        mainPanel.add(proxyTextField, mainGB);
 
-        remoteTextField.setText("");
-        mainPanel.add(remoteTextField);
-        mainPanel.add(callButton);
-        mainPanel.add(byeButton);
-        mainPanel.add(clearButton);
+        JPanel proxyControlPanel = new JPanel();
+        proxyControlPanel.add(regiButton);
 
         /////////////////////////////////////////////
+        // Contact Panel
+
+        contactToggleButton = new JButton("Contact");
+        contactToggleButton.addActionListener(new ContactToggleListener());
+        contactToggleButton.setEnabled(false);
+        proxyControlPanel.add(contactToggleButton);
+        mainGB.gridx = 0;
+        mainGB.gridy = 2;
+        mainPanel.add(proxyControlPanel, mainGB);
+
+        mainGB.gridx = 0;
+        mainGB.gridy = 3;
+        remoteTextField.setText("");
+        mainPanel.add(remoteTextField, mainGB);
+
+        JPanel remoteHostControlPanel = new JPanel();
+        remoteHostControlPanel.add(callButton);
+        remoteHostControlPanel.add(byeButton);
+        remoteHostControlPanel.add(clearButton);
 
         exitButton = new JButton("Exit");
         exitButton.addActionListener(new ExitListener());
         exitButton.setEnabled(true);
 
-        mainPanel.add(exitButton);
+        remoteHostControlPanel.add(exitButton);
+        mainGB.gridx = 0;
+        mainGB.gridy = 4;
+        mainPanel.add(remoteHostControlPanel, mainGB);
 
         /////////////////////////////////////////////
-
-        mainPanel.setPreferredSize(new Dimension(500, 100));
-        this.add(mainPanel, "Center");
-
-        // Bottom Panel
         JPanel logPanel = new JPanel(new BorderLayout());
-
         logTextArea.setEditable(false);
 
         JScrollPane jScrollPane = new JScrollPane(logTextArea);
@@ -202,7 +198,9 @@ public class ClientFrame extends JFrame {
         jScrollPane.createHorizontalScrollBar();
 
         logPanel.add(jScrollPane, "Center");
-        mainPanel.add(logPanel, "South");
+        mainGB.gridx = 0;
+        mainGB.gridy = 5;
+        mainPanel.add(logPanel, mainGB);
 
         /////////////////////////////////////////////
         // Option Panel
@@ -253,25 +251,40 @@ public class ClientFrame extends JFrame {
     private JPanel createOptionPanel() {
         ConfigManager configManager = AppInstance.getInstance().getConfigManager();
 
-        JPanel optionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        optionPanel.setAlignmentX(LEFT_ALIGNMENT);
+        JPanel optionPanel = new JPanel();
+        GridBagConstraints optionGB = new GridBagConstraints();
+        optionGB.anchor = GridBagConstraints.WEST;
+        optionPanel.setLayout(new GridBagLayout());
 
         // Option Check Buttons
         useClientCheck = new JCheckBox("UseClient", false);
         useClientCheck.addActionListener(new UseClientCheckListener());
+        optionGB.gridx = 0;
+        optionGB.gridy = 0;
+        optionGB.ipadx = 10;
+        optionGB.ipady = 10;
+        optionPanel.add(useClientCheck, optionGB);
 
         useProxyCheck = new JCheckBox("UseProxy", false);
         useProxyCheck.addActionListener(new UseClientCheckListener());
+        optionGB.gridx = 1;
+        optionGB.gridy = 0;
+        optionPanel.add(useProxyCheck, optionGB);
+        useProxyCheck.setSelected(configManager.isUseProxy());
 
         proxyModeCheck = new JCheckBox("ProxyMode", false);
         proxyModeCheck.addActionListener(new UseProxyCheckListener());
+        optionGB.gridx = 0;
+        optionGB.gridy = 1;
+        optionPanel.add(proxyModeCheck, optionGB);
 
         callAutoAcceptCheck = new JCheckBox("Auto-Accept", false);
         if (configManager.isCallAutoAccept()) {
             callAutoAcceptCheck.setSelected(true);
         }
-
-        useProxyCheck.setSelected(configManager.isUseProxy());
+        optionGB.gridx = 1;
+        optionGB.gridy = 1;
+        optionPanel.add(callAutoAcceptCheck, optionGB);
 
         if (configManager.isUseClient()) {
             useClientCheck.setSelected(true);
@@ -284,137 +297,139 @@ public class ClientFrame extends JFrame {
             stopButton.setEnabled(false);
             callAutoAcceptCheck.setEnabled(false);
         }
-
-        JPanel optionCheckPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        optionCheckPanel.setAlignmentX(LEFT_ALIGNMENT);
-
-        JPanel optionCheckGridPanel = new JPanel(new GridLayout(1, 1));
-        optionCheckGridPanel.add(useClientCheck);
-        optionCheckGridPanel.add(useProxyCheck);
-        optionCheckGridPanel.add(proxyModeCheck);
-        optionCheckGridPanel.add(callAutoAcceptCheck);
-
-        optionCheckPanel.add(optionCheckGridPanel);
-        optionPanel.add(optionCheckPanel);
-        optionPanel.add(Box.createVerticalStrut(5));
         //
 
         // Option Label Panel
-        JPanel optionLabelGridPanel = new JPanel(new GridLayout(8, 1));
-
-        JPanel hostNameLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel hostNameLabelPanel = new JPanel();
         hostNameLabelPanel.setAlignmentX(LEFT_ALIGNMENT);
-        JLabel hostNameLabel = new JLabel("Host-Name : ");
+        JLabel hostNameLabel = FrameManager.getInstance().createLabel("Host-Name : ");
         hostNameLabelPanel.add(hostNameLabel);
-        optionLabelGridPanel.add(hostNameLabelPanel);
+        optionGB.gridx = 0;
+        optionGB.gridy = 2;
+        optionPanel.add(hostNameLabelPanel, optionGB);
 
         JPanel sipIpLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         sipIpLabelPanel.setAlignmentX(LEFT_ALIGNMENT);
-        JLabel sipIpLabel = new JLabel("FROM-IP : ");
+        JLabel sipIpLabel = FrameManager.getInstance().createLabel("FROM-IP : ");
         sipIpLabelPanel.add(sipIpLabel);
-        optionLabelGridPanel.add(sipIpLabelPanel);
+        optionGB.gridx = 0;
+        optionGB.gridy = 3;
+        optionPanel.add(sipIpLabelPanel, optionGB);
 
         JPanel sipPortLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         sipPortLabelPanel.setAlignmentX(LEFT_ALIGNMENT);
-        JLabel sipPortLabel = new JLabel("FROM-Port : ");
+        JLabel sipPortLabel = FrameManager.getInstance().createLabel("FROM-Port : ");
         sipPortLabelPanel.add(sipPortLabel);
-        optionLabelGridPanel.add(sipPortLabelPanel);
+        optionGB.gridx = 0;
+        optionGB.gridy = 4;
+        optionPanel.add(sipPortLabelPanel, optionGB);
 
         JPanel proxySipIpLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         proxySipIpLabelPanel.setAlignmentX(LEFT_ALIGNMENT);
-        JLabel proxySipIpLabel = new JLabel("TO-IP : ");
+        JLabel proxySipIpLabel = FrameManager.getInstance().createLabel("TO-IP : ");
         proxySipIpLabelPanel.add(proxySipIpLabel);
-        optionLabelGridPanel.add(proxySipIpLabelPanel);
+        optionGB.gridx = 0;
+        optionGB.gridy = 5;
+        optionPanel.add(proxySipIpLabelPanel, optionGB);
 
         JPanel proxySipPortLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         proxySipPortLabelPanel.setAlignmentX(LEFT_ALIGNMENT);
-        JLabel proxySipPortLabel = new JLabel("TO-Port : ");
+        JLabel proxySipPortLabel = FrameManager.getInstance().createLabel("TO-Port : ");
         proxySipPortLabelPanel.add(proxySipPortLabel);
-        optionLabelGridPanel.add(proxySipPortLabelPanel);
+        optionGB.gridx = 0;
+        optionGB.gridy = 6;
+        optionPanel.add(proxySipPortLabelPanel, optionGB);
 
         JPanel mediaIpLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         mediaIpLabelPanel.setAlignmentX(LEFT_ALIGNMENT);
-        JLabel mediaIpLabel = new JLabel("Media-IP : ");
+        JLabel mediaIpLabel = FrameManager.getInstance().createLabel("Media-IP : ");
         mediaIpLabelPanel.add(mediaIpLabel);
-        optionLabelGridPanel.add(mediaIpLabelPanel);
+        optionGB.gridx = 0;
+        optionGB.gridy = 7;
+        optionPanel.add(mediaIpLabelPanel, optionGB);
 
         JPanel mediaPortLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         mediaPortLabelPanel.setAlignmentX(LEFT_ALIGNMENT);
-        JLabel mediaPortLabel = new JLabel("Media-Port : ");
+        JLabel mediaPortLabel = FrameManager.getInstance().createLabel("Media-Port : ");
         mediaPortLabelPanel.add(mediaPortLabel);
-        optionLabelGridPanel.add(mediaPortLabelPanel);
+        optionGB.gridx = 0;
+        optionGB.gridy = 8;
+        optionPanel.add(mediaPortLabelPanel, optionGB);
 
         JPanel recordPathLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         recordPathLabelPanel.setAlignmentX(LEFT_ALIGNMENT);
-        JLabel recordPathLabel = new JLabel("Record-Path : ");
+        JLabel recordPathLabel = FrameManager.getInstance().createLabel("Record-Path : ");
         recordPathLabelPanel.add(recordPathLabel);
-        optionLabelGridPanel.add(recordPathLabelPanel);
-
-        optionPanel.add(optionLabelGridPanel);
+        optionGB.gridx = 0;
+        optionGB.gridy = 9;
+        optionPanel.add(recordPathLabelPanel, optionGB);
         //
 
         // Option Text Panel
-        JPanel optionTextGridPanel = new JPanel(new GridLayout(8, 1));
-
         hostNameTextField.setEnabled(true);
         hostNameTextField.setEditable(true);
         hostNameTextField.setText(configManager.getHostName());
+        optionGB.gridx = 1;
+        optionGB.gridy = 2;
+        optionPanel.add(hostNameTextField, optionGB);
 
         sipIpTextField.setEnabled(true);
         sipIpTextField.setEditable(true);
         sipIpTextField.setText(configManager.getFromIp());
+        optionGB.gridx = 1;
+        optionGB.gridy = 3;
+        optionPanel.add(sipIpTextField, optionGB);
 
         sipPortTextField.setEnabled(true);
         sipPortTextField.setEditable(true);
         sipPortTextField.setText(String.valueOf(configManager.getFromPort()));
+        optionGB.gridx = 1;
+        optionGB.gridy = 4;
+        optionPanel.add(sipPortTextField, optionGB);
 
         toSipIpTextField.setEnabled(true);
         toSipIpTextField.setEditable(true);
         toSipIpTextField.setText(configManager.getToIp());
+        optionGB.gridx = 1;
+        optionGB.gridy = 5;
+        optionPanel.add(toSipIpTextField, optionGB);
 
         toSipPortTextField.setEnabled(true);
         toSipPortTextField.setEditable(true);
         toSipPortTextField.setText(String.valueOf(configManager.getToPort()));
+        optionGB.gridx = 1;
+        optionGB.gridy = 6;
+        optionPanel.add(toSipPortTextField, optionGB);
 
         mediaIpTextField.setEnabled(true);
         mediaIpTextField.setEditable(true);
         mediaIpTextField.setText(String.valueOf(configManager.getNettyServerIp()));
+        optionGB.gridx = 1;
+        optionGB.gridy = 7;
+        optionPanel.add(mediaIpTextField, optionGB);
 
         mediaPortTextField.setEnabled(true);
         mediaPortTextField.setEditable(true);
         mediaPortTextField.setText(String.valueOf(configManager.getNettyServerPort()));
+        optionGB.gridx = 1;
+        optionGB.gridy = 8;
+        optionPanel.add(mediaPortTextField, optionGB);
 
         recordPathTextField.setEnabled(true);
         recordPathTextField.setEditable(true);
         recordPathTextField.setText(String.valueOf(configManager.getRecordPath()));
-
-        optionTextGridPanel.add(hostNameTextField);
-        optionTextGridPanel.add(sipIpTextField);
-        optionTextGridPanel.add(sipPortTextField);
-        optionTextGridPanel.add(toSipIpTextField);
-        optionTextGridPanel.add(toSipPortTextField);
-        optionTextGridPanel.add(mediaIpTextField);
-        optionTextGridPanel.add(mediaPortTextField);
-        optionTextGridPanel.add(recordPathTextField);
-
-        optionPanel.add(optionTextGridPanel);
+        optionGB.gridx = 1;
+        optionGB.gridy = 9;
+        optionPanel.add(recordPathTextField, optionGB);
         //
 
-        optionPanel.add(Box.createVerticalStrut(5));
-
         // Apply button
-        JPanel optionApplyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        optionApplyPanel.setAlignmentX(LEFT_ALIGNMENT);
-
-        JPanel optionApplyGridPanel = new JPanel(new GridLayout(1, 1));
-
         optionApplyButton = new JButton("Apply");
         optionApplyButton.addActionListener(new OptionApplyListener());
         optionApplyButton.setEnabled(true);
-
-        optionApplyGridPanel.add(optionApplyButton);
-        optionApplyPanel.add(optionApplyGridPanel);
-        optionPanel.add(optionApplyPanel);
+        optionGB.gridx = 0;
+        optionGB.gridy = 10;
+        optionPanel.add(optionApplyButton, optionGB);
         //
 
         return optionPanel;
@@ -422,26 +437,18 @@ public class ClientFrame extends JFrame {
 
     private JPanel createMediaPanel() {
         JPanel mediaPanel = new JPanel();
-        mediaPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
-        mediaPanel.setAlignmentX(LEFT_ALIGNMENT);
+        GridBagConstraints mediaGB = new GridBagConstraints();
+        mediaGB.anchor = GridBagConstraints.WEST;
+        mediaPanel.setLayout(new GridBagLayout());
 
-        // Codec select panel
-        JPanel codecSelectPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        codecSelectPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JPanel codecDescriptionPanel = new JPanel(new GridLayout(1, 1));
-
-        JPanel codecDesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel codecSelectLabel = new JLabel("Audio Codec : ");
-        codecDesPanel.add(codecSelectLabel);
-        codecDescriptionPanel.add(codecDesPanel);
-
-        String[] audioCodecStrArray = MediaManager.getInstance().getSupportedAudioCodecList();
-        JPanel audioCodecComboPanel = new JPanel(new GridLayout(1, 1));
-
-        audioCodecSelectCombo = new JComboBox(audioCodecStrArray);
+        JPanel codecDescriptionPanel = new JPanel(new GridBagLayout());
+        JLabel codecSelectLabel = FrameManager.getInstance().createLabel("Audio Codec : ");
+        codecDescriptionPanel.add(codecSelectLabel);
 
         ConfigManager configManager = AppInstance.getInstance().getConfigManager();
+        String[] audioCodecStrArray = MediaManager.getInstance().getSupportedAudioCodecList();
+        audioCodecSelectCombo = new JComboBox(audioCodecStrArray);
+
         if (configManager.getPriorityAudioCodec().equals(MediaManager.ALAW)) {
             audioCodecSelectCombo.setSelectedItem(AudioFormat.Encoding.ALAW);
         } else if (configManager.getPriorityAudioCodec().equals(MediaManager.ULAW)) {
@@ -486,32 +493,36 @@ public class ClientFrame extends JFrame {
             }
         });
 
-        audioCodecComboPanel.add(audioCodecSelectCombo);
-        codecSelectPanel.add(audioCodecComboPanel);
+        JPanel codecSelectPanel = new JPanel();
+        codecSelectPanel.add(audioCodecSelectCombo);
 
-        mediaPanel.add(codecDescriptionPanel);
-        mediaPanel.add(codecSelectPanel);
+        mediaGB.gridx = 0;
+        mediaGB.gridy = 0;
+        mediaGB.ipadx = 10;
+        mediaGB.ipady = 10;
+        mediaPanel.add(codecDescriptionPanel, mediaGB);
 
-        mediaPanel.add(Box.createVerticalStrut(5));
+        mediaGB.gridx = 1;
+        mediaGB.gridy = 0;
+        mediaPanel.add(codecSelectPanel, mediaGB);
         //
 
         // Volume slider
-        JPanel sliderPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        sliderPanel.setAlignmentX(LEFT_ALIGNMENT);
 
         ////////////
-        JPanel volumeDescriptionPanel = new JPanel(new GridLayout(2, 1));
-
         JPanel speakerDesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel speakerLabel = new JLabel("Speaker : ");
+        JLabel speakerLabel = FrameManager.getInstance().createLabel("Speaker : ");
         speakerDesPanel.add(speakerLabel);
+        mediaGB.gridx = 0;
+        mediaGB.gridy = 1;
+        mediaPanel.add(speakerDesPanel, mediaGB);
 
         JPanel mikeDesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel mikeLabel = new JLabel("Mike : ");
+        JLabel mikeLabel = FrameManager.getInstance().createLabel("Mike : ");
         mikeDesPanel.add(mikeLabel);
-
-        volumeDescriptionPanel.add(speakerDesPanel);
-        volumeDescriptionPanel.add(mikeDesPanel);
+        mediaGB.gridx = 0;
+        mediaGB.gridy = 2;
+        mediaPanel.add(mikeDesPanel, mediaGB);
 
         for (UIManager.LookAndFeelInfo laf : UIManager.getInstalledLookAndFeels()) {
             if ("Nimbus".equals(laf.getName())){
@@ -522,10 +533,6 @@ public class ClientFrame extends JFrame {
                 }
             }
         }
-
-        JPanel volumePanel = new JPanel(new GridLayout(2,1,20,20));
-        volumePanel.setOpaque(false);
-        //sliderPanel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
 
         UIDefaults sliderDefaults = new UIDefaults();
 
@@ -549,7 +556,10 @@ public class ClientFrame extends JFrame {
         });
 
         speakerSlider = new JSlider(0, 100, configManager.getSpeakerVolume());
-        volumePanel.add(speakerSlider);
+        mediaGB.gridx = 1;
+        mediaGB.gridy = 1;
+        mediaPanel.add(speakerSlider, mediaGB);
+
         speakerSlider.putClientProperty("Nimbus.Overrides",sliderDefaults);
         speakerSlider.putClientProperty("Nimbus.Overrides.InheritDefaults",false);
         speakerSlider.addChangeListener(
@@ -562,7 +572,10 @@ public class ClientFrame extends JFrame {
         );
 
         mikeSlider = new JSlider(0, 100, configManager.getMikeVolume());
-        volumePanel.add(mikeSlider);
+        mediaGB.gridx = 1;
+        mediaGB.gridy = 2;
+        mediaPanel.add(mikeSlider, mediaGB);
+
         mikeSlider.putClientProperty("Nimbus.Overrides",sliderDefaults);
         mikeSlider.putClientProperty("Nimbus.Overrides.InheritDefaults",false);
         mikeSlider.addChangeListener(
@@ -573,116 +586,73 @@ public class ClientFrame extends JFrame {
                     configManager.setIniValue(ConfigManager.SECTION_MEDIA, ConfigManager.FIELD_MIKE_VOLUME, String.valueOf(curMikeVolume));
                 }
         );
-
-        sliderPanel.add(volumeDescriptionPanel);
-        sliderPanel.add(volumePanel);
-        mediaPanel.add(sliderPanel);
-        mediaPanel.add(Box.createVerticalStrut(5));
         //
 
         // Record CheckBox
-        JPanel recordPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        recordPanel.setAlignmentX(LEFT_ALIGNMENT);
-        recordPanel.setOpaque(false);
-
-        JPanel recordDescriptionPanel = new JPanel(new GridLayout(1, 1));
+        JPanel recordDescriptionPanel = new JPanel();
         recordDescriptionPanel.setOpaque(false);
+        JLabel recordSelectLabel = FrameManager.getInstance().createLabel("Record type : ");
+        recordDescriptionPanel.add(recordSelectLabel);
+        mediaGB.gridx = 0;
+        mediaGB.gridy = 3;
+        mediaPanel.add(recordDescriptionPanel, mediaGB);
 
-        JPanel recordDesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        recordDesPanel.setOpaque(false);
-
-        JLabel recordSelectLabel = new JLabel("Record type : ");
-        recordDesPanel.add(recordSelectLabel);
-        recordDescriptionPanel.add(recordDesPanel);
-
-        JPanel recordFileCheckPanel = new JPanel(new GridLayout(1, 1));
-        recordFileCheckPanel.setOpaque(false);
+        JPanel recordSelectPanel = new JPanel();
+        recordSelectPanel.setOpaque(false);
+        GridBagConstraints recordSelectGB = new GridBagConstraints();
+        recordSelectGB.anchor = GridBagConstraints.WEST;
+        recordSelectGB.ipadx = 10;
+        recordSelectGB.ipady = 10;
+        recordSelectPanel.setLayout(new GridBagLayout());
 
         rawFileCheck = new JCheckBox("PCM", false);
         rawFileCheck.addActionListener(new RawFileCheckListener());
         if (configManager.isRawFile()) {
             rawFileCheck.setSelected(true);
         }
+        recordSelectGB.gridx = 0;
+        recordSelectGB.gridy = 0;
+        recordSelectPanel.add(rawFileCheck, recordSelectGB);
 
         encFileCheck = new JCheckBox("DEC", false);
         encFileCheck.addActionListener(new EncFileCheckListener());
         if (configManager.isEncFile()) {
             encFileCheck.setSelected(true);
         }
+        recordSelectGB.gridx = 1;
+        recordSelectPanel.add(encFileCheck, recordSelectGB);
 
         decFileCheck = new JCheckBox("ENC", false);
         decFileCheck.addActionListener(new DecFileCheckListener());
         if (configManager.isDecFile()) {
             decFileCheck.setSelected(true);
         }
+        recordSelectGB.gridx = 2;
+        recordSelectPanel.add(decFileCheck, recordSelectGB);
 
-        recordFileCheckPanel.add(rawFileCheck);
-        recordFileCheckPanel.add(encFileCheck);
-        recordFileCheckPanel.add(decFileCheck);
-        recordPanel.add(recordDescriptionPanel);
-        recordPanel.add(recordFileCheckPanel);
-        mediaPanel.add(recordPanel);
-        mediaPanel.add(Box.createVerticalStrut(5));
+        mediaGB.gridx = 1;
+        mediaGB.gridy = 3;
+        mediaPanel.add(recordSelectPanel, mediaGB);
         //
 
         // DTMF Checkbox
-        JPanel dtmfPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        dtmfPanel.setAlignmentX(LEFT_ALIGNMENT);
-        dtmfPanel.setOpaque(false);
-
-        JPanel dtmfDescriptionPanel = new JPanel(new GridLayout(1, 1));
-        dtmfDescriptionPanel.setOpaque(false);
-
-        JPanel dtmfDesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        dtmfDesPanel.setOpaque(false);
-
-        JLabel dtmfSelectLabel = new JLabel("DTMF : ");
-        dtmfDesPanel.add(dtmfSelectLabel);
-        dtmfDescriptionPanel.add(dtmfDesPanel);
-
-        JPanel dtmfCheckPanel = new JPanel(new GridLayout(1, 1));
-        dtmfCheckPanel.setOpaque(false);
-
-        dtmfCheck = new JCheckBox("", false);
+        dtmfCheck = new JCheckBox("DTMF", false);
         dtmfCheck.addActionListener(new DtmfCheckListener());
         dtmfCheck.setSelected(configManager.isDtmf());
-
-        dtmfCheckPanel.add(dtmfCheck);
-        dtmfPanel.add(dtmfDescriptionPanel);
-        dtmfPanel.add(dtmfCheckPanel);
-        mediaPanel.add(dtmfPanel);
-        mediaPanel.add(Box.createVerticalStrut(5));
+        mediaGB.gridx = 0;
+        mediaGB.gridy = 4;
+        mediaPanel.add(dtmfCheck, mediaGB);
         //
 
         // Wav Checkbox
-        JPanel wavPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        wavPanel.setAlignmentX(LEFT_ALIGNMENT);
-        wavPanel.setOpaque(false);
-
-        JPanel wavDescriptionPanel = new JPanel(new GridLayout(1, 1));
-        wavDescriptionPanel.setOpaque(false);
-
-        JPanel wavDesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        wavDesPanel.setOpaque(false);
-
-        JLabel wavSelectLabel = new JLabel("Send Wav : ");
-        wavDesPanel.add(wavSelectLabel);
-        wavDescriptionPanel.add(wavDesPanel);
-
-        JPanel wavCheckPanel = new JPanel(new GridLayout(1, 1));
-        wavCheckPanel.setOpaque(false);
-
-        sendWavCheck = new JCheckBox("", false);
+        sendWavCheck = new JCheckBox("Send Wav", false);
         sendWavCheck.addActionListener(new SendWavCheckListener());
         if (configManager.isSendWav()) {
             sendWavCheck.setSelected(true);
         }
-
-        wavCheckPanel.add(sendWavCheck);
-        wavPanel.add(wavDescriptionPanel);
-        wavPanel.add(wavCheckPanel);
-        mediaPanel.add(wavPanel);
-        mediaPanel.add(Box.createVerticalStrut(5));
+        mediaGB.gridx = 0;
+        mediaGB.gridy = 5;
+        mediaPanel.add(sendWavCheck, mediaGB);
         //
 
         return mediaPanel;
@@ -714,7 +684,7 @@ public class ClientFrame extends JFrame {
         logTextArea.setText(content);
     }
 
-    public static void appendText(String content) {
+    public void appendText(String content) {
         logTextArea.append(content);
     }
 
@@ -1031,6 +1001,16 @@ public class ClientFrame extends JFrame {
         }
     }
 
+    class ContactToggleListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            if(e.getSource() == contactToggleButton) {
+                FrameManager.getInstance().change(ServiceManager.CONTACT_FRAME_NAME);
+            }
+        }
+    }
+
     ////////////////////////////////////////////////////////////////////////////////
 
     class CallListener implements ActionListener {
@@ -1225,6 +1205,7 @@ public class ClientFrame extends JFrame {
                 sendWavCheck.setEnabled(false);
 
                 fileUploadButton.setEnabled(false);
+                contactToggleButton.setEnabled(true);
 
                 appendText("> Phone is on.\n");
             }
@@ -1286,6 +1267,7 @@ public class ClientFrame extends JFrame {
                 sendWavCheck.setEnabled(true);
 
                 fileUploadButton.setEnabled(configManager.isSendWav());
+                contactToggleButton.setEnabled(false);
 
                 appendText("> Phone is off.\n");
             }
@@ -1417,7 +1399,7 @@ public class ClientFrame extends JFrame {
                     appendText("Host-name option is changed. ([" + configManager.getHostName() + "] > [" + inputStr + "])\n");
                     configManager.setHostName(inputStr);
                     configManager.setIniValue(ConfigManager.SECTION_SIGNAL, ConfigManager.FIELD_HOST_NAME, inputStr);
-                    setTitle("Client - " + configManager.getHostName());
+                    FrameManager.getInstance().setTitle("Client - " + configManager.getHostName());
                 }
 
                 ///////////////////////////////////////////////////////////////////////////

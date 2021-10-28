@@ -47,30 +47,29 @@ public class AmrManager {
 
         try {
             //FrameManager.getInstance().appendTextToFrame(ServiceManager.CLIENT_FRAME_NAME, "Loading... the amr library. (path=" + curUserDir + ")");
-            FrameManager.getInstance().appendTextToFrame(ServiceManager.CLIENT_FRAME_NAME, "Loading... the amr library.\n");
+            FrameManager.getInstance().appendTextToFrame("Loading... the amr library.\n");
             NativeLoader.loadLibrary("amrjni");
             //System.load(curUserDir);
-            FrameManager.getInstance().appendTextToFrame(ServiceManager.CLIENT_FRAME_NAME, "Loaded the amr library.\n");
+            FrameManager.getInstance().appendTextToFrame("Loaded the amr library.\n");
             //FrameManager.getInstance().appendTextToFrame(ServiceManager.CLIENT_FRAME_NAME, "Loaded the amr library. (path=" + curUserDir + ")");
         } catch (Exception e) {
             String[] audioCodecStrArray = MediaManager.getInstance().getSupportedAudioCodecList();
             ConfigManager configManager = AppInstance.getInstance().getConfigManager();
             configManager.setPriorityAudioCodec(audioCodecStrArray[0]);
             configManager.setIniValue(ConfigManager.SECTION_MEDIA, ConfigManager.FIELD_PRIORITY_CODEC, audioCodecStrArray[0]);
-            FrameManager.getInstance().selectPriorityCodec(ServiceManager.CLIENT_FRAME_NAME, audioCodecStrArray[0]);
+            FrameManager.getInstance().selectPriorityCodec(audioCodecStrArray[0]);
 
             String resultMsg = "Fail to load the amr library.\nPriority codec is changed to [" + audioCodecStrArray[0] + "].\n" + e.getMessage();
             //logger.error("Fail to load the amr library. (path={})", curUserDir);
-            FrameManager.getInstance().appendTextToFrame(ServiceManager.CLIENT_FRAME_NAME, resultMsg);
+            FrameManager.getInstance().appendTextToFrame(resultMsg);
             //FrameManager.getInstance().popUpErrorMsg(resultMsg);
-            FrameManager.getInstance().popUpWarnMsgToFrame(ServiceManager.CLIENT_FRAME_NAME, resultMsg);
+            FrameManager.getInstance().popUpWarnMsgToFrame(resultMsg);
             logger.debug("Priority audio codec option is changed. (before=[{}], after=[{}])", configManager.getPriorityAudioCodec(), audioCodecStrArray[0]);
 
             return;
         }
 
         FrameManager.getInstance().popUpInfoMsgToFrame(
-                ServiceManager.CLIENT_FRAME_NAME,
                 //"Success to load the amr library. (path=" + curUserDir + ")"
                 "Success to load the amr library."
         );

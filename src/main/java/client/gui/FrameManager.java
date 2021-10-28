@@ -2,31 +2,53 @@ package client.gui;
 
 import client.VoipClient;
 import client.gui.model.ClientFrame;
+import client.gui.model.ContactFrame;
 import config.ConfigManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.AppInstance;
+import service.ServiceManager;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.HashMap;
-import java.util.Map;
 
 /**
- * @class public class FrameManager
+ * @class public class FrameManager extends JFrame
  * @brief FrameManager class
  */
-public class FrameManager {
+public class FrameManager extends JFrame { // Main frame
 
     private static final Logger logger = LoggerFactory.getLogger(FrameManager.class);
 
     private static FrameManager manager;
 
-    Map<String, ClientFrame> frameMap;
+    private ClientFrame clientFrame;
+    private ContactFrame contactFrame;
 
     ////////////////////////////////////////////////////////////////////////////////
 
     private FrameManager() {
-        frameMap = new HashMap<>();
+        super("MAIN_FRAME");
+
+        try {
+            //UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+            UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+        } catch (Exception e) {
+            logger.warn("Fail to apply theme.");
+        }
+
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        Image image = toolkit.getImage("src/main/resources/icon.png");
+        this.setIconImage(image);
+
+        ConfigManager configManager = AppInstance.getInstance().getConfigManager();
+        this.setTitle(configManager.getHostName());
+
+        setBounds(500, 400, 500, 500);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        //setLocationRelativeTo(null);
+        //setResizable(false);
     }
 
     public static FrameManager getInstance() {
@@ -39,83 +61,101 @@ public class FrameManager {
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    public void addFrame(String name) {
-        if (name == null) { return; }
-        ClientFrame ClientFrame = new ClientFrame(name);
-        frameMap.put(name, ClientFrame);
-    }
-
-    public void openFrame(String name) {
-        if (name == null) { return; }
-        ClientFrame frame = getFrame(name);
-        if(frame != null) {
-            frame.setVisible(true);
+    public void openClientFrame() {
+        if(clientFrame == null) {
+            clientFrame = new ClientFrame();
+            //clientFrame.setVisible(true);
         }
     }
 
-    public void closeFrame(String name) {
-        if (name == null) { return; }
-        ClientFrame frame = getFrame(name);
-        if(frame != null) {
-            frame.setVisible(false);
+    public void closeClientFrameFrame() {
+        if(clientFrame != null) {
+            //clientFrame.setVisible(false);
+            clientFrame = null;
         }
     }
 
-    public void deleteFrame(String name) {
-        if (name == null) { return; }
-        frameMap.remove(name);
-    }
-
-    public ClientFrame getFrame(String name) {
-        if (name == null) { return null; }
-
-        ClientFrame frame = null;
-        if(frameMap.containsKey(name)) {
-            frame = frameMap.get(name);
-        }
-
-        return frame;
+    public ClientFrame getClientFrame() {
+        return clientFrame;
     }
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    public void start (String name) {
-        addFrame(name);
-        openFrame(name);
+    public void openContactFrame() {
+        if(contactFrame == null) {
+            contactFrame = new ContactFrame();
+            //contactFrame.setVisible(true);
+        }
     }
 
-    public void stop (String name) {
-        closeFrame(name);
-        deleteFrame(name);
+    public void closeContactFrameFrame() {
+        if(contactFrame != null) {
+            //contactFrame.setVisible(false);
+            contactFrame = null;
+        }
+    }
+
+    public ContactFrame getContactFrame() {
+        return contactFrame;
     }
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    public void popUpInfoMsgToFrame(String name, String msg) {
-        ClientFrame frame = getFrame(name);
-        if (frame == null) {
+    public void start () {
+        openClientFrame();
+        openContactFrame();
+
+        /////////////////////////////////////////////
+
+        getContentPane().add(clientFrame);
+        setVisible(true);
+        //pack();
+    }
+
+    public void stop () {
+        closeContactFrameFrame();
+        closeClientFrameFrame();
+    }
+
+    public void change (String name) {
+        getContentPane().removeAll();
+
+        if (name.equals(ServiceManager.CLIENT_FRAME_NAME)) {
+            getContentPane().add(clientFrame);
+        } else if (name.equals(ServiceManager.CONTACT_FRAME_NAME)) {
+            getContentPane().add(contactFrame);
+        } else {
+            getContentPane().add(clientFrame);
+        }
+
+        revalidate();
+        repaint();
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
+
+    public void popUpInfoMsgToFrame(String msg) {
+        if (clientFrame == null) {
             return;
         }
 
-        frame.popUpInfoMsg(msg);
+        clientFrame.popUpInfoMsg(msg);
     }
 
-    public void popUpWarnMsgToFrame(String name, String msg) {
-        ClientFrame frame = getFrame(name);
-        if (frame == null) {
+    public void popUpWarnMsgToFrame(String msg) {
+        if (clientFrame == null) {
             return;
         }
 
-        frame.popUpWarnMsg(msg);
+        clientFrame.popUpWarnMsg(msg);
     }
 
-    public int popUpErrorMsgToFrame(String name, String msg) {
-        ClientFrame frame = getFrame(name);
-        if (frame == null) {
+    public int popUpErrorMsgToFrame(String msg) {
+        if (clientFrame == null) {
             return JOptionPane.CLOSED_OPTION;
         }
 
-        return frame.popUpErrorMsg(msg);
+        return clientFrame.popUpErrorMsg(msg);
     }
 
     public void popUpErrorMsg(String msg) {
@@ -137,35 +177,32 @@ public class FrameManager {
         }
     }
 
-    public void appendTextToFrame(String name, String msg) {
-        ClientFrame frame = getFrame(name);
-        if (frame == null) {
+    public void appendTextToFrame(String msg) {
+        if (clientFrame == null) {
             return;
         }
 
-        frame.appendText(msg);
+        clientFrame.appendText(msg);
     }
 
-    public void selectPriorityCodec(String name, String codecName) {
-        ClientFrame frame = getFrame(name);
-        if (frame == null) {
+    public void selectPriorityCodec(String codecName) {
+        if (clientFrame == null) {
             return;
         }
 
-        frame.selectPriorityCodec(codecName);
+        clientFrame.selectPriorityCodec(codecName);
     }
 
-    public boolean processInviteToFrame(String name, String remoteHostName) {
-        if (name == null) { return false; }
+    public boolean processInviteToFrame(String remoteHostName) {
+        if (remoteHostName == null) { return false; }
 
         ConfigManager configManager = AppInstance.getInstance().getConfigManager();
         if (configManager.isUseClient()) {
-            ClientFrame frame = getFrame(name);
-            if (frame == null) {
+            if (clientFrame == null) {
                 return false;
             }
 
-            frame.inputRemoteTextField(remoteHostName);
+            clientFrame.inputRemoteTextField(remoteHostName);
 
             VoipClient voipClient = VoipClient.getInstance();
             voipClient.setRemoteHostName(remoteHostName);
@@ -174,46 +211,44 @@ public class FrameManager {
         return true;
     }
 
-    public boolean processAutoInviteToFrame(String name, String remoteHostName) {
-        if (name == null) { return false; }
+    public boolean processAutoInviteToFrame(String remoteHostName) {
+        if (remoteHostName == null) { return false; }
 
         ConfigManager configManager = AppInstance.getInstance().getConfigManager();
         if (configManager.isUseClient()) {
-            ClientFrame frame = getFrame(name);
-            if (frame == null) {
+            if (clientFrame == null) {
                 return false;
             }
 
-            frame.getByeButton().setEnabled(true);
-            frame.getCallButton().setEnabled(false);
-            frame.getStopButton().setEnabled(false);
-            frame.getMikeMuteCheck().setEnabled(true);
-            frame.getSpeakerMuteCheck().setEnabled(true);
+            clientFrame.getByeButton().setEnabled(true);
+            clientFrame.getCallButton().setEnabled(false);
+            clientFrame.getStopButton().setEnabled(false);
+            clientFrame.getMikeMuteCheck().setEnabled(true);
+            clientFrame.getSpeakerMuteCheck().setEnabled(true);
 
-            frame.inputRemoteTextField(remoteHostName);
+            clientFrame.inputRemoteTextField(remoteHostName);
 
             VoipClient voipClient = VoipClient.getInstance();
             voipClient.setRemoteHostName(remoteHostName);
 
             logger.debug("Call from [{}]", voipClient.getRemoteHostName());
-            frame.appendText("Call from [" + voipClient.getRemoteHostName() + "].\n");
+            clientFrame.appendText("Call from [" + voipClient.getRemoteHostName() + "].\n");
         }
 
         return true;
     }
 
-    public boolean processRegisterToFrame(String name, String mdn) {
-        if (name == null) { return false; }
+    public boolean processRegisterToFrame(String mdn) {
+        if (mdn == null) { return false; }
 
-        ClientFrame frame = getFrame(name);
-        if(frame == null) { return false; }
+        if(clientFrame == null) { return false; }
 
-        frame.appendText("Success to register. (mdn=" + mdn + ")\n");
+        clientFrame.appendText("Success to register. (mdn=" + mdn + ")\n");
 
         ConfigManager configManager = AppInstance.getInstance().getConfigManager();
         if (configManager.isUseClient()) {
-            frame.getRegiButton().setEnabled(false);
-            frame.getCallButton().setEnabled(true);
+            clientFrame.getRegiButton().setEnabled(false);
+            clientFrame.getCallButton().setEnabled(true);
         }
 
         return true;
@@ -224,19 +259,28 @@ public class FrameManager {
 
         ConfigManager configManager = AppInstance.getInstance().getConfigManager();
         if (configManager.isUseClient()) {
-            ClientFrame frame = getFrame(name);
-            if (frame == null) {
+            if (clientFrame == null) {
                 return false;
             }
 
-            frame.getCallButton().setEnabled(true);
-            frame.getByeButton().setEnabled(false);
-            frame.getStopButton().setEnabled(true);
-            frame.getMikeMuteCheck().setEnabled(false);
-            frame.getSpeakerMuteCheck().setEnabled(false);
+            clientFrame.getCallButton().setEnabled(true);
+            clientFrame.getByeButton().setEnabled(false);
+            clientFrame.getStopButton().setEnabled(true);
+            clientFrame.getMikeMuteCheck().setEnabled(false);
+            clientFrame.getSpeakerMuteCheck().setEnabled(false);
         }
 
         return true;
     }
+
+    ////////////////////////////////////////////////////////////////////////////////
+
+    public JLabel createLabel(String msg) {
+        JLabel label = new JLabel(msg);
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        label.setVerticalAlignment(SwingConstants.CENTER);
+        return label;
+    }
+
 
 }

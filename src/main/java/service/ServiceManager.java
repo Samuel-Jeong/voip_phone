@@ -26,6 +26,7 @@ public class ServiceManager {
     private static final int DELAY = 1000;
 
     public static final String CLIENT_FRAME_NAME = "CLIENT";
+    public static final String CONTACT_FRAME_NAME = "CONTACT";
     public static final String CONFIG_ERROR_FRAME_NAME = "CONFIG_ERROR";
 
     private final AtomicBoolean isQuit = new AtomicBoolean(false);
@@ -68,7 +69,7 @@ public class ServiceManager {
             System.exit(1);
         }
 
-        FrameManager.getInstance().start(CLIENT_FRAME_NAME);
+        FrameManager.getInstance().start();
 
         if (MediaManager.getInstance().getPriorityCodec().equals(MediaManager.EVS)) {
             EvsManager.getInstance().init();
@@ -101,7 +102,7 @@ public class ServiceManager {
 
         ResourceManager.getInstance().releaseResource();
 
-        FrameManager.getInstance().stop(CLIENT_FRAME_NAME);
+        FrameManager.getInstance().stop();
 
         isQuit.set(true);
         logger.debug("All services are closed.");

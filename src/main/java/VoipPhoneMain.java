@@ -15,17 +15,20 @@ public class VoipPhoneMain {
 
    public static void main(String[] args) {
       if (args.length < 1) {
-         logger.error("Argument Error. (&0: Mode(0:jar, 1:bin), &1: configPath(optional))");
+         logger.error("Argument Error. (&0: Mode(0:jar, 1:bin), &1: configPath, &2: contactPath)");
          return;
       }
 
       String configPath = null;
+      String contactPath = null;
+
       int mode = Integer.parseInt(args[0].trim());
       if (mode == 0) { // jar
-         if (args.length == 2) {
+         if (args.length == 3) {
             configPath = args[1].trim();
+            contactPath = args[2].trim();
          } else {
-            logger.error("Argument Error. (&0: Mode(0:jar, 1:bin), &1: configPath(optional))");
+            logger.error("Argument Error. (&0: Mode(0:jar, 1:bin), &1: configPath(mandatory) &2: contactPath(mandatory))");
             return;
          }
       } else if (mode == 1) { // binary
@@ -40,10 +43,18 @@ public class VoipPhoneMain {
          } else {
             configPath += "/config/user_conf.ini";
          }
+
+         contactPath = curUserDir;
+         if (SystemManager.getInstance().getOs().contains("win")) {
+            contactPath += "\\contact\\contact.txt";
+         } else {
+            contactPath += "/contact/contact.txt";
+         }
       }
 
       if (configPath != null) {
          ConfigManager configManager = new ConfigManager(configPath);
+         configManager.setContactPath(contactPath);
          AppInstance.getInstance().setConfigManager(configManager);
          ServiceManager.getInstance().loop();
       } else {
