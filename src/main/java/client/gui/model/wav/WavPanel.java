@@ -29,8 +29,8 @@ public class WavPanel {
         wavGB.gridy = 1;
         wavPanel.add(fieldWavFile, wavGB);
 
-        wavGB.gridx = 0;
-        wavGB.gridy = 2;
+        wavGB.gridx = 1;
+        wavGB.gridy = 1;
         wavPanel.add(fileUploadButton, wavGB);
 
         return wavPanel;

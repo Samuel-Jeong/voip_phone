@@ -339,6 +339,7 @@ public class ContactFrame extends JPanel {
 
                 setBounds(500, 400, 450, 450);
                 setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+                setLocationRelativeTo(null);
                 setVisible(true);
             }
 

@@ -45,9 +45,10 @@ public class FrameManager extends JFrame { // Main frame
         ConfigManager configManager = AppInstance.getInstance().getConfigManager();
         this.setTitle(configManager.getHostName());
 
-        setBounds(500, 400, 500, 500);
+        Dimension dimension = toolkit.getScreenSize();
+        setBounds(dimension.width / 2, dimension.height / 2, 500, 600);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        //setLocationRelativeTo(null);
+        setLocationRelativeTo(null);
         //setResizable(false);
     }
 
