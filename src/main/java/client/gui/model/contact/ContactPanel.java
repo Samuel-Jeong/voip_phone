@@ -6,15 +6,12 @@ import client.gui.model.contact.base.ContactManager;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.util.Iterator;
 
 /**
  * @class public class ContactPanel
  * @brief ContactPanel class
  */
 public class ContactPanel {
-
-    public static final int CONTACT_CONTENT_NUM = 5;
 
     private JPanel panel;
     private JTable contactTable;
@@ -31,6 +28,7 @@ public class ContactPanel {
         DefaultTableModel defaultTableModel = new DefaultTableModel(contactTableHeaders, 0);
         contactTable = new JTable(defaultTableModel);
         contactTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
         JScrollPane jScrollPane = new JScrollPane(contactTable);
         jScrollPane.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         panel.add(jScrollPane, BorderLayout.WEST);

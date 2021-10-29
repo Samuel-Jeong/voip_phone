@@ -89,8 +89,16 @@ public class SipUtil implements SipListener {
         return toIp;
     }
 
+    public void setToIp(String toIp) {
+        this.toIp = toIp;
+    }
+
     public int getToPort() {
         return toPort;
+    }
+
+    public void setToPort(int toPort) {
+        this.toPort = toPort;
     }
 
     ////////////////////////////////////////////////////////////////////////////////

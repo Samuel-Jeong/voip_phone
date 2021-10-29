@@ -1,6 +1,9 @@
 package client.gui.model.contact.base;
 
-import client.gui.model.contact.ContactPanel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
 
 /**
  * @class public class ContactInfo
@@ -8,11 +11,17 @@ import client.gui.model.contact.ContactPanel;
  */
 public class ContactInfo {
 
+    private static final Logger logger = LoggerFactory.getLogger(ContactInfo.class);
+
+    public static final int CONTACT_CONTENT_NUM = 5;
+
     private String name;
     private String email;
     private String phoneNumber;
     private String sipIp;
     private int sipPort;
+
+    ////////////////////////////////////////////////////////////////////////////////
 
     public ContactInfo(String name, String email, String phoneNumber, String sipIp, int sipPort) {
         this.name = name;
@@ -21,6 +30,12 @@ public class ContactInfo {
         this.sipIp = sipIp;
         this.sipPort = sipPort;
     }
+
+    public ContactInfo() {
+        // Nothing
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////
 
     public String getName() {
         return name;
@@ -62,8 +77,25 @@ public class ContactInfo {
         this.sipPort = sipPort;
     }
 
+    ////////////////////////////////////////////////////////////////////////////////
+
+    public boolean setData(String[] data) {
+        if (data.length != CONTACT_CONTENT_NUM) {
+            logger.warn("Fail to set the data into the contact info. (data={})", Arrays.stream(data).toArray());
+            return false;
+        }
+
+        name = data[0];
+        email = data[1];
+        phoneNumber = data[2];
+        sipIp = data[3];
+        sipPort = Integer.parseInt(data[4]);
+
+        return true;
+    }
+
     public String[] toArray() {
-        String[] infos = new String[ContactPanel.CONTACT_CONTENT_NUM];
+        String[] infos = new String[CONTACT_CONTENT_NUM];
         infos[0] = name;
         infos[1] = email;
         infos[2] = phoneNumber;

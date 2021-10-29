@@ -211,6 +211,22 @@ public class FrameManager extends JFrame { // Main frame
         return true;
     }
 
+    public void setRemoteHostName(String remoteHostName) {
+        if (remoteHostName == null) { return; }
+
+        ConfigManager configManager = AppInstance.getInstance().getConfigManager();
+        if (configManager.isUseClient()) {
+            if (clientFrame == null) {
+                return;
+            }
+
+            clientFrame.inputRemoteTextField(remoteHostName);
+
+            VoipClient voipClient = VoipClient.getInstance();
+            voipClient.setRemoteHostName(remoteHostName);
+        }
+    }
+
     public boolean processAutoInviteToFrame(String remoteHostName) {
         if (remoteHostName == null) { return false; }
 

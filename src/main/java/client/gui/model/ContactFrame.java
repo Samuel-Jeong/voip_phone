@@ -1,10 +1,16 @@
 package client.gui.model;
 
+import client.VoipClient;
 import client.gui.FrameManager;
 import client.gui.model.contact.ContactPanel;
 import client.gui.model.contact.base.ContactInfo;
 import client.gui.model.contact.base.ContactManager;
+import config.ConfigManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import service.AppInstance;
 import service.ServiceManager;
+import signal.SignalManager;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -17,6 +23,8 @@ import java.awt.event.ActionListener;
  * @brief ContentFrame class
  */
 public class ContactFrame extends JPanel {
+
+    private static final Logger logger = LoggerFactory.getLogger(ContactFrame.class);
 
     //////////////////////////////////////////////////////////////////////
     // Button
@@ -86,6 +94,47 @@ public class ContactFrame extends JPanel {
 
     //////////////////////////////////////////////////////////////////////
 
+    public String[][] getTableData(JTable table) {
+        DefaultTableModel defaultTableModel = (DefaultTableModel) table.getModel();
+        if (defaultTableModel == null) {
+            return null;
+        }
+
+        int rowCount = defaultTableModel.getRowCount() - 1;
+        int columnCount = defaultTableModel.getColumnCount() - 1;
+        String[][] tableData = new String[rowCount][columnCount];
+
+        for (int i = 0 ; i < rowCount ; i++) {
+            for (int j = 0; j < columnCount; j++) {
+                String data = (String) defaultTableModel.getValueAt(i, j);
+                if (data != null) {
+                    tableData[i][j] = data;
+                }
+            }
+        }
+
+        return tableData;
+    }
+
+    public String[] getTableDataAtRow(JTable table, int rowPos) {
+        DefaultTableModel defaultTableModel = (DefaultTableModel) table.getModel();
+        if (defaultTableModel == null) {
+            return null;
+        }
+
+        int columnCount = defaultTableModel.getColumnCount() - 1;
+        String[] tableData = new String[columnCount];
+
+        for (int j = 0; j < columnCount; j++) {
+            String data = (String) defaultTableModel.getValueAt(rowPos, j);
+            if (data != null) {
+                tableData[j] = data;
+            }
+        }
+
+        return tableData;
+    }
+
     public ContactPanel getContactPanel() {
         return contactPanel;
     }
@@ -94,19 +143,32 @@ public class ContactFrame extends JPanel {
         contactPanel.addContact(contactInfo);
     }
 
-    public int removeContactFromTable() {
+    public void removeContactFromTable() {
         JTable contactTable = contactPanel.getContactTable();
         if (contactTable == null) {
-            return -1;
+            return;
         }
 
         int selectedIndex = contactTable.getSelectedRow();
         if (selectedIndex != -1) {
             DefaultTableModel model = (DefaultTableModel) contactTable.getModel();
-            model.removeRow(selectedIndex);
-        }
 
-        return selectedIndex;
+            //String[][] tableData = getTableData(contactTable);
+            String[] tableData = getTableDataAtRow(contactTable, selectedIndex);
+            if (tableData != null) {
+                if (selectedIndex >= 0 && selectedIndex < contactTable.getRowCount()) {
+                    //String[] selectedData = tableData[selectedIndex];
+                    ContactInfo contactInfo = new ContactInfo();
+                    contactInfo.setData(tableData);
+
+                    if (ContactManager.getInstance().removeContactInfoFromFile(contactInfo)) {
+                        logger.debug("Success to remove the contact info. ({})", contactInfo);
+                    }
+                }
+
+                model.removeRow(selectedIndex);
+            }
+        }
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -133,13 +195,47 @@ public class ContactFrame extends JPanel {
 
                 int selectedIndex = contactTable.getSelectedRow();
                 if (selectedIndex != -1) {
-                    DefaultTableModel model = (DefaultTableModel) contactTable.getModel();
-                    // TODO
+                    //String[][] tableData = getTableData(contactTable);
+                    String[] tableData = getTableDataAtRow(contactTable, selectedIndex);
+                    if (tableData != null) {
+                        if (selectedIndex >= 0 && selectedIndex < contactTable.getRowCount()) {
+                            //String[] selectedData = tableData[selectedIndex];
+                            ContactInfo contactInfo = new ContactInfo();
+                            if (contactInfo.setData(tableData)) {
+                                //
+                                // 1) Set remote host name
+                                FrameManager.getInstance().setRemoteHostName(contactInfo.getPhoneNumber());
+                                //
+
+                                //
+                                // 2) Set remote sip ip & port
+                                ConfigManager configManager = AppInstance.getInstance().getConfigManager();
+
+                                String toIp = contactInfo.getSipIp();
+                                if (toIp != null) {
+                                    SignalManager.getInstance().setToIp(toIp);
+                                    configManager.setToIp(toIp);
+                                    configManager.setIniValue(ConfigManager.SECTION_SIGNAL, ConfigManager.FIELD_TO_IP, toIp);
+                                }
+
+                                int toPort = contactInfo.getSipPort();
+                                if (toPort > 0) {
+                                    SignalManager.getInstance().setToPort(toPort);
+                                    configManager.setToPort(toPort);
+                                    configManager.setIniValue(ConfigManager.SECTION_SIGNAL, ConfigManager.FIELD_TO_PORT, String.valueOf(toPort));
+                                }
+                                //
+
+                                logger.debug("Contact info is selected. ({})", contactInfo);
+                            }
+                        }
+                    }
 
                     FrameManager.getInstance().change(ServiceManager.CLIENT_FRAME_NAME);
                 }
             }
         }
+
     }
 
     class AddContactListener implements ActionListener {
@@ -161,142 +257,87 @@ public class ContactFrame extends JPanel {
 
             private final JButton okButton;
 
-            private final JTextField nameInputField = new JTextField(30);
-            private final JTextField emailInputField = new JTextField(30);
-            private final JTextField phoneNumberInputField = new JTextField(30);
-            private final JTextField sipIpInputField = new JTextField(30);
-            private final JTextField sipPortInputField = new JTextField(30);
-            
+            private final JTextField nameInputField = new JTextField(20);
+            private final JTextField emailInputField = new JTextField(20);
+            private final JTextField phoneNumberInputField = new JTextField(20);
+            private final JTextField sipIpInputField = new JTextField(20);
+            private final JTextField sipPortInputField = new JTextField(20);
+
             public ContactAddFrame() {
                 super("ContactAddFrame");
 
                 //
                 JPanel jPanel = new JPanel();
                 GridBagConstraints mainGB = new GridBagConstraints();
-                mainGB.ipadx = 10;
-                mainGB.ipady = 10;
                 mainGB.anchor = GridBagConstraints.WEST;
+                mainGB.ipadx = 10; mainGB.ipady = 10;
                 jPanel.setLayout(new GridBagLayout());
                 //
 
                 //
-                JPanel nameInputPanel = new JPanel();
-                GridBagConstraints nameInputGB = new GridBagConstraints();
-                nameInputGB.ipadx = 100;
-                nameInputGB.ipady = 10;
-                nameInputGB.anchor = GridBagConstraints.WEST;
-                nameInputPanel.setLayout(new GridBagLayout());
-
                 JLabel nameInputLabel = FrameManager.getInstance().createLabel("name: ");
-                nameInputGB.gridx = 0;
-                nameInputGB.gridy = 0;
-                nameInputPanel.add(nameInputLabel, nameInputGB);
-                nameInputGB.gridx = 1;
-                nameInputPanel.add(nameInputField, nameInputGB);
-
-                mainGB.gridx = 0;
-                mainGB.gridy = 0;
-                jPanel.add(nameInputPanel, mainGB);
+                mainGB.gridx = 0; mainGB.gridy = 0;
+                jPanel.add(nameInputLabel, mainGB);
+                mainGB.gridx = 1; mainGB.gridy = 0;
+                jPanel.add(nameInputField, mainGB);
                 //
 
                 //
-                JPanel emailInputPanel = new JPanel();
-                GridBagConstraints emailInputGB = new GridBagConstraints();
-                emailInputGB.ipadx = 100;
-                emailInputGB.ipady = 10;
-                emailInputGB.anchor = GridBagConstraints.WEST;
-                emailInputPanel.setLayout(new GridBagLayout());
-
                 JLabel emailInputLabel = FrameManager.getInstance().createLabel("email: ");
-                emailInputGB.gridx = 0;
-                emailInputGB.gridy = 0;
-                emailInputPanel.add(emailInputLabel, emailInputGB);
-                emailInputGB.gridx = 1;
-                emailInputPanel.add(emailInputField, emailInputGB);
-
-                mainGB.gridx = 0;
-                mainGB.gridy = 1;
-                jPanel.add(emailInputPanel, mainGB);
+                mainGB.gridx = 0; mainGB.gridy = 1;
+                jPanel.add(emailInputLabel, mainGB);
+                mainGB.gridx = 1; mainGB.gridy = 1;
+                jPanel.add(emailInputField, mainGB);
                 //
 
                 //
-                JPanel phoneNumberInputPanel = new JPanel();
-                GridBagConstraints phoneNumberInputGB = new GridBagConstraints();
-                phoneNumberInputGB.ipadx = 100;
-                phoneNumberInputGB.ipady = 10;
-                phoneNumberInputGB.anchor = GridBagConstraints.WEST;
-                phoneNumberInputPanel.setLayout(new GridBagLayout());
-
                 JLabel phoneNumberInputLabel = FrameManager.getInstance().createLabel("phone-number: ");
-                phoneNumberInputGB.gridx = 0;
-                phoneNumberInputGB.gridy = 0;
-                phoneNumberInputPanel.add(phoneNumberInputLabel, phoneNumberInputGB);
-                phoneNumberInputGB.gridx = 1;
-                phoneNumberInputPanel.add(phoneNumberInputField, phoneNumberInputGB);
-
-                mainGB.gridx = 0;
-                mainGB.gridy = 2;
-                jPanel.add(phoneNumberInputPanel, mainGB);
+                mainGB.gridx = 0; mainGB.gridy = 2;
+                jPanel.add(phoneNumberInputLabel, mainGB);
+                mainGB.gridx = 1; mainGB.gridy = 2;
+                jPanel.add(phoneNumberInputField, mainGB);
                 //
 
                 //
-                JPanel sipIpInputPanel = new JPanel();
-                GridBagConstraints sipIpInputGB = new GridBagConstraints();
-                sipIpInputGB.ipadx = 100;
-                sipIpInputGB.ipady = 10;
-                sipIpInputGB.anchor = GridBagConstraints.WEST;
-                sipIpInputPanel.setLayout(new GridBagLayout());
-
                 JLabel sipIpInputLabel = FrameManager.getInstance().createLabel("sip-ip: ");
-                sipIpInputGB.gridx = 0;
-                sipIpInputGB.gridy = 0;
-                sipIpInputPanel.add(sipIpInputLabel, sipIpInputGB);
-                sipIpInputGB.gridx = 1;
-                sipIpInputPanel.add(sipIpInputField, sipIpInputGB);
-
-                mainGB.gridx = 0;
-                mainGB.gridy = 3;
-                jPanel.add(sipIpInputPanel, mainGB);
+                mainGB.gridx = 0; mainGB.gridy = 3;
+                jPanel.add(sipIpInputLabel, mainGB);
+                mainGB.gridx = 1; mainGB.gridy = 3;
+                jPanel.add(sipIpInputField, mainGB);
                 //
 
                 //
-                JPanel sipPortInputPanel = new JPanel();
-                GridBagConstraints sipPortInputGB = new GridBagConstraints();
-                sipPortInputGB.ipadx = 100;
-                sipPortInputGB.ipady = 10;
-                sipPortInputGB.anchor = GridBagConstraints.WEST;
-                sipPortInputPanel.setLayout(new GridBagLayout());
-
                 JLabel sipPortInputLabel = FrameManager.getInstance().createLabel("sip-port: ");
-                sipPortInputGB.gridx = 0;
-                sipPortInputGB.gridy = 0;
-                sipPortInputPanel.add(sipPortInputLabel, sipPortInputGB);
-                sipPortInputGB.gridx = 1;
-                sipPortInputGB.anchor = GridBagConstraints.EAST;
-                sipPortInputPanel.add(sipPortInputField, sipPortInputGB);
-
-                mainGB.gridx = 0;
-                mainGB.gridy = 4;
-                jPanel.add(sipPortInputPanel, mainGB);
+                mainGB.gridx = 0; mainGB.gridy = 4;
+                jPanel.add(sipPortInputLabel, mainGB);
+                mainGB.gridx = 1; mainGB.gridy = 4;
+                jPanel.add(sipPortInputField, mainGB);
                 //
 
                 //
+                JPanel buttonPanel = new JPanel();
+                GridBagConstraints buttonGB = new GridBagConstraints();
+                buttonGB.ipadx = 10; buttonGB.ipady = 10;
+                buttonGB.anchor = GridBagConstraints.WEST;
+                buttonPanel.setLayout(new GridBagLayout());
+
                 okButton = new JButton("Ok");
                 okButton.addActionListener(new ApplyContactInfoListener());
-                mainGB.gridx = 0;
-                mainGB.gridy = 5;
-                jPanel.add(okButton, mainGB);
+                buttonGB.gridx = 0; buttonGB.gridy = 0;
+                buttonPanel.add(okButton, buttonGB);
 
                 JButton closeButton = new JButton("Close");
                 closeButton.addActionListener(this);
-                mainGB.gridx = 1;
-                mainGB.gridy = 5;
-                jPanel.add(closeButton, mainGB);
+                buttonGB.gridx = 1; buttonGB.gridy = 0;
+                buttonPanel.add(closeButton, buttonGB);
+
+                mainGB.gridx = 0; mainGB.gridy = 5;
+                jPanel.add(buttonPanel, mainGB);
                 //
 
                 add(jPanel);
 
-                setBounds(500, 400, 400, 400);
+                setBounds(500, 400, 450, 450);
                 setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
                 setVisible(true);
             }
@@ -326,9 +367,9 @@ public class ContactFrame extends JPanel {
                         );
                         addContactToTable(contactInfo);
 
-                        // TODO : File update
-
-                        //
+                        if (ContactManager.getInstance().addContactInfoToFile(contactInfo)) {
+                            logger.debug("Success to add the contact info. ({})", contactInfo);
+                        }
 
                         dispose();
                     }
@@ -342,11 +383,7 @@ public class ContactFrame extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             if(e.getSource() == removeContactButton) {
-                int selectedIndex = 0;
-                if ((selectedIndex = removeContactFromTable()) > 0) {
-                    // TODO : File update
-                    //
-                }
+                removeContactFromTable();
             }
         }
     }

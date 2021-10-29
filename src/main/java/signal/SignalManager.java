@@ -118,8 +118,16 @@ public class SignalManager {
         return sipUtil.getToIp();
     }
 
+    public void setToIp(String toIp) {
+        sipUtil.setToIp(toIp);
+    }
+
     public int getToPort() {
         return sipUtil.getToPort();
+    }
+
+    public void setToPort(int toPort) {
+        sipUtil.setToPort(toPort);
     }
 
     public Sdp getLocalSdp() {
