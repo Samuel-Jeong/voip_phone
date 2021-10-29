@@ -706,6 +706,14 @@ public class ClientFrame extends JPanel {
         return logTextArea.getText();
     }
 
+    public void setToSipIpTextField(String toSipIp) {
+        toSipIpTextField.setText(toSipIp);
+    }
+
+    public void setToSipPortTextField(String toSipPort) {
+        toSipPortTextField.setText(toSipPort);
+    }
+
     public String readHostNameTextArea() {
         return hostNameTextField.getText();
     }
@@ -1564,7 +1572,7 @@ public class ClientFrame extends JPanel {
                 new JFrame(),
                 msg,
                 "Error",
-                JOptionPane.YES_OPTION,
+                JOptionPane.YES_NO_OPTION,
                 JOptionPane.ERROR_MESSAGE
         );
     }

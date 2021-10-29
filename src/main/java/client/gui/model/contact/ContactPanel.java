@@ -54,4 +54,15 @@ public class ContactPanel {
         DefaultTableModel model = (DefaultTableModel) contactTable.getModel();
         model.addRow(contactInfo.toArray());
     }
+
+    public void modifyContact(int row, ContactInfo contactInfo) {
+        if (contactInfo == null) {
+            return;
+        }
+
+        DefaultTableModel model = (DefaultTableModel) contactTable.getModel();
+        model.removeRow(row);
+        model.insertRow(row, contactInfo.toArray());
+    }
+
 }

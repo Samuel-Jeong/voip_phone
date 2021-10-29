@@ -9,14 +9,12 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.concurrent.Executor;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.stream.Stream;
 
 /**
  * @class public class ContactManager
@@ -30,13 +28,13 @@ public class ContactManager {
 
     private static ContactManager contactManager = null;
 
-    private final LinkedHashSet<ContactInfo> contactMap;
+    private final LinkedHashSet<ContactInfo> contactSet;
     private final ReentrantLock contactSetLock = new ReentrantLock();
 
     ////////////////////////////////////////////////////////////////////////////////
 
     public ContactManager() {
-        contactMap = new LinkedHashSet<>(MAX_CONTACT_NUM);
+        contactSet = new LinkedHashSet<>(MAX_CONTACT_NUM);
 
         try {
             File contactFile = getContactFile();
@@ -89,7 +87,7 @@ public class ContactManager {
         try {
             contactSetLock.lock();
 
-            return contactMap.size();
+            return contactSet.size();
         } catch (Exception e) {
             logger.warn("Fail to get the contact set size.", e);
             return 0;
@@ -108,11 +106,17 @@ public class ContactManager {
             contactSetLock.lock();
 
             ContactInfo contactInfo = new ContactInfo(name, email, phoneNumber, sipIp, sipPort);
-            if (contactMap.add(contactInfo)) {
-                logger.debug("Success to add the contact info. ({})", contactInfo);
+            for (ContactInfo curContactInfo : contactSet) {
+                if (curContactInfo != null) {
+                    if (curContactInfo.getPhoneNumber().equals(phoneNumber)) {
+                        return null;
+                    }
+                }
+            }
+
+            if (contactSet.add(contactInfo)) {
                 return contactInfo;
             } else {
-                logger.warn("Fail to add the contact info. ({})", contactInfo);
                 return null;
             }
         } catch (Exception e) {
@@ -131,7 +135,7 @@ public class ContactManager {
         try {
             contactSetLock.lock();
 
-            if (contactMap.remove(contactInfo)) {
+            if (contactSet.remove(contactInfo)) {
                 logger.debug("Success to delete the contact info. ({})", contactInfo);
             } else {
                 logger.warn("Fail to delete the contact info. ({})", contactInfo);
@@ -143,11 +147,34 @@ public class ContactManager {
         }
     }
 
+    public ContactInfo getContactInfoByPhoneNumber(String phoneNumber) {
+        if (phoneNumber == null) { return null; }
+
+        try {
+            contactSetLock.lock();
+
+            for (ContactInfo curContactInfo : contactSet) {
+                if (curContactInfo != null) {
+                    if (curContactInfo.getPhoneNumber().equals(phoneNumber)) {
+                        return curContactInfo;
+                    }
+                }
+            }
+
+            return null;
+        } catch (Exception e) {
+            logger.warn("Fail to get the contact info by the phone number. (phoneNumber={})", phoneNumber, e);
+            return null;
+        } finally {
+            contactSetLock.unlock();
+        }
+    }
+
     public LinkedHashSet<ContactInfo> cloneContactInfoSet() {
         try {
             contactSetLock.lock();
 
-            return (LinkedHashSet<ContactInfo>) contactMap.clone();
+            return (LinkedHashSet<ContactInfo>) contactSet.clone();
         } catch (Exception e) {
             logger.warn("Fail to clone the contact set.", e);
             return null;
@@ -160,7 +187,7 @@ public class ContactManager {
         try {
             contactSetLock.lock();
 
-            contactMap.clear();
+            contactSet.clear();
             logger.debug("Success to clear the contact set.");
         } catch (Exception e) {
             logger.warn("Fail to clear the contact set.", e);
@@ -225,6 +252,45 @@ public class ContactManager {
         return true;
     }
 
+    public boolean reWriteContactInfoFromFile(LinkedHashSet<ContactInfo> dataList) {
+        if (dataList == null || dataList.isEmpty()) {
+            return false;
+        }
+
+        ConfigManager configManager = AppInstance.getInstance().getConfigManager();
+        String contactFileName = configManager.getContactPath();
+
+        File contactFile = getContactFile();
+        if (contactFile == null) {
+            logger.warn("Fail to modify the contact info from the file. (path={})", contactFileName);
+            return false;
+        }
+
+
+        try {
+            try (BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(new FileOutputStream(contactFile))) {
+                int index = 0;
+                for (ContactInfo contactInfo : dataList) {
+                    String contactDataString = contactInfo.toString();
+
+                    if (index++ < dataList.size() - 1) {
+                        contactDataString += "\n";
+                    }
+
+                    bufferedOutputStream.write(contactDataString.getBytes(StandardCharsets.UTF_8));
+                }
+            } catch (Exception e) {
+                logger.warn("Fail to write the contact info from the file. (path={})", contactFileName, e);
+                return false;
+            }
+        } catch (Exception e) {
+            logger.warn("Fail to modify the contact info from the file. (path={})", contactFileName, e);
+            return false;
+        }
+
+        return true;
+    }
+
     public boolean removeContactInfoFromFile(ContactInfo contactInfo) {
         if (contactInfo == null) {
             return false;
@@ -235,7 +301,7 @@ public class ContactManager {
 
         File contactFile = getContactFile();
         if (contactFile == null) {
-            logger.warn("Fail to remote the contact info from the file. (path={})", contactFileName);
+            logger.warn("Fail to remove the contact info from the file. (path={})", contactFileName);
             return false;
         }
 
@@ -266,7 +332,7 @@ public class ContactManager {
                 return false;
             }
         } catch (Exception e) {
-            logger.warn("Fail to remote the contact info from the file. (path={})", contactFileName, e);
+            logger.warn("Fail to remove the contact info from the file. (path={})", contactFileName, e);
             return false;
         }
 

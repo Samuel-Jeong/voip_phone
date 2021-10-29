@@ -228,6 +228,32 @@ public class FrameManager extends JFrame { // Main frame
         }
     }
 
+    public void setToSipIp(String toSipIp) {
+        if (toSipIp == null) { return; }
+
+        ConfigManager configManager = AppInstance.getInstance().getConfigManager();
+        if (configManager.isUseClient()) {
+            if (clientFrame == null) {
+                return;
+            }
+
+            clientFrame.setToSipIpTextField(toSipIp);
+        }
+    }
+
+    public void setToSipPort(String toSipPort) {
+        if (toSipPort == null) { return; }
+
+        ConfigManager configManager = AppInstance.getInstance().getConfigManager();
+        if (configManager.isUseClient()) {
+            if (clientFrame == null) {
+                return;
+            }
+
+            clientFrame.setToSipPortTextField(toSipPort);
+        }
+    }
+
     public boolean processAutoInviteToFrame(String remoteHostName) {
         if (remoteHostName == null) { return false; }
 
