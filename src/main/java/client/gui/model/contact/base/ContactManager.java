@@ -97,7 +97,7 @@ public class ContactManager {
     }
 
     public ContactInfo addContactInfo(String name, String email, String phoneNumber, String sipIp, int sipPort) {
-        if (name == null || email == null || phoneNumber == null || sipIp == null || sipPort <= 0) {
+        if (phoneNumber == null || sipIp == null || sipPort <= 0) {
             logger.warn("Fail to add the contact info. (name={}, email={}, phoneNumber={}, sipIp={}, sipPort={})", name, email, phoneNumber, sipIp, sipPort);
             return null;
         }

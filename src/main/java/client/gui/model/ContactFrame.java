@@ -375,7 +375,12 @@ public class ContactFrame extends JPanel {
                         String email = emailInputField.getText();
                         String phoneNumber = phoneNumberInputField.getText();
                         String sipIp = sipIpInputField.getText();
-                        int sipPort = Integer.parseInt(sipPortInputField.getText());
+
+                        int sipPort = 0;
+                        String sipPortString = sipPortInputField.getText();
+                        if (sipPortString != null && sipPortString.length() > 0) {
+                            sipPort = Integer.parseInt(sipPortString);
+                        }
 
                         ContactInfo contactInfo = ContactManager.getInstance().addContactInfo(
                                 name,
@@ -384,17 +389,30 @@ public class ContactFrame extends JPanel {
                                 sipIp,
                                 sipPort
                         );
+
+                        String resultMsg;
                         if (contactInfo != null) {
                             // 1) Add to the table
                             addContactToTable(contactInfo);
 
                             // 2) Add to the file
                             if (ContactManager.getInstance().addContactInfoToFile(contactInfo)) {
+                                resultMsg = "Success to add the contact info. (" + contactInfo + ")";
                                 logger.debug("Success to add the contact info. ({})", contactInfo);
                             } else {
-                                logger.warn("Fail to add the contact info. ({})", contactInfo);
+                                resultMsg = "Fail to add the contact info. (FILE IO ERROR) (" + contactInfo + ")";
+                                logger.warn("Fail to add the contact info. (FILE IO ERROR) ({})", contactInfo);
+                                FrameManager.getInstance().popUpWarnMsgToFrame(resultMsg);
                             }
+                        } else {
+                            resultMsg = "Fail to add the contact info. (" + phoneNumber + ")";
+                            logger.warn("Fail to add the contact info. ({})", phoneNumber);
+                            FrameManager.getInstance().popUpWarnMsgToFrame(resultMsg);
+                            FrameManager.getInstance().appendTextToFrame(resultMsg + "\n");
+                            return;
                         }
+
+                        FrameManager.getInstance().appendTextToFrame(resultMsg + "\n");
 
                         dispose();
                     }
@@ -548,14 +566,34 @@ public class ContactFrame extends JPanel {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if(e.getSource() == okButton) {
+                        String resultMsg;
+
                         String name = nameInputField.getText();
                         String email = emailInputField.getText();
                         String phoneNumber = phoneNumberInputField.getText();
                         String sipIp = sipIpInputField.getText();
-                        int sipPort = Integer.parseInt(sipPortInputField.getText());
+
+                        int sipPort = 0;
+                        String sipPortString = sipPortInputField.getText();
+                        if (sipPortString != null && sipPortString.length() > 0) {
+                            sipPort = Integer.parseInt(sipPortString);
+                        }
 
                         ContactInfo contactInfo = ContactManager.getInstance().getContactInfoByPhoneNumber(curPhoneNumber);
                         if (contactInfo == null) {
+                            resultMsg = "Fail to modify the contact info. Not found contact info (" + curPhoneNumber + ")";
+                            logger.warn("Fail to modify the contact info. Not found contact info ({})", curPhoneNumber);
+                            FrameManager.getInstance().popUpWarnMsgToFrame(resultMsg);
+                            FrameManager.getInstance().appendTextToFrame(resultMsg + "\n");
+                            return;
+                        }
+
+                        ContactInfo otherContactInfo = ContactManager.getInstance().getContactInfoByPhoneNumber(phoneNumber);
+                        if (otherContactInfo != null) {
+                            resultMsg = "Fail to modify the contact info. Other contact info is detected by the phone number. (" + phoneNumber + ")";
+                            logger.warn("Fail to modify the contact info. Other contact info is detected by the phone number. ({})", phoneNumber);
+                            FrameManager.getInstance().popUpWarnMsgToFrame(resultMsg);
+                            FrameManager.getInstance().appendTextToFrame(resultMsg + "\n");
                             return;
                         }
 
@@ -570,10 +608,15 @@ public class ContactFrame extends JPanel {
 
                         // 2) Add to the file
                         if (ContactManager.getInstance().reWriteContactInfoFromFile(ContactManager.getInstance().cloneContactInfoSet())) {
+                            resultMsg = "Success to modify the contact info. (" + contactInfo + ")";
                             logger.debug("Success to modify the contact info. ({})", contactInfo);
                         } else {
+                            resultMsg = "Fail to modify the contact info. (" + contactInfo + ")";
                             logger.warn("Fail to modify the contact info. ({})", contactInfo);
+                            FrameManager.getInstance().popUpWarnMsgToFrame(resultMsg);
                         }
+
+                        FrameManager.getInstance().appendTextToFrame(resultMsg + "\n");
 
                         dispose();
                     }
