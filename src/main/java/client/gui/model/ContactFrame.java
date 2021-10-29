@@ -5,6 +5,7 @@ import client.gui.FrameManager;
 import client.gui.model.contact.ContactPanel;
 import client.gui.model.contact.base.ContactInfo;
 import client.gui.model.contact.base.ContactManager;
+import client.gui.model.util.JTextFieldLimit;
 import config.ConfigManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -279,6 +280,7 @@ public class ContactFrame extends JPanel {
                 mainGB.gridx = 0; mainGB.gridy = 0;
                 jPanel.add(nameInputLabel, mainGB);
                 mainGB.gridx = 1; mainGB.gridy = 0;
+                nameInputField.setDocument(new JTextFieldLimit(10));
                 jPanel.add(nameInputField, mainGB);
                 //
 
@@ -287,6 +289,7 @@ public class ContactFrame extends JPanel {
                 mainGB.gridx = 0; mainGB.gridy = 1;
                 jPanel.add(emailInputLabel, mainGB);
                 mainGB.gridx = 1; mainGB.gridy = 1;
+                emailInputField.setDocument(new JTextFieldLimit(20));
                 jPanel.add(emailInputField, mainGB);
                 //
 
@@ -295,6 +298,7 @@ public class ContactFrame extends JPanel {
                 mainGB.gridx = 0; mainGB.gridy = 2;
                 jPanel.add(phoneNumberInputLabel, mainGB);
                 mainGB.gridx = 1; mainGB.gridy = 2;
+                phoneNumberInputField.setDocument(new JTextFieldLimit(20));
                 jPanel.add(phoneNumberInputField, mainGB);
                 //
 
@@ -303,6 +307,7 @@ public class ContactFrame extends JPanel {
                 mainGB.gridx = 0; mainGB.gridy = 3;
                 jPanel.add(sipIpInputLabel, mainGB);
                 mainGB.gridx = 1; mainGB.gridy = 3;
+                sipIpInputField.setDocument(new JTextFieldLimit(15));
                 jPanel.add(sipIpInputField, mainGB);
                 //
 
@@ -311,6 +316,7 @@ public class ContactFrame extends JPanel {
                 mainGB.gridx = 0; mainGB.gridy = 4;
                 jPanel.add(sipPortInputLabel, mainGB);
                 mainGB.gridx = 1; mainGB.gridy = 4;
+                sipPortInputField.setDocument(new JTextFieldLimit(5));
                 jPanel.add(sipPortInputField, mainGB);
                 //
 

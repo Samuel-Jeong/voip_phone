@@ -3,6 +3,7 @@ package client.gui.model;
 import client.VoipClient;
 import client.gui.FrameManager;
 import client.gui.model.dtmf.DtmfPanel;
+import client.gui.model.util.JTextFieldLimit;
 import client.gui.model.wav.WavPanel;
 import config.ConfigManager;
 import media.MediaManager;
@@ -106,7 +107,9 @@ public class ClientFrame extends JPanel {
         mainPanel.setLayout(new GridBagLayout());
 
         proxyTextField = new JTextField(20);
+        proxyTextField.setDocument(new JTextFieldLimit(20));
         remoteTextField = new JTextField(20);
+        remoteTextField.setDocument(new JTextFieldLimit(20));
 
         callButton = new JButton("Call");
         callButton.addActionListener(new CallListener());
@@ -368,6 +371,7 @@ public class ClientFrame extends JPanel {
         // Option Text Panel
         hostNameTextField.setEnabled(true);
         hostNameTextField.setEditable(true);
+        hostNameTextField.setDocument(new JTextFieldLimit(20));
         hostNameTextField.setText(configManager.getHostName());
         optionGB.gridx = 1;
         optionGB.gridy = 2;
@@ -375,6 +379,7 @@ public class ClientFrame extends JPanel {
 
         sipIpTextField.setEnabled(true);
         sipIpTextField.setEditable(true);
+        sipIpTextField.setDocument(new JTextFieldLimit(15));
         sipIpTextField.setText(configManager.getFromIp());
         optionGB.gridx = 1;
         optionGB.gridy = 3;
@@ -382,6 +387,7 @@ public class ClientFrame extends JPanel {
 
         sipPortTextField.setEnabled(true);
         sipPortTextField.setEditable(true);
+        sipPortTextField.setDocument(new JTextFieldLimit(5));
         sipPortTextField.setText(String.valueOf(configManager.getFromPort()));
         optionGB.gridx = 1;
         optionGB.gridy = 4;
@@ -389,6 +395,7 @@ public class ClientFrame extends JPanel {
 
         toSipIpTextField.setEnabled(true);
         toSipIpTextField.setEditable(true);
+        toSipIpTextField.setDocument(new JTextFieldLimit(15));
         toSipIpTextField.setText(configManager.getToIp());
         optionGB.gridx = 1;
         optionGB.gridy = 5;
@@ -396,6 +403,7 @@ public class ClientFrame extends JPanel {
 
         toSipPortTextField.setEnabled(true);
         toSipPortTextField.setEditable(true);
+        toSipPortTextField.setDocument(new JTextFieldLimit(5));
         toSipPortTextField.setText(String.valueOf(configManager.getToPort()));
         optionGB.gridx = 1;
         optionGB.gridy = 6;
@@ -410,6 +418,7 @@ public class ClientFrame extends JPanel {
 
         mediaPortTextField.setEnabled(true);
         mediaPortTextField.setEditable(true);
+        mediaPortTextField.setDocument(new JTextFieldLimit(5));
         mediaPortTextField.setText(String.valueOf(configManager.getNettyServerPort()));
         optionGB.gridx = 1;
         optionGB.gridy = 8;
@@ -417,6 +426,7 @@ public class ClientFrame extends JPanel {
 
         recordPathTextField.setEnabled(true);
         recordPathTextField.setEditable(true);
+        recordPathTextField.setDocument(new JTextFieldLimit(100));
         recordPathTextField.setText(String.valueOf(configManager.getRecordPath()));
         optionGB.gridx = 1;
         optionGB.gridy = 9;

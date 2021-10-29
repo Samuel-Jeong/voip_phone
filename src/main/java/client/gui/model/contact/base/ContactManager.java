@@ -176,9 +176,23 @@ public class ContactManager {
         String contactFileName = configManager.getContactPath();
         if (contactFileName != null) {
             File contactFile = new File(contactFileName);
-            if (contactFile.exists()) {
+            if (contactFile.isFile() && contactFile.exists()) {
                 return contactFile;
+            } else {
+                try {
+                    if (contactFile.createNewFile()) {
+                        return contactFile;
+                    } else {
+                        logger.warn("Fail to create new contact file. ({})", contactFileName);
+                        return null;
+                    }
+                } catch (Exception e) {
+                    logger.warn("Fail to create new contact file. ({})", contactFileName, e);
+                    return null;
+                }
             }
+        } else {
+            logger.warn("Fail to get the contact file path.");
         }
 
         return null;
