@@ -183,7 +183,7 @@ public class ContactManager {
                     if (contactFile.createNewFile()) {
                         return contactFile;
                     } else {
-                        logger.warn("Fail to create new contact file. ({})", contactFileName);
+                        logger.warn("Fail to create new contact path. ({})", contactFileName);
                         return null;
                     }
                 } catch (Exception e) {

@@ -24,7 +24,7 @@ public class ContactPanel {
         panel = new JPanel();
         panel.setOpaque(false);
 
-        String[] contactTableHeaders = { "index", "name", "email", "phone_number", "sip_ip", "sip_port" };
+        String[] contactTableHeaders = { "name", "email", "phone_number", "sip_ip", "sip_port" };
         DefaultTableModel defaultTableModel = new DefaultTableModel(contactTableHeaders, 0);
         contactTable = new JTable(defaultTableModel);
         contactTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
