@@ -1406,6 +1406,7 @@ public class ClientFrame extends JPanel {
                 String inputStr = String.valueOf(readHostNameTextArea());
                 if(inputStr == null || inputStr.length() == 0) {
                     logger.warn("Host-name option is null. Fail to set the option.");
+                    popUpWarnMsg("Host-name option is null. Fail to set the option.");
                     appendText("Host-name option is null. Fail to set the option.\n");
                     return;
                 }
@@ -1424,6 +1425,7 @@ public class ClientFrame extends JPanel {
                 inputStr = String.valueOf(readSipIpTextArea());
                 if(inputStr == null || inputStr.length() == 0) {
                     logger.warn("FROM-IP option is null. Fail to set the option.");
+                    popUpWarnMsg("FROM-IP option is null. Fail to set the option.");
                     appendText("FROM-IP option is null. Fail to set the option.\n");
                     return;
                 }
@@ -1441,6 +1443,7 @@ public class ClientFrame extends JPanel {
                 inputStr = String.valueOf(readSipPortTextArea());
                 if(inputStr == null || inputStr.length() == 0) {
                     logger.warn("FROM-Port option is null. Fail to set the option.");
+                    popUpWarnMsg("FROM-Port option is null. Fail to set the option.");
                     appendText("FROM-Port option is null. Fail to set the option.\n");
                     return;
                 }
@@ -1448,7 +1451,15 @@ public class ClientFrame extends JPanel {
                 inputStr = inputStr.trim();
                 if (inputStr.length() == 0) { inputStr = "0"; }
                 logger.debug("|FROM-Port: {}", inputStr);
-                if (configManager.getFromPort() != Integer.parseInt(inputStr)) {
+                int fromPort = Integer.parseInt(inputStr);
+                if (configManager.getFromPort() != fromPort) {
+                    if (fromPort <= 0 || fromPort >= 65536) {
+                        logger.warn("Port number is wrong. ({})", fromPort);
+                        popUpWarnMsg("Port number is wrong. (" + fromPort + ")");
+                        appendText("Port number is wrong. (" + fromPort + ")\n");
+                        return;
+                    }
+
                     logger.debug("FROM-Port option is changed. (before=[{}], after=[{}])", configManager.getFromPort(), inputStr);
                     appendText("FROM-Port option is changed. ([" + configManager.getFromPort() + "] > [" + inputStr + "])\n");
                     configManager.setFromPort(Integer.parseInt(inputStr));
@@ -1459,6 +1470,7 @@ public class ClientFrame extends JPanel {
                 inputStr = String.valueOf(readToSipIpTextArea());
                 if(inputStr == null || inputStr.length() == 0) {
                     logger.warn("TO-IP option is null. Fail to set the option.");
+                    popUpWarnMsg("TO-IP option is null. Fail to set the option.");
                     appendText("TO-IP option is null. Fail to set the option.\n");
                     return;
                 }
@@ -1476,6 +1488,7 @@ public class ClientFrame extends JPanel {
                 inputStr = String.valueOf(readToSipPortTextArea());
                 if(inputStr == null || inputStr.length() == 0) {
                     logger.warn("TO-Port option is null. Fail to set the option.");
+                    popUpWarnMsg("TO-Port option is null. Fail to set the option.");
                     appendText("TO-Port option is null. Fail to set the option.\n");
                     return;
                 }
@@ -1483,7 +1496,15 @@ public class ClientFrame extends JPanel {
                 inputStr = inputStr.trim();
                 if (inputStr.length() == 0) { inputStr = "0"; }
                 logger.debug("|TO-Port: {}", inputStr);
-                if (configManager.getToPort() != Integer.parseInt(inputStr)) {
+                int toPort = Integer.parseInt(inputStr);
+                if (configManager.getToPort() != toPort) {
+                    if (toPort <= 0 || toPort >= 65536) {
+                        logger.warn("Port number is wrong. ({})", toPort);
+                        popUpWarnMsg("Port number is wrong. (" + toPort + ")");
+                        appendText("Port number is wrong. (" + toPort + ")\n");
+                        return;
+                    }
+
                     logger.debug("TO-Port option is changed. (before=[{}], after=[{}])", configManager.getToPort(), inputStr);
                     appendText("TO-Port option is changed. ([" + configManager.getToPort() + "] > [" + inputStr + "])\n");
                     configManager.setToPort(Integer.parseInt(inputStr));
@@ -1494,6 +1515,7 @@ public class ClientFrame extends JPanel {
                 inputStr = String.valueOf(readMediaIpTextArea());
                 if(inputStr == null || inputStr.length() == 0) {
                     logger.warn("Media-IP option is null. Fail to set the option.");
+                    popUpWarnMsg("Media-IP option is null. Fail to set the option.");
                     appendText("Media-IP option is null. Fail to set the option.\n");
                     return;
                 }
@@ -1511,6 +1533,7 @@ public class ClientFrame extends JPanel {
                 inputStr = String.valueOf(readMediaPortTextArea());
                 if(inputStr == null || inputStr.length() == 0) {
                     logger.warn("Media-Port option is null. Fail to set the option.");
+                    popUpWarnMsg("Media-Port option is null. Fail to set the option.");
                     appendText("Media-Port option is null. Fail to set the option.\n");
                     return;
                 }
@@ -1518,7 +1541,15 @@ public class ClientFrame extends JPanel {
                 inputStr = inputStr.trim();
                 if (inputStr.length() == 0) { inputStr = "0"; }
                 logger.debug("|Media-Port: {}", inputStr);
-                if (configManager.getNettyServerPort() != Integer.parseInt(inputStr)) {
+                int mediaPort = Integer.parseInt(inputStr);
+                if (configManager.getNettyServerPort() != mediaPort) {
+                    if (mediaPort <= 0 || mediaPort >= 65536) {
+                        logger.warn("Port number is wrong. ({})", mediaPort);
+                        popUpWarnMsg("Port number is wrong. (" + mediaPort + ")");
+                        appendText("Port number is wrong. (" + mediaPort + ")\n");
+                        return;
+                    }
+
                     logger.debug("Media-Port option is changed. (before=[{}], after=[{}])", configManager.getNettyServerPort(), inputStr);
                     appendText("Media-Port option is changed. ([" + configManager.getNettyServerPort() + "] > [" + inputStr + "])\n");
                     configManager.setNettyServerPort(Integer.parseInt(inputStr));
@@ -1529,6 +1560,7 @@ public class ClientFrame extends JPanel {
                 inputStr = String.valueOf(readRecordPathTextArea());
                 if(inputStr == null || inputStr.length() == 0) {
                     logger.warn("Record-Path option is null. Fail to set the option.");
+                    popUpWarnMsg("Record-Path option is null. Fail to set the option.");
                     appendText("Record-Path option is null. Fail to set the option.\n");
                     return;
                 }
