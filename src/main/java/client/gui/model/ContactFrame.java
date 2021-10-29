@@ -215,7 +215,7 @@ public class ContactFrame extends JPanel {
                             if (contactInfo.setData(tableData)) {
                                 //
                                 // 1) Set remote host name
-                                FrameManager.getInstance().setRemoteHostName(contactInfo.getPhoneNumber());
+                                FrameManager.getInstance().setRemoteHostName(contactInfo.getMdn());
                                 //
 
                                 //
@@ -272,7 +272,7 @@ public class ContactFrame extends JPanel {
 
             private final JTextField nameInputField = new JTextField(20);
             private final JTextField emailInputField = new JTextField(20);
-            private final JTextField phoneNumberInputField = new JTextField(20);
+            private final JTextField mdnInputField = new JTextField(20);
             private final JTextField sipIpInputField = new JTextField(20);
             private final JTextField sipPortInputField = new JTextField(20);
 
@@ -306,12 +306,12 @@ public class ContactFrame extends JPanel {
                 //
 
                 //
-                JLabel phoneNumberInputLabel = FrameManager.getInstance().createLabel("phone-number: ");
+                JLabel mdnInputLabel = FrameManager.getInstance().createLabel("phone-number: ");
                 mainGB.gridx = 0; mainGB.gridy = 2;
-                jPanel.add(phoneNumberInputLabel, mainGB);
+                jPanel.add(mdnInputLabel, mainGB);
                 mainGB.gridx = 1; mainGB.gridy = 2;
-                phoneNumberInputField.setDocument(new JTextFieldLimit(20));
-                jPanel.add(phoneNumberInputField, mainGB);
+                mdnInputField.setDocument(new JTextFieldLimit(20));
+                jPanel.add(mdnInputField, mainGB);
                 //
 
                 //
@@ -375,7 +375,7 @@ public class ContactFrame extends JPanel {
 
                         String name = nameInputField.getText();
                         String email = emailInputField.getText();
-                        String phoneNumber = phoneNumberInputField.getText();
+                        String mdn = mdnInputField.getText();
                         String sipIp = sipIpInputField.getText();
 
                         int sipPort = 0;
@@ -404,7 +404,7 @@ public class ContactFrame extends JPanel {
                         ContactInfo contactInfo = ContactManager.getInstance().addContactInfo(
                                 name,
                                 email,
-                                phoneNumber,
+                                mdn,
                                 sipIp,
                                 sipPort
                         );
@@ -423,8 +423,8 @@ public class ContactFrame extends JPanel {
                                 FrameManager.getInstance().popUpWarnMsgToFrame(resultMsg);
                             }
                         } else {
-                            resultMsg = "Fail to add the contact info. (" + phoneNumber + ")";
-                            logger.warn("Fail to add the contact info. ({})", phoneNumber);
+                            resultMsg = "Fail to add the contact info. (" + mdn + ")";
+                            logger.warn("Fail to add the contact info. ({})", mdn);
                             FrameManager.getInstance().popUpWarnMsgToFrame(resultMsg);
                             FrameManager.getInstance().appendTextToFrame(resultMsg + "\n");
                             return;
@@ -473,11 +473,11 @@ public class ContactFrame extends JPanel {
 
             private final JTextField nameInputField = new JTextField(20);
             private final JTextField emailInputField = new JTextField(20);
-            private final JTextField phoneNumberInputField = new JTextField(20);
+            private final JTextField mdnInputField = new JTextField(20);
             private final JTextField sipIpInputField = new JTextField(20);
             private final JTextField sipPortInputField = new JTextField(20);
 
-            private final String curPhoneNumber;
+            private final String curMdn;
             private final int selectedRowIndex;
 
             public ContactModifyFrame(String[] tableData, int selectedRowIndex) {
@@ -485,7 +485,7 @@ public class ContactFrame extends JPanel {
 
                 logger.debug("[Modify] tableData: {}, selectedRowIndex: {}", tableData, selectedRowIndex);
                 this.selectedRowIndex = selectedRowIndex;
-                this.curPhoneNumber = tableData[2];
+                this.curMdn = tableData[2];
 
                 //
                 JPanel jPanel = new JPanel();
@@ -516,13 +516,13 @@ public class ContactFrame extends JPanel {
                 //
 
                 //
-                JLabel phoneNumberInputLabel = FrameManager.getInstance().createLabel("phone-number: ");
+                JLabel mdnInputLabel = FrameManager.getInstance().createLabel("phone-number: ");
                 mainGB.gridx = 0; mainGB.gridy = 2;
-                jPanel.add(phoneNumberInputLabel, mainGB);
+                jPanel.add(mdnInputLabel, mainGB);
                 mainGB.gridx = 1; mainGB.gridy = 2;
-                phoneNumberInputField.setDocument(new JTextFieldLimit(20));
-                phoneNumberInputField.setText(tableData[2]);
-                jPanel.add(phoneNumberInputField, mainGB);
+                mdnInputField.setDocument(new JTextFieldLimit(20));
+                mdnInputField.setText(tableData[2]);
+                jPanel.add(mdnInputField, mainGB);
                 //
 
                 //
@@ -588,7 +588,7 @@ public class ContactFrame extends JPanel {
 
                         String name = nameInputField.getText();
                         String email = emailInputField.getText();
-                        String phoneNumber = phoneNumberInputField.getText();
+                        String mdn = mdnInputField.getText();
                         String sipIp = sipIpInputField.getText();
 
                         int sipPort = 0;
@@ -614,19 +614,19 @@ public class ContactFrame extends JPanel {
                             return;
                         }
 
-                        ContactInfo contactInfo = ContactManager.getInstance().getContactInfoByPhoneNumber(curPhoneNumber);
+                        ContactInfo contactInfo = ContactManager.getInstance().getContactInfoByMdn(curMdn);
                         if (contactInfo == null) {
-                            resultMsg = "Fail to modify the contact info. Not found contact info. (" + curPhoneNumber + ")";
-                            logger.warn("Fail to modify the contact info. Not found contact info. ({})", curPhoneNumber);
+                            resultMsg = "Fail to modify the contact info. Not found contact info. (" + curMdn + ")";
+                            logger.warn("Fail to modify the contact info. Not found contact info. ({})", curMdn);
                             FrameManager.getInstance().popUpWarnMsgToFrame(resultMsg);
                             FrameManager.getInstance().appendTextToFrame(resultMsg + "\n");
                             return;
                         }
 
-                        ContactInfo otherContactInfo = ContactManager.getInstance().getContactInfoByPhoneNumber(phoneNumber);
-                        if (otherContactInfo != null) {
-                            resultMsg = "Fail to modify the contact info. Other contact info is detected by the phone number. (" + phoneNumber + ")";
-                            logger.warn("Fail to modify the contact info. Other contact info is detected by the phone number. ({})", phoneNumber);
+                        ContactInfo otherContactInfo = ContactManager.getInstance().getContactInfoByMdn(mdn);
+                        if (otherContactInfo != null && otherContactInfo != contactInfo) {
+                            resultMsg = "Fail to modify the contact info. Other contact info is detected by the mdn. (" + mdn + ")";
+                            logger.warn("Fail to modify the contact info. Other contact info is detected by the mdn. ({})", mdn);
                             FrameManager.getInstance().popUpWarnMsgToFrame(resultMsg);
                             FrameManager.getInstance().appendTextToFrame(resultMsg + "\n");
                             return;
@@ -634,7 +634,7 @@ public class ContactFrame extends JPanel {
 
                         contactInfo.setName(name);
                         contactInfo.setEmail(email);
-                        contactInfo.setPhoneNumber(phoneNumber);
+                        contactInfo.setMdn(mdn);
                         contactInfo.setSipIp(sipIp);
                         contactInfo.setSipPort(sipPort);
 

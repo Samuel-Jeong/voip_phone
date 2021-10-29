@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
@@ -51,14 +50,14 @@ public class ContactManager {
 
                     String name = content[0];
                     String email = content[1];
-                    String phoneNumber = content[2];
+                    String mdn = content[2];
                     String sipIp = content[3];
                     int sipPort = Integer.parseInt(content[4]);
 
                     addContactInfo(
                             name,
                             email,
-                            phoneNumber,
+                            mdn,
                             sipIp,
                             sipPort
                     );
@@ -96,19 +95,19 @@ public class ContactManager {
         }
     }
 
-    public ContactInfo addContactInfo(String name, String email, String phoneNumber, String sipIp, int sipPort) {
-        if (phoneNumber == null || sipIp == null || sipPort <= 0) {
-            logger.warn("Fail to add the contact info. (name={}, email={}, phoneNumber={}, sipIp={}, sipPort={})", name, email, phoneNumber, sipIp, sipPort);
+    public ContactInfo addContactInfo(String name, String email, String mdn, String sipIp, int sipPort) {
+        if (mdn == null || sipIp == null || sipPort <= 0) {
+            logger.warn("Fail to add the contact info. (name={}, email={}, mdn={}, sipIp={}, sipPort={})", name, email, mdn, sipIp, sipPort);
             return null;
         }
 
         try {
             contactSetLock.lock();
 
-            ContactInfo contactInfo = new ContactInfo(name, email, phoneNumber, sipIp, sipPort);
+            ContactInfo contactInfo = new ContactInfo(name, email, mdn, sipIp, sipPort);
             for (ContactInfo curContactInfo : contactSet) {
                 if (curContactInfo != null) {
-                    if (curContactInfo.getPhoneNumber().equals(phoneNumber)) {
+                    if (curContactInfo.getMdn().equals(mdn)) {
                         return null;
                     }
                 }
@@ -120,7 +119,7 @@ public class ContactManager {
                 return null;
             }
         } catch (Exception e) {
-            logger.warn("Fail to add the contact info. (name={}, email={}, phoneNumber={}, sipIp={}, sipPort={})", name, email, phoneNumber, sipIp, sipPort, e);
+            logger.warn("Fail to add the contact info. (name={}, email={}, mdn={}, sipIp={}, sipPort={})", name, email, mdn, sipIp, sipPort, e);
             return null;
         } finally {
             contactSetLock.unlock();
@@ -147,15 +146,15 @@ public class ContactManager {
         }
     }
 
-    public ContactInfo getContactInfoByPhoneNumber(String phoneNumber) {
-        if (phoneNumber == null) { return null; }
+    public ContactInfo getContactInfoByMdn(String mdn) {
+        if (mdn == null) { return null; }
 
         try {
             contactSetLock.lock();
 
             for (ContactInfo curContactInfo : contactSet) {
                 if (curContactInfo != null) {
-                    if (curContactInfo.getPhoneNumber().equals(phoneNumber)) {
+                    if (curContactInfo.getMdn().equals(mdn)) {
                         return curContactInfo;
                     }
                 }
@@ -163,7 +162,7 @@ public class ContactManager {
 
             return null;
         } catch (Exception e) {
-            logger.warn("Fail to get the contact info by the phone number. (phoneNumber={})", phoneNumber, e);
+            logger.warn("Fail to get the contact info by the mdn. (mdn={})", mdn, e);
             return null;
         } finally {
             contactSetLock.unlock();

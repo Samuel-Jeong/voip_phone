@@ -17,16 +17,16 @@ public class ContactInfo {
 
     private String name;
     private String email;
-    private String phoneNumber;
+    private String mdn;
     private String sipIp;
     private int sipPort;
 
     ////////////////////////////////////////////////////////////////////////////////
 
-    public ContactInfo(String name, String email, String phoneNumber, String sipIp, int sipPort) {
+    public ContactInfo(String name, String email, String mdn, String sipIp, int sipPort) {
         this.name = name;
         this.email = email;
-        this.phoneNumber = phoneNumber;
+        this.mdn = mdn;
         this.sipIp = sipIp;
         this.sipPort = sipPort;
     }
@@ -53,12 +53,12 @@ public class ContactInfo {
         this.email = email;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public String getMdn() {
+        return mdn;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setMdn(String mdn) {
+        this.mdn = mdn;
     }
 
     public String getSipIp() {
@@ -87,7 +87,7 @@ public class ContactInfo {
 
         name = data[0];
         email = data[1];
-        phoneNumber = data[2];
+        mdn = data[2];
         sipIp = data[3];
         sipPort = Integer.parseInt(data[4]);
 
@@ -98,7 +98,7 @@ public class ContactInfo {
         String[] infos = new String[CONTACT_CONTENT_NUM];
         infos[0] = name;
         infos[1] = email;
-        infos[2] = phoneNumber;
+        infos[2] = mdn;
         infos[3] = sipIp;
         infos[4] = String.valueOf(sipPort);
         return infos;
@@ -108,7 +108,7 @@ public class ContactInfo {
     public String toString() {
         return name +
                 "," + email +
-                "," + phoneNumber +
+                "," + mdn +
                 "," + sipIp +
                 "," + sipPort;
     }
