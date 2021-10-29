@@ -371,6 +371,8 @@ public class ContactFrame extends JPanel {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if(e.getSource() == okButton) {
+                        String resultMsg;
+
                         String name = nameInputField.getText();
                         String email = emailInputField.getText();
                         String phoneNumber = phoneNumberInputField.getText();
@@ -382,6 +384,15 @@ public class ContactFrame extends JPanel {
                             sipPort = Integer.parseInt(sipPortString);
                         }
 
+                        ConfigManager configManager = AppInstance.getInstance().getConfigManager();
+                        if (configManager.getFromPort() == sipPort) {
+                            resultMsg = "Fail to modify the contact info. Same port number with local. (" + sipPort + ")";
+                            logger.warn("Fail to modify the contact info. Same port number with local. ({})", sipPort);
+                            FrameManager.getInstance().popUpWarnMsgToFrame(resultMsg);
+                            FrameManager.getInstance().appendTextToFrame(resultMsg + "\n");
+                            return;
+                        }
+
                         ContactInfo contactInfo = ContactManager.getInstance().addContactInfo(
                                 name,
                                 email,
@@ -390,7 +401,6 @@ public class ContactFrame extends JPanel {
                                 sipPort
                         );
 
-                        String resultMsg;
                         if (contactInfo != null) {
                             // 1) Add to the table
                             addContactToTable(contactInfo);
@@ -579,10 +589,19 @@ public class ContactFrame extends JPanel {
                             sipPort = Integer.parseInt(sipPortString);
                         }
 
+                        ConfigManager configManager = AppInstance.getInstance().getConfigManager();
+                        if (configManager.getFromPort() == sipPort) {
+                            resultMsg = "Fail to modify the contact info. Same port number with local. (" + sipPort + ")";
+                            logger.warn("Fail to modify the contact info. Same port number with local. ({})", sipPort);
+                            FrameManager.getInstance().popUpWarnMsgToFrame(resultMsg);
+                            FrameManager.getInstance().appendTextToFrame(resultMsg + "\n");
+                            return;
+                        }
+
                         ContactInfo contactInfo = ContactManager.getInstance().getContactInfoByPhoneNumber(curPhoneNumber);
                         if (contactInfo == null) {
-                            resultMsg = "Fail to modify the contact info. Not found contact info (" + curPhoneNumber + ")";
-                            logger.warn("Fail to modify the contact info. Not found contact info ({})", curPhoneNumber);
+                            resultMsg = "Fail to modify the contact info. Not found contact info. (" + curPhoneNumber + ")";
+                            logger.warn("Fail to modify the contact info. Not found contact info. ({})", curPhoneNumber);
                             FrameManager.getInstance().popUpWarnMsgToFrame(resultMsg);
                             FrameManager.getInstance().appendTextToFrame(resultMsg + "\n");
                             return;

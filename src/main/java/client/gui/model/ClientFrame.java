@@ -1446,6 +1446,7 @@ public class ClientFrame extends JPanel {
                 }
 
                 inputStr = inputStr.trim();
+                if (inputStr.length() == 0) { inputStr = "0"; }
                 logger.debug("|FROM-Port: {}", inputStr);
                 if (configManager.getFromPort() != Integer.parseInt(inputStr)) {
                     logger.debug("FROM-Port option is changed. (before=[{}], after=[{}])", configManager.getFromPort(), inputStr);
@@ -1480,6 +1481,7 @@ public class ClientFrame extends JPanel {
                 }
 
                 inputStr = inputStr.trim();
+                if (inputStr.length() == 0) { inputStr = "0"; }
                 logger.debug("|TO-Port: {}", inputStr);
                 if (configManager.getToPort() != Integer.parseInt(inputStr)) {
                     logger.debug("TO-Port option is changed. (before=[{}], after=[{}])", configManager.getToPort(), inputStr);
@@ -1514,6 +1516,7 @@ public class ClientFrame extends JPanel {
                 }
 
                 inputStr = inputStr.trim();
+                if (inputStr.length() == 0) { inputStr = "0"; }
                 logger.debug("|Media-Port: {}", inputStr);
                 if (configManager.getNettyServerPort() != Integer.parseInt(inputStr)) {
                     logger.debug("Media-Port option is changed. (before=[{}], after=[{}])", configManager.getNettyServerPort(), inputStr);
