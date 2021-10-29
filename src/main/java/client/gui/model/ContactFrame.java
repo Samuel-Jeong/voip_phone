@@ -277,7 +277,7 @@ public class ContactFrame extends JPanel {
             private final JTextField sipPortInputField = new JTextField(20);
 
             public ContactAddFrame() {
-                super("ContactAddFrame");
+                super("Add contact");
 
                 //
                 JPanel jPanel = new JPanel();
@@ -481,7 +481,7 @@ public class ContactFrame extends JPanel {
             private final int selectedRowIndex;
 
             public ContactModifyFrame(String[] tableData, int selectedRowIndex) {
-                super("ContactModifyFrame");
+                super("Modify contact");
 
                 logger.debug("[Modify] tableData: {}, selectedRowIndex: {}", tableData, selectedRowIndex);
                 this.selectedRowIndex = selectedRowIndex;
