@@ -392,9 +392,10 @@ public class ContactFrame extends JPanel {
                         }
 
                         ConfigManager configManager = AppInstance.getInstance().getConfigManager();
-                        if (configManager.getFromPort() == sipPort) {
-                            resultMsg = "Fail to modify the contact info. Same port number with local. (" + sipPort + ")";
-                            logger.warn("Fail to modify the contact info. Same port number with local. ({})", sipPort);
+                        if (configManager.getFromIp().equals(sipIp) &&
+                                (configManager.getFromPort() == sipPort || configManager.getNettyServerPort() == sipPort)) {
+                            resultMsg = "Fail to modify the contact info. Same network info with local. (" + sipPort + ")";
+                            logger.warn("Fail to modify the contact info. Same network info with local. ({})", sipPort);
                             FrameManager.getInstance().popUpWarnMsgToFrame(resultMsg);
                             FrameManager.getInstance().appendTextToFrame(resultMsg + "\n");
                             return;
@@ -604,9 +605,10 @@ public class ContactFrame extends JPanel {
                         }
 
                         ConfigManager configManager = AppInstance.getInstance().getConfigManager();
-                        if (configManager.getFromPort() == sipPort) {
-                            resultMsg = "Fail to modify the contact info. Same port number with local. (" + sipPort + ")";
-                            logger.warn("Fail to modify the contact info. Same port number with local. ({})", sipPort);
+                        if (configManager.getFromIp().equals(sipIp) &&
+                                (configManager.getFromPort() == sipPort || configManager.getNettyServerPort() == sipPort)) {
+                            resultMsg = "Fail to modify the contact info. Same network info with local. (" + sipPort + ")";
+                            logger.warn("Fail to modify the contact info. Same network info with local. ({})", sipPort);
                             FrameManager.getInstance().popUpWarnMsgToFrame(resultMsg);
                             FrameManager.getInstance().appendTextToFrame(resultMsg + "\n");
                             return;
