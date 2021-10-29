@@ -382,6 +382,13 @@ public class ContactFrame extends JPanel {
                         String sipPortString = sipPortInputField.getText();
                         if (sipPortString != null && sipPortString.length() > 0) {
                             sipPort = Integer.parseInt(sipPortString);
+                            if (sipPort <= 0 || sipPort >= 65536) {
+                                resultMsg = "Fail to modify the contact info. Port number is wrong. (" + sipPort + ")";
+                                logger.warn("Fail to modify the contact info. Port number is wrong. ({})", sipPort);
+                                FrameManager.getInstance().popUpWarnMsgToFrame(resultMsg);
+                                FrameManager.getInstance().appendTextToFrame(resultMsg + "\n");
+                                return;
+                            }
                         }
 
                         ConfigManager configManager = AppInstance.getInstance().getConfigManager();
@@ -587,6 +594,13 @@ public class ContactFrame extends JPanel {
                         String sipPortString = sipPortInputField.getText();
                         if (sipPortString != null && sipPortString.length() > 0) {
                             sipPort = Integer.parseInt(sipPortString);
+                            if (sipPort <= 0 || sipPort >= 65536) {
+                                resultMsg = "Fail to modify the contact info. Port number is wrong. (" + sipPort + ")";
+                                logger.warn("Fail to modify the contact info. Port number is wrong. ({})", sipPort);
+                                FrameManager.getInstance().popUpWarnMsgToFrame(resultMsg);
+                                FrameManager.getInstance().appendTextToFrame(resultMsg + "\n");
+                                return;
+                            }
                         }
 
                         ConfigManager configManager = AppInstance.getInstance().getConfigManager();
