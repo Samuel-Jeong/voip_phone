@@ -28,7 +28,7 @@ public class DtmfTaskManager {
             dtmfTaskExecutor = new ScheduledThreadPoolExecutor(2);
             dtmfTaskExecutor.scheduleAtFixedRate(
                     dtmfTask,
-                    dtmfTask.getInterval(),
+                    0,
                     dtmfTask.getInterval(),
                     TimeUnit.MILLISECONDS
             );

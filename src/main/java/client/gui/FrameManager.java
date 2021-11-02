@@ -11,7 +11,6 @@ import service.ServiceManager;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
 
 /**
  * @class public class FrameManager extends JFrame

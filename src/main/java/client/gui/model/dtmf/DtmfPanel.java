@@ -45,9 +45,9 @@ public class DtmfPanel {
                     dtmfButtons[i] = new JButton(String.valueOf(i + 1));
                 }
 
-                dtmfButtons[i].setMultiClickThreshhold(100);
+                dtmfButtons[i].setMultiClickThreshhold(10);
 
-                int delay = 80;
+                int delay = 20;
 
                 switch (i) {
                     case 0: dtmfButtons[i].addMouseListener(new DtmfButtonAdapter(DtmfUnit.DIGIT_1, volume, delay)); break;

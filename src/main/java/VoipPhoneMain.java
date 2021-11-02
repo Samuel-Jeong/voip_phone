@@ -1,3 +1,4 @@
+import client.gui.model.dtmf.DtmfSoundGenerator;
 import config.ConfigManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,8 @@ public class VoipPhoneMain {
             contactPath += "/contact/contact.txt";
          }
       }
+
+      DtmfSoundGenerator.getInstance().setMode(mode);
 
       if (configPath != null) {
          ConfigManager configManager = new ConfigManager(configPath);
