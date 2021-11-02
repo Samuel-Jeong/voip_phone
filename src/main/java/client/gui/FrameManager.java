@@ -46,7 +46,7 @@ public class FrameManager extends JFrame { // Main frame
         this.setTitle(configManager.getHostName());
 
         Dimension dimension = toolkit.getScreenSize();
-        setBounds(dimension.width / 2, dimension.height / 2, 500, 600);
+        setBounds(dimension.width / 2, dimension.height / 2, 750, 600);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null);
         //setResizable(false);

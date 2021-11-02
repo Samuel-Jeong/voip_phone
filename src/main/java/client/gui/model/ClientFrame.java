@@ -42,7 +42,7 @@ public class ClientFrame extends JPanel {
 
     //////////////////////////////////////////////////////////////////////
     // Text
-    private static final JTextArea logTextArea = new JTextArea(15, 20);
+    private static final JTextArea logTextArea = new JTextArea(15, 30);
     private final JTextField proxyTextField;
     private final JTextField remoteTextField;
     private final JTextField hostNameTextField = new JTextField(20);
@@ -100,16 +100,26 @@ public class ClientFrame extends JPanel {
 
         /////////////////////////////////////////////
         // Top Panel
+        JPanel masterPanel = new JPanel();
+        GridBagConstraints masterGB = new GridBagConstraints();
+        masterGB.anchor = GridBagConstraints.WEST;
+        masterGB.ipadx = 10;
+        masterGB.ipady = 10;
+        masterPanel.setLayout(new GridBagLayout());
+
         JPanel mainPanel = new JPanel();
         /*FlowLayout flowLayout = new FlowLayout();
         flowLayout.setAlignment(FlowLayout.TRAILING);*/
         GridBagConstraints mainGB = new GridBagConstraints();
+        mainGB.anchor = GridBagConstraints.WEST;
+        mainGB.ipadx = 10;
+        mainGB.ipady = 10;
         mainPanel.setLayout(new GridBagLayout());
 
-        proxyTextField = new JTextField(20);
-        proxyTextField.setDocument(new JTextFieldLimit(20));
-        remoteTextField = new JTextField(20);
-        remoteTextField.setDocument(new JTextFieldLimit(20));
+        proxyTextField = new JTextField(30);
+        proxyTextField.setDocument(new JTextFieldLimit(30));
+        remoteTextField = new JTextField(30);
+        remoteTextField.setDocument(new JTextFieldLimit(30));
 
         callButton = new JButton("Call");
         callButton.addActionListener(new CallListener());
@@ -150,21 +160,15 @@ public class ClientFrame extends JPanel {
         mainControlPanel.add(speakerMuteCheck);
         mainGB.gridx = 0;
         mainGB.gridy = 0;
-        mainGB.ipadx = 100;
-        mainGB.ipady = 10;
         mainPanel.add(mainControlPanel, mainGB);
 
+        proxyTextField.setText("");
         mainGB.gridx = 0;
         mainGB.gridy = 1;
-        proxyTextField.setText("");
         mainPanel.add(proxyTextField, mainGB);
 
         JPanel proxyControlPanel = new JPanel();
         proxyControlPanel.add(regiButton);
-
-        /////////////////////////////////////////////
-        // Contact Panel
-
         contactToggleButton = new JButton("Contact");
         contactToggleButton.addActionListener(new ContactToggleListener());
         contactToggleButton.setEnabled(false);
@@ -173,37 +177,36 @@ public class ClientFrame extends JPanel {
         mainGB.gridy = 2;
         mainPanel.add(proxyControlPanel, mainGB);
 
+        remoteTextField.setText("");
         mainGB.gridx = 0;
         mainGB.gridy = 3;
-        remoteTextField.setText("");
         mainPanel.add(remoteTextField, mainGB);
 
         JPanel remoteHostControlPanel = new JPanel();
-        remoteHostControlPanel.add(callButton);
-        remoteHostControlPanel.add(byeButton);
-        remoteHostControlPanel.add(clearButton);
-
         exitButton = new JButton("Exit");
         exitButton.addActionListener(new ExitListener());
         exitButton.setEnabled(true);
-
+        remoteHostControlPanel.add(callButton);
+        remoteHostControlPanel.add(byeButton);
+        remoteHostControlPanel.add(clearButton);
         remoteHostControlPanel.add(exitButton);
         mainGB.gridx = 0;
         mainGB.gridy = 4;
         mainPanel.add(remoteHostControlPanel, mainGB);
 
-        /////////////////////////////////////////////
         JPanel logPanel = new JPanel(new BorderLayout());
         logTextArea.setEditable(false);
-
         JScrollPane jScrollPane = new JScrollPane(logTextArea);
         jScrollPane.createVerticalScrollBar();
         jScrollPane.createHorizontalScrollBar();
-
         logPanel.add(jScrollPane, "Center");
         mainGB.gridx = 0;
         mainGB.gridy = 5;
         mainPanel.add(logPanel, mainGB);
+
+        masterGB.gridx = 0;
+        masterGB.gridy = 0;
+        masterPanel.add(mainPanel, masterGB);
 
         /////////////////////////////////////////////
         // Option Panel
@@ -218,8 +221,14 @@ public class ClientFrame extends JPanel {
         }
 
         /////////////////////////////////////////////
-        // Keypad Panel
-        JPanel keypadPanel = DtmfPanel.createKeypadPanel();
+
+        JPanel subMainPanel = new JPanel();
+        subMainPanel.setOpaque(false);
+        GridBagConstraints subMainGB = new GridBagConstraints();
+        subMainGB.anchor = GridBagConstraints.WEST;
+        subMainGB.ipadx = 10;
+        subMainGB.ipady = 10;
+        subMainPanel.setLayout(new GridBagLayout());
 
         // Wav Panel
         fileUploadButton = new JButton("Upload");
@@ -228,6 +237,23 @@ public class ClientFrame extends JPanel {
 
         fieldWavFile.setEditable(false);
         JPanel wavPanel = WavPanel.createWavPanel(fileUploadButton, fieldWavFile);
+        subMainGB.gridx = 0;
+        subMainGB.gridy = 0;
+        subMainPanel.add(wavPanel, subMainGB);
+
+        // Keypad Panel
+        JPanel keypadPanel = DtmfPanel.createKeypadPanel();
+        if (keypadPanel != null) {
+            subMainGB.ipadx = 10;
+            subMainGB.ipady = 180;
+            subMainGB.gridx = 0;
+            subMainGB.gridy = 1;
+            subMainPanel.add(keypadPanel, subMainGB);
+        }
+
+        masterGB.gridx = 1;
+        masterGB.gridy = 0;
+        masterPanel.add(subMainPanel, masterGB);
 
         /////////////////////////////////////////////
         // Tab Panel
@@ -235,17 +261,17 @@ public class ClientFrame extends JPanel {
         JTabbedPane jTabbedPane = new JTabbedPane();
         add(jTabbedPane);
 
-        jTabbedPane.addTab("phone", mainPanel);
-        jTabbedPane.addTab("keypad", keypadPanel);
-        jTabbedPane.addTab("wav", wavPanel);
+        jTabbedPane.addTab("phone", masterPanel);
+        //jTabbedPane.addTab("keypad", keypadPanel);
+        //jTabbedPane.addTab("wav", wavPanel);
         jTabbedPane.addTab("option", optionPanel);
         jTabbedPane.addTab("media", mediaPanel);
 
         jTabbedPane.setBackgroundAt(0, Color.GRAY);
         jTabbedPane.setBackgroundAt(1, Color.GRAY);
         jTabbedPane.setBackgroundAt(2, Color.GRAY);
-        jTabbedPane.setBackgroundAt(2, Color.GRAY);
-        jTabbedPane.setBackgroundAt(4, Color.GRAY);
+        //jTabbedPane.setBackgroundAt(2, Color.GRAY);
+        //jTabbedPane.setBackgroundAt(4, Color.GRAY);
 
         proxyTextField.setEnabled(false);
         remoteTextField.setEnabled(false);
@@ -327,7 +353,7 @@ public class ClientFrame extends JPanel {
         optionGB.gridy = 4;
         optionPanel.add(sipPortLabelPanel, optionGB);
 
-        JPanel proxySipIpLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        /*JPanel proxySipIpLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         proxySipIpLabelPanel.setAlignmentX(LEFT_ALIGNMENT);
         JLabel proxySipIpLabel = FrameManager.getInstance().createLabel("TO-IP : ");
         proxySipIpLabelPanel.add(proxySipIpLabel);
@@ -341,14 +367,14 @@ public class ClientFrame extends JPanel {
         proxySipPortLabelPanel.add(proxySipPortLabel);
         optionGB.gridx = 0;
         optionGB.gridy = 6;
-        optionPanel.add(proxySipPortLabelPanel, optionGB);
+        optionPanel.add(proxySipPortLabelPanel, optionGB);*/
 
         JPanel mediaIpLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         mediaIpLabelPanel.setAlignmentX(LEFT_ALIGNMENT);
         JLabel mediaIpLabel = FrameManager.getInstance().createLabel("Media-IP : ");
         mediaIpLabelPanel.add(mediaIpLabel);
         optionGB.gridx = 0;
-        optionGB.gridy = 7;
+        optionGB.gridy = 5;
         optionPanel.add(mediaIpLabelPanel, optionGB);
 
         JPanel mediaPortLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -356,7 +382,7 @@ public class ClientFrame extends JPanel {
         JLabel mediaPortLabel = FrameManager.getInstance().createLabel("Media-Port : ");
         mediaPortLabelPanel.add(mediaPortLabel);
         optionGB.gridx = 0;
-        optionGB.gridy = 8;
+        optionGB.gridy = 6;
         optionPanel.add(mediaPortLabelPanel, optionGB);
 
         JPanel recordPathLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -364,7 +390,7 @@ public class ClientFrame extends JPanel {
         JLabel recordPathLabel = FrameManager.getInstance().createLabel("Record-Path : ");
         recordPathLabelPanel.add(recordPathLabel);
         optionGB.gridx = 0;
-        optionGB.gridy = 9;
+        optionGB.gridy = 7;
         optionPanel.add(recordPathLabelPanel, optionGB);
         //
 
@@ -393,7 +419,7 @@ public class ClientFrame extends JPanel {
         optionGB.gridy = 4;
         optionPanel.add(sipPortTextField, optionGB);
 
-        toSipIpTextField.setEnabled(true);
+        /*toSipIpTextField.setEnabled(true);
         toSipIpTextField.setEditable(true);
         toSipIpTextField.setDocument(new JTextFieldLimit(15));
         toSipIpTextField.setText(configManager.getToIp());
@@ -407,13 +433,13 @@ public class ClientFrame extends JPanel {
         toSipPortTextField.setText(String.valueOf(configManager.getToPort()));
         optionGB.gridx = 1;
         optionGB.gridy = 6;
-        optionPanel.add(toSipPortTextField, optionGB);
+        optionPanel.add(toSipPortTextField, optionGB);*/
 
         mediaIpTextField.setEnabled(true);
         mediaIpTextField.setEditable(true);
         mediaIpTextField.setText(String.valueOf(configManager.getNettyServerIp()));
         optionGB.gridx = 1;
-        optionGB.gridy = 7;
+        optionGB.gridy = 5;
         optionPanel.add(mediaIpTextField, optionGB);
 
         mediaPortTextField.setEnabled(true);
@@ -421,7 +447,7 @@ public class ClientFrame extends JPanel {
         mediaPortTextField.setDocument(new JTextFieldLimit(5));
         mediaPortTextField.setText(String.valueOf(configManager.getNettyServerPort()));
         optionGB.gridx = 1;
-        optionGB.gridy = 8;
+        optionGB.gridy = 6;
         optionPanel.add(mediaPortTextField, optionGB);
 
         recordPathTextField.setEnabled(true);
@@ -429,7 +455,7 @@ public class ClientFrame extends JPanel {
         recordPathTextField.setDocument(new JTextFieldLimit(100));
         recordPathTextField.setText(String.valueOf(configManager.getRecordPath()));
         optionGB.gridx = 1;
-        optionGB.gridy = 9;
+        optionGB.gridy = 7;
         optionPanel.add(recordPathTextField, optionGB);
         //
 
@@ -438,7 +464,7 @@ public class ClientFrame extends JPanel {
         optionApplyButton.addActionListener(new OptionApplyListener());
         optionApplyButton.setEnabled(true);
         optionGB.gridx = 0;
-        optionGB.gridy = 10;
+        optionGB.gridy = 8;
         optionPanel.add(optionApplyButton, optionGB);
         //
 
@@ -1202,8 +1228,8 @@ public class ClientFrame extends JPanel {
                 hostNameTextField.setEnabled(false);
                 sipIpTextField.setEnabled(false);
                 sipPortTextField.setEnabled(false);
-                toSipIpTextField.setEnabled(false);
-                toSipPortTextField.setEnabled(false);
+                //toSipIpTextField.setEnabled(false);
+                //toSipPortTextField.setEnabled(false);
                 mediaIpTextField.setEnabled(false);
                 mediaPortTextField.setEnabled(false);
                 recordPathTextField.setEnabled(false);
@@ -1266,8 +1292,8 @@ public class ClientFrame extends JPanel {
                 hostNameTextField.setEnabled(true);
                 sipIpTextField.setEnabled(true);
                 sipPortTextField.setEnabled(true);
-                toSipIpTextField.setEnabled(true);
-                toSipPortTextField.setEnabled(true);
+                //toSipIpTextField.setEnabled(true);
+                //toSipPortTextField.setEnabled(true);
                 mediaIpTextField.setEnabled(true);
                 mediaPortTextField.setEnabled(true);
                 recordPathTextField.setEnabled(true);
@@ -1467,7 +1493,7 @@ public class ClientFrame extends JPanel {
                 }
 
                 ///////////////////////////////////////////////////////////////////////////
-                inputStr = String.valueOf(readToSipIpTextArea());
+                /*inputStr = String.valueOf(readToSipIpTextArea());
                 if(inputStr == null || inputStr.length() == 0) {
                     logger.warn("TO-IP option is null. Fail to set the option.");
                     popUpWarnMsg("TO-IP option is null. Fail to set the option.");
@@ -1484,7 +1510,6 @@ public class ClientFrame extends JPanel {
                     configManager.setIniValue(ConfigManager.SECTION_SIGNAL, ConfigManager.FIELD_TO_IP, inputStr);
                 }
 
-                ///////////////////////////////////////////////////////////////////////////
                 inputStr = String.valueOf(readToSipPortTextArea());
                 if(inputStr == null || inputStr.length() == 0) {
                     logger.warn("TO-Port option is null. Fail to set the option.");
@@ -1509,7 +1534,7 @@ public class ClientFrame extends JPanel {
                     appendText("TO-Port option is changed. ([" + configManager.getToPort() + "] > [" + inputStr + "])\n");
                     configManager.setToPort(Integer.parseInt(inputStr));
                     configManager.setIniValue(ConfigManager.SECTION_SIGNAL, ConfigManager.FIELD_TO_PORT, inputStr);
-                }
+                }*/
 
                 ///////////////////////////////////////////////////////////////////////////
                 inputStr = String.valueOf(readMediaIpTextArea());

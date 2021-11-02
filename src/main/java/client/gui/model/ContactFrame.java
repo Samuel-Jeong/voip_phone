@@ -14,6 +14,8 @@ import signal.SignalManager;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -90,6 +92,8 @@ public class ContactFrame extends JPanel {
         contactGB.gridy = 0;
         mainPanel.add(buttonPanel, contactGB);
 
+        contactGB.ipadx = 10;
+        contactGB.ipady = 50;
         contactGB.gridx = 0;
         contactGB.gridy = 1;
         contactPanel = new ContactPanel();
@@ -227,7 +231,7 @@ public class ContactFrame extends JPanel {
                                     SignalManager.getInstance().setToIp(toIp);
                                     configManager.setToIp(toIp);
                                     configManager.setIniValue(ConfigManager.SECTION_SIGNAL, ConfigManager.FIELD_TO_IP, toIp);
-                                    FrameManager.getInstance().setToSipIp(toIp);
+                                    //FrameManager.getInstance().setToSipIp(toIp);
                                 }
 
                                 int toPort = contactInfo.getSipPort();
@@ -235,7 +239,7 @@ public class ContactFrame extends JPanel {
                                     SignalManager.getInstance().setToPort(toPort);
                                     configManager.setToPort(toPort);
                                     configManager.setIniValue(ConfigManager.SECTION_SIGNAL, ConfigManager.FIELD_TO_PORT, String.valueOf(toPort));
-                                    FrameManager.getInstance().setToSipPort(String.valueOf(toPort));
+                                    //FrameManager.getInstance().setToSipPort(String.valueOf(toPort));
                                 }
                                 //
 
