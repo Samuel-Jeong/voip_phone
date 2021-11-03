@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.AppInstance;
 import service.ServiceManager;
+import system.SystemManager;
 
 import javax.swing.*;
 import java.awt.*;
@@ -46,7 +47,13 @@ public class FrameManager extends JFrame { // Main frame
         this.setTitle(configManager.getHostName());
 
         Dimension dimension = toolkit.getScreenSize();
-        setBounds(dimension.width / 2, dimension.height / 2, 750, 630);
+
+        if (SystemManager.getInstance().getOs().contains("win")) {
+            setBounds(dimension.width / 2, dimension.height / 2, 750, 700);
+        } else {
+            setBounds(dimension.width / 2, dimension.height / 2, 750, 630);
+        }
+
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null);
         //setResizable(false);

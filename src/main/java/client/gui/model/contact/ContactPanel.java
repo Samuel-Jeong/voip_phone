@@ -33,7 +33,7 @@ public class ContactPanel {
         panel = new JPanel();
         panel.setOpaque(false);
 
-        DefaultTableModel defaultTableModel = new DefaultTableModel(CONTACT_PANEL_TABLE_HEADERS, 0);
+        DefaultTableModel defaultTableModel = new DefaultTableModel(CONTACT_PANEL_TABLE_HEADERS, 0) { @Override public boolean isCellEditable(int row, int column){ return false; }};
         contactTable = new JTable(defaultTableModel);
         contactTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         contactTable.setSize(CONTACT_PANEL_TABLE_MAX_WIDTH, CONTACT_PANEL_TABLE_MAX_HEIGHT);

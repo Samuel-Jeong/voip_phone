@@ -108,7 +108,7 @@ public class ClientFrame extends JPanel {
 
         JPanel masterPanel = new JPanel();
         GridBagConstraints masterGB = new GridBagConstraints();
-        masterGB.anchor = GridBagConstraints.WEST;
+        masterGB.anchor = GridBagConstraints.CENTER;
         masterGB.ipadx = 10;
         masterGB.ipady = 10;
         masterPanel.setLayout(new GridBagLayout());
@@ -117,7 +117,7 @@ public class ClientFrame extends JPanel {
         // Top Panel
         JPanel mainPanel = new JPanel();
         GridBagConstraints mainGB = new GridBagConstraints();
-        mainGB.anchor = GridBagConstraints.WEST;
+        mainGB.anchor = GridBagConstraints.CENTER;
         mainGB.ipadx = 10;
         mainGB.ipady = 10;
         mainPanel.setLayout(new GridBagLayout());
@@ -126,7 +126,7 @@ public class ClientFrame extends JPanel {
         /*FlowLayout flowLayout = new FlowLayout();
         flowLayout.setAlignment(FlowLayout.TRAILING);*/
         GridBagConstraints mainCallGB = new GridBagConstraints();
-        mainCallGB.anchor = GridBagConstraints.WEST;
+        mainCallGB.anchor = GridBagConstraints.CENTER;
         mainCallGB.ipadx = 10;
         mainCallGB.ipady = 10;
         mainCallPanel.setLayout(new GridBagLayout());
@@ -224,18 +224,6 @@ public class ClientFrame extends JPanel {
         mainPanel.add(mainCallPanel, mainGB);
 
         /////////////////////////////////////////////
-        // Option Panel
-        JPanel optionPanel = createOptionPanel();
-
-        /////////////////////////////////////////////
-        // Media Panel
-        JPanel mediaPanel = createMediaPanel();
-        if (configManager.isProxyMode()) {
-            speakerSlider.setEnabled(false);
-            mikeSlider.setEnabled(false);
-        }
-
-        /////////////////////////////////////////////
 
         JPanel mainAssistPanel = new JPanel();
         mainAssistPanel.setOpaque(false);
@@ -281,11 +269,12 @@ public class ClientFrame extends JPanel {
         final String[] contactTableHeaders = ContactPanel.getContactPanelTableHeaders();
         final int[] contactTableHeaderWidth = ContactPanel.getContactPanelTableHeaderWidth();
 
-        DefaultTableModel defaultTableModel = new DefaultTableModel(contactTableHeaders, 0);
+        DefaultTableModel defaultTableModel = new DefaultTableModel(contactTableHeaders, 0) { @Override public boolean isCellEditable(int row, int column){ return false; }};
         curContactInfoTable = new JTable(defaultTableModel);
+
         curContactInfoTable.setCellSelectionEnabled(false);
-        curContactInfoTable.setSize(ContactPanel.CONTACT_PANEL_TABLE_MAX_WIDTH, ContactPanel.CONTACT_PANEL_TABLE_MIN_HEIGHT * 3);
-        curContactInfoTable.setPreferredSize(new Dimension(ContactPanel.CONTACT_PANEL_TABLE_MAX_WIDTH, ContactPanel.CONTACT_PANEL_TABLE_MIN_HEIGHT * 3));
+        curContactInfoTable.setSize(ContactPanel.CONTACT_PANEL_TABLE_MAX_WIDTH, ContactPanel.CONTACT_PANEL_TABLE_MIN_HEIGHT * 2);
+        curContactInfoTable.setPreferredSize(new Dimension(ContactPanel.CONTACT_PANEL_TABLE_MAX_WIDTH, ContactPanel.CONTACT_PANEL_TABLE_MIN_HEIGHT * 2));
 
         JTableHeader jTableHeader = curContactInfoTable.getTableHeader();
         jTableHeader.setSize(ContactPanel.CONTACT_PANEL_ROW_DIMENSION);
@@ -303,8 +292,8 @@ public class ClientFrame extends JPanel {
         }
 
         JScrollPane contactTableScrollPane = new JScrollPane(curContactInfoTable);
-        contactTableScrollPane.setPreferredSize(new Dimension(ContactPanel.CONTACT_PANEL_TABLE_MAX_WIDTH, ContactPanel.CONTACT_PANEL_TABLE_MIN_HEIGHT * 3));
-        contactTableScrollPane.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        contactTableScrollPane.setPreferredSize(new Dimension(ContactPanel.CONTACT_PANEL_TABLE_MAX_WIDTH, ContactPanel.CONTACT_PANEL_TABLE_MIN_HEIGHT * 2));
+        //contactTableScrollPane.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
         contactTableScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
         curContactInfoPanel.add(contactTableScrollPane, BorderLayout.WEST);
 
@@ -314,17 +303,38 @@ public class ClientFrame extends JPanel {
         //
 
         /////////////////////////////////////////////
+        // Option Panel
+        JPanel optionMasterPanel = new JPanel();
+        GridBagConstraints optionMasterGB = new GridBagConstraints();
+        optionMasterGB.anchor = GridBagConstraints.WEST;
+        optionMasterGB.ipadx = 10;
+        optionMasterGB.ipady = 10;
+        optionMasterPanel.setLayout(new GridBagLayout());
+
+        JPanel optionPanel = createOptionPanel();
+        optionMasterGB.ipadx = 30;
+        optionMasterGB.gridx = 0;
+        optionMasterGB.gridy = 1;
+        optionMasterPanel.add(optionPanel, optionMasterGB);
+
+        JPanel mediaPanel = createMediaPanel();
+        if (configManager.isProxyMode()) {
+            speakerSlider.setEnabled(false);
+            mikeSlider.setEnabled(false);
+        }
+        optionMasterGB.gridx = 1;
+        optionMasterPanel.add(mediaPanel, optionMasterGB);
+
+        /////////////////////////////////////////////
         // Tab Panel
         JTabbedPane jTabbedPane = new JTabbedPane();
         add(jTabbedPane);
 
         jTabbedPane.addTab("phone", masterPanel);
-        jTabbedPane.addTab("option", optionPanel);
-        jTabbedPane.addTab("media", mediaPanel);
+        jTabbedPane.addTab("option", optionMasterPanel);
 
         jTabbedPane.setBackgroundAt(0, Color.GRAY);
         jTabbedPane.setBackgroundAt(1, Color.GRAY);
-        jTabbedPane.setBackgroundAt(2, Color.GRAY);
 
         proxyTextField.setEnabled(false);
         remoteTextField.setEnabled(false);
