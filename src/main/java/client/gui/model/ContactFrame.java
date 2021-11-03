@@ -1,5 +1,6 @@
 package client.gui.model;
 
+import client.VoipClient;
 import client.gui.FrameManager;
 import client.gui.model.contact.ContactPanel;
 import client.gui.model.contact.base.ContactInfo;
@@ -244,6 +245,8 @@ public class ContactFrame extends JPanel {
                                 //
 
                                 logger.debug("Contact info is selected. ({})", contactInfo);
+                                VoipClient.getInstance().setCurContactInfo(contactInfo);
+                                FrameManager.getInstance().setCurContactInfoToClientFrame(contactInfo);
                             }
                         }
                     }

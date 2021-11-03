@@ -6,6 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -28,6 +32,7 @@ public class DtmfPanel {
     public static JPanel createKeypadPanel() {
         JPanel keypadPanel = new JPanel();
         keypadPanel.setOpaque(false);
+
         GridBagConstraints keypadGB = new GridBagConstraints();
         keypadGB.ipadx = 50;
         keypadGB.ipady = 10;
@@ -67,6 +72,14 @@ public class DtmfPanel {
 
                 //buttons[i].setPreferredSize(new Dimension(20, 20));
                 dtmfButtons[i].setEnabled(false);
+
+                dtmfButtons[i].setOpaque(false);
+                dtmfButtons[i].setForeground(Color.BLACK);
+                dtmfButtons[i].setBackground(Color.WHITE);
+                Border line = new LineBorder(Color.BLACK);
+                Border margin = new EmptyBorder(5, 15, 5, 15);
+                Border compound = new CompoundBorder(line, margin);
+                dtmfButtons[i].setBorder(compound);
             }
 
             int curButtonIndex = 0;

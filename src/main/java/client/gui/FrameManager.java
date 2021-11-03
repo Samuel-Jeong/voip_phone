@@ -3,6 +3,7 @@ package client.gui;
 import client.VoipClient;
 import client.gui.model.ClientFrame;
 import client.gui.model.ContactFrame;
+import client.gui.model.contact.base.ContactInfo;
 import config.ConfigManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +46,7 @@ public class FrameManager extends JFrame { // Main frame
         this.setTitle(configManager.getHostName());
 
         Dimension dimension = toolkit.getScreenSize();
-        setBounds(dimension.width / 2, dimension.height / 2, 750, 600);
+        setBounds(dimension.width / 2, dimension.height / 2, 750, 630);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null);
         //setResizable(false);
@@ -130,6 +131,14 @@ public class FrameManager extends JFrame { // Main frame
 
         revalidate();
         repaint();
+    }
+
+    public void setCurContactInfoToClientFrame(ContactInfo contactInfo) {
+        if (contactInfo == null) {
+            return;
+        }
+
+        clientFrame.addCurContactInfoToTable(contactInfo);
     }
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -227,32 +236,6 @@ public class FrameManager extends JFrame { // Main frame
         }
     }
 
-    public void setToSipIp(String toSipIp) {
-        if (toSipIp == null) { return; }
-
-        ConfigManager configManager = AppInstance.getInstance().getConfigManager();
-        if (configManager.isUseClient()) {
-            if (clientFrame == null) {
-                return;
-            }
-
-            clientFrame.setToSipIpTextField(toSipIp);
-        }
-    }
-
-    public void setToSipPort(String toSipPort) {
-        if (toSipPort == null) { return; }
-
-        ConfigManager configManager = AppInstance.getInstance().getConfigManager();
-        if (configManager.isUseClient()) {
-            if (clientFrame == null) {
-                return;
-            }
-
-            clientFrame.setToSipPortTextField(toSipPort);
-        }
-    }
-
     public boolean processAutoInviteToFrame(String remoteHostName) {
         if (remoteHostName == null) { return false; }
 
@@ -323,6 +306,5 @@ public class FrameManager extends JFrame { // Main frame
         label.setVerticalAlignment(SwingConstants.CENTER);
         return label;
     }
-
 
 }

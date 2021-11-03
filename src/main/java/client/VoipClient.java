@@ -1,5 +1,6 @@
 package client;
 
+import client.gui.model.contact.base.ContactInfo;
 import client.module.SoundHandler;
 import config.ConfigManager;
 import media.MediaManager;
@@ -73,6 +74,8 @@ public class VoipClient {
 
     private String wavFilePath = null;
     private WavFile wavFile = null;
+    
+    private ContactInfo curContactInfo = null;
 
     ////////////////////////////////////////////////////////////////////////////////
 
@@ -652,6 +655,14 @@ public class VoipClient {
 
     public int getSourcePayloadId() {
         return soundHandler.getSourcePayloadId();
+    }
+
+    public ContactInfo getCurContactInfo() {
+        return curContactInfo;
+    }
+
+    public void setCurContactInfo(ContactInfo curContactInfo) {
+        this.curContactInfo = curContactInfo;
     }
 
     ////////////////////////////////////////////////////////////////////////////////

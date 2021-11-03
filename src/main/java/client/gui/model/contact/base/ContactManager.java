@@ -169,6 +169,29 @@ public class ContactManager {
         }
     }
 
+    public ContactInfo getContactInfoByIpPort(String ip, int port) {
+        if (ip == null || port <= 0 || port > 65535) { return null; }
+
+        try {
+            contactSetLock.lock();
+
+            for (ContactInfo curContactInfo : contactSet) {
+                if (curContactInfo != null) {
+                    if (curContactInfo.getSipIp().equals(ip) && (curContactInfo.getSipPort() == port)) {
+                        return curContactInfo;
+                    }
+                }
+            }
+
+            return null;
+        } catch (Exception e) {
+            logger.warn("Fail to get the contact info by the mdn. (ip={}, port={})", ip, port, e);
+            return null;
+        } finally {
+            contactSetLock.unlock();
+        }
+    }
+
     public LinkedHashSet<ContactInfo> cloneContactInfoSet() {
         try {
             contactSetLock.lock();

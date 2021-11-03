@@ -2,6 +2,8 @@ package client.gui.model;
 
 import client.VoipClient;
 import client.gui.FrameManager;
+import client.gui.model.contact.ContactPanel;
+import client.gui.model.contact.base.ContactInfo;
 import client.gui.model.dtmf.DtmfPanel;
 import client.gui.model.util.JTextFieldLimit;
 import client.gui.model.wav.WavPanel;
@@ -22,9 +24,11 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -92,14 +96,16 @@ public class ClientFrame extends JPanel {
     private JSlider mikeSlider;
 
     //////////////////////////////////////////////////////////////////////
+    // Table
+    private final JTable curContactInfoTable;
+
+    //////////////////////////////////////////////////////////////////////
 
     //private AudioSelectFrame audioSelectFrame;
 
     public ClientFrame() {
         ConfigManager configManager = AppInstance.getInstance().getConfigManager();
 
-        /////////////////////////////////////////////
-        // Top Panel
         JPanel masterPanel = new JPanel();
         GridBagConstraints masterGB = new GridBagConstraints();
         masterGB.anchor = GridBagConstraints.WEST;
@@ -107,14 +113,23 @@ public class ClientFrame extends JPanel {
         masterGB.ipady = 10;
         masterPanel.setLayout(new GridBagLayout());
 
+        /////////////////////////////////////////////
+        // Top Panel
         JPanel mainPanel = new JPanel();
-        /*FlowLayout flowLayout = new FlowLayout();
-        flowLayout.setAlignment(FlowLayout.TRAILING);*/
         GridBagConstraints mainGB = new GridBagConstraints();
         mainGB.anchor = GridBagConstraints.WEST;
         mainGB.ipadx = 10;
         mainGB.ipady = 10;
         mainPanel.setLayout(new GridBagLayout());
+
+        JPanel mainCallPanel = new JPanel();
+        /*FlowLayout flowLayout = new FlowLayout();
+        flowLayout.setAlignment(FlowLayout.TRAILING);*/
+        GridBagConstraints mainCallGB = new GridBagConstraints();
+        mainCallGB.anchor = GridBagConstraints.WEST;
+        mainCallGB.ipadx = 10;
+        mainCallGB.ipady = 10;
+        mainCallPanel.setLayout(new GridBagLayout());
 
         proxyTextField = new JTextField(30);
         proxyTextField.setDocument(new JTextFieldLimit(30));
@@ -158,14 +173,14 @@ public class ClientFrame extends JPanel {
         mainControlPanel.add(stopButton);
         mainControlPanel.add(mikeMuteCheck);
         mainControlPanel.add(speakerMuteCheck);
-        mainGB.gridx = 0;
-        mainGB.gridy = 0;
-        mainPanel.add(mainControlPanel, mainGB);
+        mainCallGB.gridx = 0;
+        mainCallGB.gridy = 0;
+        mainCallPanel.add(mainControlPanel, mainCallGB);
 
         proxyTextField.setText("");
-        mainGB.gridx = 0;
-        mainGB.gridy = 1;
-        mainPanel.add(proxyTextField, mainGB);
+        mainCallGB.gridx = 0;
+        mainCallGB.gridy = 1;
+        mainCallPanel.add(proxyTextField, mainCallGB);
 
         JPanel proxyControlPanel = new JPanel();
         proxyControlPanel.add(regiButton);
@@ -173,14 +188,14 @@ public class ClientFrame extends JPanel {
         contactToggleButton.addActionListener(new ContactToggleListener());
         contactToggleButton.setEnabled(false);
         proxyControlPanel.add(contactToggleButton);
-        mainGB.gridx = 0;
-        mainGB.gridy = 2;
-        mainPanel.add(proxyControlPanel, mainGB);
+        mainCallGB.gridx = 0;
+        mainCallGB.gridy = 2;
+        mainCallPanel.add(proxyControlPanel, mainCallGB);
 
         remoteTextField.setText("");
-        mainGB.gridx = 0;
-        mainGB.gridy = 3;
-        mainPanel.add(remoteTextField, mainGB);
+        mainCallGB.gridx = 0;
+        mainCallGB.gridy = 3;
+        mainCallPanel.add(remoteTextField, mainCallGB);
 
         JPanel remoteHostControlPanel = new JPanel();
         exitButton = new JButton("Exit");
@@ -190,9 +205,9 @@ public class ClientFrame extends JPanel {
         remoteHostControlPanel.add(byeButton);
         remoteHostControlPanel.add(clearButton);
         remoteHostControlPanel.add(exitButton);
-        mainGB.gridx = 0;
-        mainGB.gridy = 4;
-        mainPanel.add(remoteHostControlPanel, mainGB);
+        mainCallGB.gridx = 0;
+        mainCallGB.gridy = 4;
+        mainCallPanel.add(remoteHostControlPanel, mainCallGB);
 
         JPanel logPanel = new JPanel(new BorderLayout());
         logTextArea.setEditable(false);
@@ -200,13 +215,13 @@ public class ClientFrame extends JPanel {
         jScrollPane.createVerticalScrollBar();
         jScrollPane.createHorizontalScrollBar();
         logPanel.add(jScrollPane, "Center");
-        mainGB.gridx = 0;
-        mainGB.gridy = 5;
-        mainPanel.add(logPanel, mainGB);
+        mainCallGB.gridx = 0;
+        mainCallGB.gridy = 5;
+        mainCallPanel.add(logPanel, mainCallGB);
 
-        masterGB.gridx = 0;
-        masterGB.gridy = 0;
-        masterPanel.add(mainPanel, masterGB);
+        mainGB.gridx = 0;
+        mainGB.gridy = 0;
+        mainPanel.add(mainCallPanel, mainGB);
 
         /////////////////////////////////////////////
         // Option Panel
@@ -222,13 +237,13 @@ public class ClientFrame extends JPanel {
 
         /////////////////////////////////////////////
 
-        JPanel subMainPanel = new JPanel();
-        subMainPanel.setOpaque(false);
-        GridBagConstraints subMainGB = new GridBagConstraints();
-        subMainGB.anchor = GridBagConstraints.WEST;
-        subMainGB.ipadx = 10;
-        subMainGB.ipady = 10;
-        subMainPanel.setLayout(new GridBagLayout());
+        JPanel mainAssistPanel = new JPanel();
+        mainAssistPanel.setOpaque(false);
+        GridBagConstraints mainAssistGB = new GridBagConstraints();
+        mainAssistGB.anchor = GridBagConstraints.CENTER;
+        mainAssistGB.ipadx = 10;
+        mainAssistGB.ipady = 10;
+        mainAssistPanel.setLayout(new GridBagLayout());
 
         // Wav Panel
         fileUploadButton = new JButton("Upload");
@@ -237,44 +252,92 @@ public class ClientFrame extends JPanel {
 
         fieldWavFile.setEditable(false);
         JPanel wavPanel = WavPanel.createWavPanel(fileUploadButton, fieldWavFile);
-        subMainGB.gridx = 0;
-        subMainGB.gridy = 0;
-        subMainPanel.add(wavPanel, subMainGB);
+        mainAssistGB.gridx = 0;
+        mainAssistGB.gridy = 0;
+        mainAssistPanel.add(wavPanel, mainAssistGB);
 
         // Keypad Panel
         JPanel keypadPanel = DtmfPanel.createKeypadPanel();
         if (keypadPanel != null) {
-            subMainGB.ipadx = 10;
-            subMainGB.ipady = 180;
-            subMainGB.gridx = 0;
-            subMainGB.gridy = 1;
-            subMainPanel.add(keypadPanel, subMainGB);
+            mainAssistGB.ipadx = 10;
+            mainAssistGB.ipady = 160;
+            mainAssistGB.gridx = 0;
+            mainAssistGB.gridy = 1;
+            mainAssistPanel.add(keypadPanel, mainAssistGB);
         }
 
-        masterGB.gridx = 1;
+        mainGB.gridx = 1;
+        mainGB.gridy = 0;
+        mainPanel.add(mainAssistPanel, mainGB);
+
+        masterGB.gridx = 0;
         masterGB.gridy = 0;
-        masterPanel.add(subMainPanel, masterGB);
+        masterPanel.add(mainPanel, masterGB);
+
+        // Current contact info panel
+        JPanel curContactInfoPanel = new JPanel();
+        curContactInfoPanel.setOpaque(false);
+
+        final String[] contactTableHeaders = ContactPanel.getContactPanelTableHeaders();
+        final int[] contactTableHeaderWidth = ContactPanel.getContactPanelTableHeaderWidth();
+
+        DefaultTableModel defaultTableModel = new DefaultTableModel(contactTableHeaders, 0);
+        curContactInfoTable = new JTable(defaultTableModel);
+        curContactInfoTable.setCellSelectionEnabled(false);
+        curContactInfoTable.setSize(ContactPanel.CONTACT_PANEL_TABLE_MAX_WIDTH, ContactPanel.CONTACT_PANEL_TABLE_MIN_HEIGHT * 3);
+        curContactInfoTable.setPreferredSize(new Dimension(ContactPanel.CONTACT_PANEL_TABLE_MAX_WIDTH, ContactPanel.CONTACT_PANEL_TABLE_MIN_HEIGHT * 3));
+
+        JTableHeader jTableHeader = curContactInfoTable.getTableHeader();
+        jTableHeader.setSize(ContactPanel.CONTACT_PANEL_ROW_DIMENSION);
+        jTableHeader.setPreferredSize(ContactPanel.CONTACT_PANEL_ROW_DIMENSION);
+
+        TableColumnModel columnModel = curContactInfoTable.getColumnModel();
+        for (int i = 0; i < contactTableHeaders.length; i++) {
+            columnModel.getColumn(i).setWidth(contactTableHeaderWidth[i]);
+            columnModel.getColumn(i).setPreferredWidth(contactTableHeaderWidth[i]);
+        }
+
+        ContactInfo curContactInfo = VoipClient.getInstance().getCurContactInfo();
+        if (curContactInfo != null) {
+            defaultTableModel.addRow(curContactInfo.toArray());
+        }
+
+        JScrollPane contactTableScrollPane = new JScrollPane(curContactInfoTable);
+        contactTableScrollPane.setPreferredSize(new Dimension(ContactPanel.CONTACT_PANEL_TABLE_MAX_WIDTH, ContactPanel.CONTACT_PANEL_TABLE_MIN_HEIGHT * 3));
+        contactTableScrollPane.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        contactTableScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        curContactInfoPanel.add(contactTableScrollPane, BorderLayout.WEST);
+
+        masterGB.gridx = 0;
+        masterGB.gridy = 1;
+        masterPanel.add(curContactInfoPanel, masterGB);
+        //
 
         /////////////////////////////////////////////
         // Tab Panel
-
         JTabbedPane jTabbedPane = new JTabbedPane();
         add(jTabbedPane);
 
         jTabbedPane.addTab("phone", masterPanel);
-        //jTabbedPane.addTab("keypad", keypadPanel);
-        //jTabbedPane.addTab("wav", wavPanel);
         jTabbedPane.addTab("option", optionPanel);
         jTabbedPane.addTab("media", mediaPanel);
 
         jTabbedPane.setBackgroundAt(0, Color.GRAY);
         jTabbedPane.setBackgroundAt(1, Color.GRAY);
         jTabbedPane.setBackgroundAt(2, Color.GRAY);
-        //jTabbedPane.setBackgroundAt(2, Color.GRAY);
-        //jTabbedPane.setBackgroundAt(4, Color.GRAY);
 
         proxyTextField.setEnabled(false);
         remoteTextField.setEnabled(false);
+    }
+
+    public void addCurContactInfoToTable(ContactInfo contactInfo) {
+        if (contactInfo == null) {
+            return;
+        }
+
+        curContactInfoTable.removeAll();
+        DefaultTableModel model = (DefaultTableModel) curContactInfoTable.getModel();
+        model.addRow(contactInfo.toArray());
     }
 
     private JPanel createOptionPanel() {
