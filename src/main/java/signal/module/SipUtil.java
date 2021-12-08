@@ -1256,8 +1256,11 @@ public class SipUtil implements SipListener {
         if (callIdHeader == null) { return; }
 
         String callId = callIdHeader.getCallId();
+        logger.debug("RECV CANCEL (callId={})", callId);
+
         CallInfo callInfo = CallManager.getInstance().getCallInfo(callId);
         if (callInfo == null) {
+            logger.warn("Not found the call info. (callId={})", callId);
             return;
         }
 

@@ -131,26 +131,6 @@ public class SoundHandler {
         sourceFrameRate = this.sourceDataLine.getFormat().getFrameRate();
         sourceChannelSize = this.sourceDataLine.getFormat().getChannels();
         sourceIsBigEndian = this.sourceDataLine.getFormat().isBigEndian();
-
-        /*if (sourceCodec.equals(PCM_SIGNED.toString()) || sourceCodec.equals(PCM_UNSIGNED.toString())) {
-            sourceCodec = MediaManager.getInstance().getPriorityCodec();
-            if (sourceCodec.equals(ALAW.toString())) {
-                sourcePayloadId = 8;
-            } else if (sourceCodec.equals(ULAW.toString())) {
-                sourcePayloadId = 0;
-            }
-            sourceSamplingRate = "8000";
-            sourceFrameRate = 8000;
-        } else if (sourceCodec.equals(ALAW.toString())) {
-            sourcePayloadId = 8;
-        } else if (sourceCodec.equals(ULAW.toString())) {
-            sourcePayloadId = 0;
-        } else if (sourceCodec.equals(PCM_FLOAT.toString())) {
-            sourcePayloadId = 100;
-        } else {
-            sourcePayloadId = -1;
-            logger.error("|Fail to get the source(speaker) audio codec({}). Program ends.", sourceCodec);
-        }*/
     }
 
     private void setTargetDataLine(TargetDataLine targetDataLine) {
@@ -164,26 +144,6 @@ public class SoundHandler {
         targetFrameRate = this.targetDataLine.getFormat().getFrameRate();
         targetChannelSize = this.targetDataLine.getFormat().getChannels();
         targetIsBigEndian = this.targetDataLine.getFormat().isBigEndian();
-
-        /*if (targetCodec.equals(PCM_SIGNED.toString()) || targetCodec.equals(PCM_UNSIGNED.toString())) {
-            targetCodec = MediaManager.getInstance().getPriorityCodec();
-            if (targetCodec.equals(ALAW.toString())) {
-                targetPayloadId = 8;
-            } else if (targetCodec.equals(ULAW.toString())) {
-                targetPayloadId = 0;
-            }
-            targetSamplingRate = "8000";
-            targetFrameRate = 8000;
-        } else if (targetCodec.equals(ALAW.toString())) {
-            targetPayloadId = 8;
-        } else if (targetCodec.equals(ULAW.toString())) {
-            targetPayloadId = 0;
-        } else if (targetCodec.equals(PCM_FLOAT.toString())) {
-            targetPayloadId = 100;
-        } else {
-            targetPayloadId = -1;
-            logger.error("|Fail to get the target(mike) audio codec({}). Program ends.", targetCodec);
-        }*/
     }
 
     ////////////////////////////////////////////////////////////////////////////////
