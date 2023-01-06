@@ -2,10 +2,11 @@ package client.gui.model.contact;
 
 import client.gui.model.contact.base.ContactInfo;
 import client.gui.model.contact.base.ContactManager;
-import javafx.scene.control.SelectionMode;
 
 import javax.swing.*;
-import javax.swing.table.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 
 /**
